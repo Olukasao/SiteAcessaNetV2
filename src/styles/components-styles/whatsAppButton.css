@@ -1,0 +1,32 @@
+.whatsapp-float {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 14px 20px;
+  border-radius: 50px;
+
+  color: white;
+  text-decoration: none;
+  font-family: "Poppins";
+
+  background: linear-gradient(135deg,#2FA4E7,#1B3C88);
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+  transition: .3s;
+  z-index: 9999;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+
+.whatsapp-float svg {
+  font-size: 24px;
+}

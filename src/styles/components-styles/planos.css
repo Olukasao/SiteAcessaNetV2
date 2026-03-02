@@ -1,0 +1,136 @@
+.planos {
+  padding: 110px 20px;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f4f8fc 100%
+  );
+  text-align: center;
+}
+
+.planos-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.planos h2 {
+  font-size: 42px;
+  color: #081833;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #5c6b80;
+  margin-bottom: 70px;
+}
+
+/* GRID */
+
+.planos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+  gap: 35px;
+}
+
+/* CARD */
+
+.plano-card {
+  background: white;
+  border-radius: 18px;
+  padding: 45px 30px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.07);
+  transition: 0.35s;
+  position: relative;
+  border: 1px solid #eef2f7;
+}
+
+.plano-card:hover {
+  transform: translateY(-10px);
+}
+
+/* DESTAQUE */
+
+.plano-card.destaque {
+  border: 2px solid #2FA4E7;
+  transform: scale(1.06);
+}
+
+.badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2FA4E7;
+  color: white;
+  padding: 7px 16px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* PREÇO */
+
+.preco {
+  font-size: 44px;
+  font-weight: 700;
+  color: #081833;
+  margin: 20px 0 25px;
+}
+
+.preco span {
+  font-size: 18px;
+}
+
+.preco small {
+  font-size: 14px;
+  color: #7a8798;
+}
+
+/* LISTA */
+
+.plano-card ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.plano-card li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #445066;
+}
+
+.icon-check {
+  color: #2FA4E7;
+}
+
+.icon-tv {
+  color: #ffb400;
+}
+
+/* BOTÃO */
+
+.btn-contratar {
+  background: linear-gradient(
+    90deg,
+    #25d366,
+    #1ebe5d
+  );
+  color: white;
+  padding: 14px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: .3s;
+}
+
+.btn-contratar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(37,211,102,.3);
+}

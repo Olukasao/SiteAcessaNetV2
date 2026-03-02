@@ -1,0 +1,125 @@
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+}
+
+/* SLIDES */
+
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  background-size: cover;
+  background-position: center;
+
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+/* OVERLAY */
+
+.overlay {
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    rgba(11,30,75,0.85),
+    rgba(47,164,231,0.4)
+  );
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding-left: 8%;
+  color: white;
+  font-family: "Poppins";
+}
+
+.overlay h1 {
+  font-size: 46px;
+  margin-bottom: 15px;
+}
+
+.overlay p {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+/* BOTÃO */
+
+.carousel-btn {
+  background: white;
+  color: #1B3C88;
+  padding: 14px 26px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* SETAS */
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  font-size: 30px;
+  padding: 10px 15px;
+  cursor: pointer;
+  background: rgba(0,0,0,0.3);
+  color: white;
+}
+
+.left { left: 15px; }
+.right { right: 15px; }
+
+/* DOTS */
+
+.dots {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  margin: 0 6px;
+  background: white;
+  opacity: .5;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dot.active {
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+
+  .overlay {
+    padding: 30px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .overlay h1 {
+    font-size: 30px;
+  }
+
+}

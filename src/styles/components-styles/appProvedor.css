@@ -1,0 +1,116 @@
+.app-provedor {
+  padding: 110px 20px;
+  background: linear-gradient(180deg,#f6f9fc,#ffffff);
+}
+
+.app-container {
+  max-width: 800px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* IMAGEM */
+
+.app-image img {
+  width: 100%;
+  max-width: 200px;
+  display: block;
+  margin: auto;
+}
+
+/* TEXTO */
+
+.app-info h2 {
+  font-size: 38px;
+  color: #081833;
+  margin: 15px 0;
+}
+
+.app-info p {
+  color: #5c6b80;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+/* BADGE */
+
+.badge {
+  background: rgba(47,164,231,.1);
+  color: #2FA4E7;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* BENEFÍCIOS */
+
+.app-beneficios {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.app-beneficios li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #445066;
+  font-weight: 500;
+}
+
+.app-beneficios svg {
+  color: #2FA4E7;
+}
+
+/* STORES */
+
+.store-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.store-buttons img {
+  height: 50px;
+  transition: .3s;
+}
+
+.store-buttons img:hover {
+  transform: scale(1.05);
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .app-beneficios li {
+    justify-content: center;
+  }
+
+  .store-buttons {
+    justify-content: center;
+  }
+}
+
+.app-image img {
+  width: 100%;
+  max-width: 420px;
+  animation: floatApp 6s ease-in-out infinite;
+}
+
+@keyframes floatApp {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+  100% { transform: translateY(0px); }
+}

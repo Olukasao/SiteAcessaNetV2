@@ -1,0 +1,112 @@
+.historia {
+  background: #f7f9fc;
+}
+
+/* HERO */
+.historia-hero {
+  background: linear-gradient(135deg, #0a2540, #0d6efd);
+  color: white;
+  padding: 90px 20px;
+  text-align: center;
+}
+
+.historia-hero h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+.historia-hero p {
+  max-width: 700px;
+  margin: auto;
+  opacity: .9;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+/* SOBRE */
+.historia-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+.historia-text h2 {
+  color: #0a2540;
+  margin-bottom: 20px;
+}
+
+.historia-text p {
+  margin-bottom: 15px;
+  color: #555;
+  line-height: 1.7;
+}
+
+.historia-image img {
+  width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.1);
+}
+
+/* VALORES */
+.valores {
+  background: white;
+}
+
+.valores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px,1fr));
+  gap: 25px;
+}
+
+.valor-card {
+  background: #f4f7fb;
+  padding: 30px;
+  border-radius: 14px;
+  text-align: center;
+  transition: .3s;
+}
+
+.valor-card:hover {
+  transform: translateY(-6px);
+}
+
+.valor-card .icon {
+  font-size: 32px;
+  color: #0d6efd;
+  margin-bottom: 15px;
+}
+
+/* TIMELINE */
+.timeline h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #0a2540;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.timeline-item span {
+  background: #0d6efd;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+/* RESPONSIVO */
+@media (max-width: 900px) {
+  .historia-content {
+    grid-template-columns: 1fr;
+  }
+}

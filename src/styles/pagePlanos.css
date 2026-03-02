@@ -1,0 +1,96 @@
+.planos-hero {
+  background: linear-gradient(135deg,#0a2540,#0d6efd);
+  color: white;
+  text-align: center;
+  padding: 90px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+/* GRID */
+.planos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  gap: 30px;
+}
+
+/* CARD */
+.plano-card {
+  background: white;
+  border-radius: 16px;
+  padding: 35px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition: .3s;
+  position: relative;
+}
+
+.plano-card:hover {
+  transform: translateY(-8px);
+}
+
+.plano-card.destaque {
+  border: 2px solid #0d6efd;
+  transform: scale(1.05);
+}
+
+.badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0d6efd;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.preco {
+  font-size: 42px;
+  font-weight: bold;
+  color: #0d6efd;
+  margin: 20px 0;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+}
+
+/* BOTÃO */
+.btn-contratar {
+  display: inline-block;
+  margin-top: 20px;
+  background: #25d366;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+/* ESPECIAIS */
+.especiais {
+  text-align: center;
+}
+
+.especiais-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.especial-card {
+  background: #f4f7fb;
+  padding: 25px;
+  border-radius: 12px;
+}

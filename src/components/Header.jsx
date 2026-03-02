@@ -1,0 +1,46 @@
+import "../styles/components-styles/header.css";
+import logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
+import { FaFacebookF, FaInstagram, FaBars, FaTimes } from "react-icons/fa";
+import { useState } from "react";
+
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <header className="header">
+      <div className="header-container">
+
+        {/* LOGO */}
+        <Link to="/">
+          <img src={logo} alt="Acessa Net" className="logo" />
+        </Link>
+
+        {/* MENU */}
+        <nav className={`menu ${menuOpen ? "active" : ""}`}>
+          <Link to="https://acessanet.sgp.net.br/accounts/central/login">Área do Cliente</Link>
+          <Link to="/planos">Planos</Link>
+          <Link to="/contratos">Contratos</Link>
+          <Link to="/historia">Nossa História</Link>
+          <Link to="/trabalhe-conosco">Trabalhe Conosco</Link>
+           <Link to="/contatos">Contatos</Link>
+        </nav>
+
+        {/* SOCIAL */}
+        <div className="social">
+          <FaFacebookF />
+          <FaInstagram />
+        </div>
+
+        {/* HAMBURGER */}
+        <div
+          className="hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+
+      </div>
+    </header>
+  );
+}

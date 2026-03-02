@@ -1,0 +1,102 @@
+/* =========================
+   FOOTER ACESSA NET
+========================= */
+.footer {
+  background: #0B1E4B;
+  color: white;
+  padding: 70px 30px 40px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* CONTAINER */
+
+.footer-container {
+  max-width: 1200px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px; /* MAIS ESPAÇO ENTRE COLUNAS */
+}
+
+/* COLUNAS */
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* LOGO */
+
+.footer-logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+/* TITULOS */
+
+.footer-col h3 {
+  color: #2FA4E7;
+  font-size: 15px;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+}
+
+/* TEXTOS */
+
+.footer-col p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+  opacity: 0.9;
+}
+
+/* LINKS */
+
+.footer-col a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: 0.3s;
+}
+
+.footer-col a:hover {
+  color: #2FA4E7;
+  transform: translateX(4px);
+}
+
+/* INFORMAÇÕES MENORES */
+
+.footer-col span {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+/* LINHA DIVISÓRIA */
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin-top: 50px;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .footer-col {
+    align-items: center;
+  }
+
+}

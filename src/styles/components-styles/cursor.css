@@ -1,0 +1,29 @@
+/* esconder cursor padrão */
+body {
+  cursor: none;
+}
+
+/* cursor base */
+.cursor {
+  position: fixed;
+  width: 18px;
+  height: 18px;
+  background: #2FA4E7;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    width .25s ease,
+    height .25s ease,
+    background .25s ease,
+    transform .08s linear;
+  z-index: 9999;
+}
+
+/* efeito hover */
+.cursor-hover {
+  width: 45px;
+  height: 45px;
+  background: rgba(47,164,231,.25);
+  backdrop-filter: blur(4px);
+}

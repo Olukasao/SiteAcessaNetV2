@@ -1,0 +1,194 @@
+/* ===== SECTION ===== */
+
+.watchtv {
+  padding: 100px 20px;
+  background: linear-gradient(135deg,#081833,#0a1f44,#081833);
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+.watchtv-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===== HERO ISP ===== */
+
+.watchtv-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 50px;
+  margin-bottom: 80px;
+}
+
+.badge {
+  background: #2FA4E7;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.watchtv-info h2 {
+  font-size: 42px;
+  margin: 15px 0;
+}
+
+.watchtv-info p {
+  opacity: .85;
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.watchtv-btn {
+  display: inline-block;
+  margin-top: 25px;
+  background: #2FA4E7;
+  padding: 14px 28px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: .3s;
+}
+
+.watchtv-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(47,164,231,.4);
+}
+
+.watchtv-mockup img {
+  width: 50%;
+  border-radius: 50px;
+  max-width: 420px;
+}
+
+/* ===== SECTION HEADER ===== */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 0 15px;
+}
+
+.section-header h3 {
+  color: #2FA4E7;
+}
+
+/* ===== NAV BUTTONS ===== */
+
+.nav button {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  margin-left: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.nav button:hover {
+  background: #2FA4E7;
+}
+
+/* ===== CAROUSEL ===== */
+
+.carousel {
+  display: flex;
+  gap: 20px;
+  
+  overflow-x: auto;
+
+  scroll-behavior: smooth;
+  padding-bottom: 5px;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== FILMES ===== */
+
+.movie-card {
+  min-width: 180px;     /* largura do card */
+  height: 260px;        /* ALTURA FIXA */
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: .4s;
+  background: #000;
+}
+
+.movie-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ⭐ MUITO IMPORTANTE */
+}
+
+.movie-card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 20px 40px rgba(47,164,231,.35);
+}
+
+.movie-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,.7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: .4s;
+}
+
+.movie-card:hover .movie-overlay {
+  opacity: 1;
+}
+
+.movie-overlay svg {
+  background: #2FA4E7;
+  padding: 14px;
+  border-radius: 50%;
+  font-size: 26px;
+}
+
+/* ===== CANAIS ===== */
+
+.channel-card {
+  min-width: 150px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .3s;
+}
+
+.channel-card img {
+  max-width: 90px;
+}
+
+.channel-card:hover {
+  transform: translateY(-6px);
+  background: rgba(47,164,231,.2);
+}
+
+/* ===== RESPONSIVO ===== */
+
+@media (max-width: 900px) {
+  .watchtv-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .watchtv-info p {
+    margin: auto;
+  }
+}

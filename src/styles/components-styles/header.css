@@ -1,0 +1,90 @@
+.header {
+  background: linear-gradient(90deg,#1B3C88,#2FA4E7);
+  padding: 14px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  height: 52px;
+}
+
+/* MENU DESKTOP */
+
+.menu {
+  display: flex;
+  gap: 26px;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-family: Poppins;
+  font-weight: 500;
+  transition: .3s;
+}
+
+.menu a:hover {
+  opacity: .8;
+}
+
+/* SOCIAL */
+
+.social {
+  color: white;
+  display: flex;
+  gap: 18px;
+  font-size: 18px;
+}
+
+/* HAMBURGER */
+
+.hamburger {
+  display: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+
+  .hamburger {
+    display: block;
+  }
+
+  .social {
+    display: none;
+  }
+
+  .menu {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 100%;
+    background: #0B1E4B;
+
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    padding: 30px 0;
+
+    transform: translateY(-150%);
+    transition: .4s ease;
+  }
+
+  .menu.active {
+    transform: translateY(0);
+  }
+}

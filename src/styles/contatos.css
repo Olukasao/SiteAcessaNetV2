@@ -1,0 +1,52 @@
+.contato-hero {
+  background: linear-gradient(135deg,#0a2540,#0d6efd);
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.contato-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.contato-info p {
+  margin: 12px 0;
+  font-size: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.contato-form {
+  display: grid;
+  gap: 15px;
+}
+
+.contato-form input,
+.contato-form textarea {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.contato-form button {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.contato-form button:hover {
+  background: #0b5ed7;
+}
+
+@media(max-width:900px){
+  .contato-grid{
+    grid-template-columns:1fr;
+  }
+}

@@ -1,0 +1,110 @@
+.planos-especiais {
+  padding: 110px 20px;
+  background: #081833;
+  text-align: center;
+  color: white;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.planos-especiais h2 {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  opacity: .8;
+  margin-bottom: 60px;
+}
+
+/* GRID */
+
+.especial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 30px;
+}
+
+/* CARD */
+
+.especial-card {
+  padding: 45px 30px;
+  border-radius: 18px;
+  position: relative;
+  transition: .35s;
+  backdrop-filter: blur(10px);
+}
+
+.especial-card:hover {
+  transform: translateY(-10px) scale(1.03);
+}
+
+/* TAG */
+
+.tag {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  color: #081833;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* VARIAÇÕES */
+
+.carnaval {
+  background: linear-gradient(135deg,#ff4ecd,#ffb347);
+}
+
+.pascoa {
+  background: linear-gradient(135deg,#8fd3f4,#84fab0);
+}
+
+.natal {
+  background: linear-gradient(135deg,#ff416c,#1fa463);
+}
+
+/* TEXTO */
+
+.velocidade {
+  display: block;
+  margin: 15px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.preco {
+  font-size: 38px;
+  font-weight: bold;
+  margin-bottom: 25px;
+}
+
+.preco small {
+  font-size: 14px;
+}
+
+/* BOTÃO */
+
+.btn-especial {
+  background: rgba(255,255,255,.95);
+  color: #081833;
+  padding: 14px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: .3s;
+}
+
+.btn-especial:hover {
+  transform: translateY(-3px);
+}
