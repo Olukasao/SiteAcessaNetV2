@@ -78,7 +78,7 @@ export default function WatchTV() {
                     </div>
                 </div>
 
-                <div className="carousel" ref={movieRef}>
+                <div className="carousel-watch" ref={movieRef}>
                     {filmes.map((img, i) => (
                         <div className="movie-card" key={i}>
                             <img src={img} className="imgs-watch" alt="Filme" />
@@ -101,7 +101,7 @@ export default function WatchTV() {
                     </div>
                 </div>
 
-                <div className="carousel" ref={channelRef}>
+                <div className="carousel-watch" ref={channelRef}>
                     {canais.map((img, i) => (
                         <div className="channel-card" key={i}>
                             <img src={img} alt="Canal TV" />

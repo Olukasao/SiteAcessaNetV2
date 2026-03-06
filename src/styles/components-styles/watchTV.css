@@ -94,16 +94,17 @@
 }
 
 /* ===== CAROUSEL ===== */
-.carousel {
+.carousel-watch {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-bottom: 5px;
-  max-height: 300px;
+  margin-top: 20px;
+   margin-bottom: 20px;
 }
 
-.carousel::-webkit-scrollbar {
+.carousel-watch::-webkit-scrollbar {
   display: none;
 }
 

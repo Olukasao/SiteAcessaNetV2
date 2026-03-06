@@ -23,13 +23,18 @@ export default function Header() {
           <Link to="/contratos">Contratos</Link>
           <Link to="/historia">Nossa História</Link>
           <Link to="/trabalhe-conosco">Trabalhe Conosco</Link>
-           <Link to="/contatos">Contatos</Link>
+          <Link to="/contatos">Contatos</Link>
         </nav>
 
         {/* SOCIAL */}
         <div className="social">
-          <FaFacebookF />
-          <FaInstagram />
+          <a href="" style={{textDecoration:"None"}}>
+            <FaFacebookF />
+
+          </a>
+          <a href="">
+            <FaInstagram />
+          </a>
         </div>
 
         {/* HAMBURGER */}
