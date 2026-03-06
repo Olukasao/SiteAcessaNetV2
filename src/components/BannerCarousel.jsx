@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
 
+
 const banners = [
   {
-    title: "Internet Fibra Óptica",
+    title: "Mês das  mulheres",
     subtitle: "Alta velocidade e estabilidade para sua casa",
     image: "/banners/banner1.jpg",
   },
+
   {
-    title: "Watch TV",
-    subtitle: "Filmes, séries e canais ao vivo",
-    image: "/banners/banner2.jpg",
+    title: "700 MEGA + Watch TV",
+    subtitle: "Planos com ofertas exclusivas",
+    image: "/banners/banner3.jpg",
   },
   {
-    title: "Promoções Especiais",
+    title: "700 MEGA + Watch TV",
     subtitle: "Planos com ofertas exclusivas",
     image: "/banners/banner3.jpg",
   },

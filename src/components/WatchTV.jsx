@@ -11,7 +11,7 @@ const filmes = Object.values(
 )
     .map((file) => file.default)
     .sort();
-/* CANAIS (imagens dentro da pasta public/watchtv/) */
+
 
 const canais = Object.values(
     import.meta.glob(
