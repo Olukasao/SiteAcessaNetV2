@@ -28,11 +28,11 @@ export default function Header() {
 
         {/* SOCIAL */}
         <div className="social">
-          <a href="" style={{textDecoration:"None"}}>
+          <a href="https://www.facebook.com/people/Acessanet/61564243311224/" style={{textDecoration:"None",color:"white"}}>
             <FaFacebookF />
 
           </a>
-          <a href="">
+          <a href="https://www.instagram.com/acessanet_/" style={{textDecoration:"None",color:"white"}}>
             <FaInstagram />
           </a>
         </div>

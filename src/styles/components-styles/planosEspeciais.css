@@ -2,7 +2,7 @@
   padding: 110px 20px;
   background: #081833;
   text-align: center;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .container {
@@ -93,8 +93,8 @@
 /* BOTÃO */
 
 .btn-especial {
-  background: rgba(255,255,255,.95);
-  color: #081833;
+  background: rgba(0, 0, 0, 0.95);
+  color: #ffffff;
   padding: 14px 22px;
   border-radius: 10px;
   text-decoration: none;

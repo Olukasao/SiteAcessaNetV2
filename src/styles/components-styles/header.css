@@ -35,6 +35,7 @@
 
 .menu a:hover {
   opacity: .8;
+ transform: translateY(-20%)
 }
 
 /* SOCIAL */

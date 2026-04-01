@@ -57,11 +57,11 @@ export default function Footer() {
                 <div className="footer-col">
                     <h3>ACESSOS</h3>
                     <Link to="https://acessanet.sgp.net.br/accounts/central/login" >Área do Cliente</Link>
-                    <Link to="https://acessanet.sgp.net.br/accounts/central/login" >Planos</Link>
-                    <Link to="/historia" >Contratos</Link>
-                    <Link to="/contratos" >Nossa História</Link>
-                    <Link to="https://acessanet.sgp.net.br/accounts/central/login" >Trabalhe Conosco</Link>
-                    <Link to="https://acessanet.sgp.net.br/accounts/central/login" >Contatos</Link>
+                    <Link to="/planos" >Planos</Link>
+                    <Link to="/contratos" >Contratos</Link>
+                    <Link to="/historia" >Nossa História</Link>
+                    <Link to="/trabalhe-conosco" >Trabalhe Conosco</Link>
+                    <Link to="/contatos" >Contatos</Link>
                 </div>
                 {/* Área */}
                 <div className="footer-col">

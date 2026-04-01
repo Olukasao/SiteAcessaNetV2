@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
-
+import b1 from "../assets/pascoa/1.png"
 
 const banners = [
   {
-    title: "Mês das  mulheres",
+    title: "Promoção de Páscoa",
     subtitle: "Alta velocidade e estabilidade para sua casa",
-    image: "/banners/banner1.jpg",
+      image: b1,
   },
 
-  {
-    title: "700 MEGA + Watch TV",
-    subtitle: "Planos com ofertas exclusivas",
-    image: "/banners/banner3.jpg",
-  },
   {
     title: "700 MEGA + Watch TV",
     subtitle: "Planos com ofertas exclusivas",
@@ -57,7 +52,7 @@ export default function BannerCarousel() {
             <h1>{banner.title}</h1>
             <p>{banner.subtitle}</p>
 
-            <a href="#planos" className="carousel-btn">
+            <a href="/planos" className="carousel-btn">
               Ver Planos
             </a>
 

@@ -2,26 +2,28 @@ import "../styles/components-styles/planosEspeciais.css";
 import { FaGift, FaWhatsapp, FaStar } from "react-icons/fa";
 
 const planosEspeciais = [
-  {
-    nome: "Promoção Carnaval",
-    velocidade: "600 Mega",
-    preco: "89,90",
-    tag: "LIMITADO",
-    cor: "carnaval",
-  },
+
   {
     nome: "Especial Páscoa",
-    velocidade: "800 Mega",
-    preco: "99,90",
+    velocidade: "400 Mega",
+    preco: "74,99",
     tag: "OFERTA",
     cor: "pascoa",
   },
   {
-    nome: "Natal Premiado",
-    velocidade: "1 Giga",
-    preco: "119,90",
-    tag: "EXCLUSIVO",
-    cor: "natal",
+    nome: "Especial Páscoa",
+    velocidade: "700 Mega",
+    preco: "94,99",
+    tag: "OFERTA",
+    cor: "pascoa",
+  },
+  {
+    nome: "Especial Páscoa ",
+    velocidade: "700 Mega + TV",
+    preco: "144,99",
+    icons:"",
+    tag: "OFERTA",
+    cor: "pascoa",
   },
 ];
 
@@ -31,7 +33,7 @@ export default function PlanosEspeciais() {
 
       <div className="container">
 
-        <h2>
+        <h2 style={{color:"#ffff"}}>
           <FaGift /> Planos Especiais
         </h2>
 

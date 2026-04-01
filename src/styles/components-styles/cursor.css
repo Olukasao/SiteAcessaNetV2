@@ -8,6 +8,7 @@ body {
   position: fixed;
   width: 18px;
   height: 18px;
+  cursor: none;
   background: #2FA4E7;
   border-radius: 50%;
   pointer-events: none;
@@ -22,8 +23,9 @@ body {
 
 /* efeito hover */
 .cursor-hover {
-  width: 45px;
-  height: 45px;
-  background: rgba(47,164,231,.25);
+  width: 30px;
+  cursor: none;
+  height: 30px;
+  background: #2FA4E7;
   backdrop-filter: blur(4px);
 }
