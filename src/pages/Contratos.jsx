@@ -1,6 +1,10 @@
 import { Helmet } from "react-helmet";
 import "../styles/contratos.css";
-import contratoPDF from "../assets/docs/ACS-CONTRATO-DE-PRESTACAO-DE-SERVICOS.pdf";
+import contratoACS from "../assets/docs/ACS.pdf";
+import contratoCDE from "../assets/docs/CDE.pdf"
+import contratoDEC from "../assets/docs/DEC.pdf"
+
+
 import { FaFileContract, FaDownload } from "react-icons/fa";
 
 export default function Contratos() {
@@ -24,42 +28,41 @@ export default function Contratos() {
 
           {/* CONTRATO */}
           <div className="contrato-card">
-            <h3>Contrato de Prestação de Serviço</h3>
+            <h3>Contrato de Prestação de Serviço A.S.C</h3>
 
             <p>
               Documento que estabelece as condições gerais para
               fornecimento de internet banda larga.
             </p>
 
-            <a href={contratoPDF} target="_blank">
+            <a href={contratoACS} target="_blank">
               <FaDownload /> Baixar PDF
             </a>
           </div>
 
           {/* TERMOS */}
           <div className="contrato-card">
-            <h3>Termos de Uso</h3>
+            <h3>Contrato de Prestação de Serviço C.D.E</h3>
 
             <p>
               Regras e responsabilidades para utilização dos
               serviços disponibilizados pelo provedor.
             </p>
 
-            <a href="/docs/termos.pdf" target="_blank">
+            <a href={contratoCDE} target="_blank">
               <FaDownload /> Baixar PDF
             </a>
           </div>
 
           {/* PRIVACIDADE */}
           <div className="contrato-card">
-            <h3>Política de Privacidade</h3>
+            <h3>Contrato de Prestação de Serviço D.E.C</h3>
 
             <p>
-              Informações sobre coleta, uso e proteção dos dados
-              pessoais conforme a LGPD.
+             Documento que define as condições, direitos e responsabilidades relacionadas à prestação de serviços entre as partes.
             </p>
 
-            <a href="/docs/privacidade.pdf" target="_blank">
+            <a href={contratoDEC} target="_blank">
               <FaDownload /> Baixar PDF
             </a>
           </div>

@@ -6,10 +6,11 @@ import Historia from "../pages/Historia";
 import TrabalheConosco from "../pages/TrabalheConosco";
 import Contatos from "../pages/Contatos";
 import Planos from "../pages/Planos";
+import Disponibilidade from "../pages/Disponibilidade";
 
 export default function AppRoutes() {
 
-    
+
     return (
         <Routes>
             <Route path="/" element={<Home />} />
@@ -17,7 +18,7 @@ export default function AppRoutes() {
             <Route path="/historia" element={<Historia />} />
             <Route path="/trabalhe-conosco" element={<TrabalheConosco />} />
             <Route path="/contatos" element={<Contatos />} />
-
+            <Route path="/disponibilidade" element={<Disponibilidade />} />
             <Route path="/contratos" element={<Contratos />} />
         </Routes>
     );

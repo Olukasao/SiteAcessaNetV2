@@ -105,35 +105,28 @@ li {
 }
 
 
-
-
-
+/* estilização da seção corporatativo */ 
 
 
 .corp {
-  padding: 130px 20px 100px; /* AUMENTEI O TOPO */
+  padding: 150px 20px 100px; /* AUMENTEI O TOPO */
   background: radial-gradient(circle at 20% 10%, #0f172a, #020617 80%);
   color: #e2e8f0;
-
-  overflow: visible; /* 🔥 IMPORTANTE */
+  overflow: visible; 
   position: relative;
   z-index: 1;
 }
 
-/* CONTAINER */
-/* CONTAINER */
 .corp-wrap {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   gap: 60px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
   flex-wrap: wrap;
-
-  overflow: visible; /* 🔥 GARANTE */
+  overflow: visible;
 }
-
 /* ===== TEXTO ===== */
 .corp-left {
   max-width: 480px;
@@ -144,7 +137,6 @@ li {
   display: flex;
   gap: 20px;
   align-items: stretch;
-
   overflow: visible; /* 🔥 */
 }
 
@@ -155,6 +147,8 @@ li {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.06);
   padding: 26px;
+  height: 36vh;
+  max-width: 50vw;
   border-radius: 16px;
   width: 260px;
   transition: all 0.3s ease;

@@ -5,6 +5,7 @@ import CustomCursor from "./components/CustomCursor";
 import SmoothScroll from "./components/SmoothScroll";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
+import ChatBot from "./components/Chatbot";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Header />
       <AppRoutes />
       <Footer />
-      <WhatsAppButton />
+      <ChatBot/>
     </>
   );
 }

@@ -1,0 +1,76 @@
+.disponibilidade{
+  padding:90px 20px;
+  display:flex;
+
+  justify-content:center;
+}
+
+.card-disponibilidade{
+  background:white;
+  padding:30px;
+  border-radius:14px;
+  box-shadow:0 15px 40px rgba(0,0,0,.08);
+  width:100%;
+  max-width:900px;
+  text-align:center;
+}
+
+.card-disponibilidade h2{
+  margin-bottom:6px;
+  color:#081833;
+}
+
+.card-disponibilidade p{
+  color:#6b7a90;
+  font-size:14px;
+}
+
+.busca-disponibilidade{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.busca-disponibilidade input{
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  outline:none;
+  width:180px;
+  transition:.2s;
+}
+
+.busca-disponibilidade input:focus{
+  border-color:#2FA4E7;
+  box-shadow:0 0 0 2px rgba(47,164,231,.15);
+}
+
+.busca-disponibilidade button{
+  padding:10px 18px;
+  border:none;
+  border-radius:8px;
+  background:linear-gradient(135deg,#2FA4E7,#1B3C88);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.busca-disponibilidade button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 15px rgba(0,0,0,.15);
+}
+
+.resultado{
+  margin-top:15px;
+  font-weight:600;
+}
+
+.mapa-disponibilidade{
+  height:290px;
+  margin-top:25px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}

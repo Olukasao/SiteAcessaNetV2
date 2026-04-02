@@ -21,7 +21,7 @@ const planosEspeciais = [
     nome: "Especial Páscoa ",
     velocidade: "700 Mega + TV",
     preco: "144,99",
-    icons:"",
+    icons: "",
     tag: "OFERTA",
     cor: "pascoa",
   },
@@ -33,7 +33,7 @@ export default function PlanosEspeciais() {
 
       <div className="container">
 
-        <h2 style={{color:"#ffff"}}>
+        <h2 style={{ color: "#ffff" }}>
           <FaGift /> Planos Especiais
         </h2>
 
@@ -54,8 +54,9 @@ export default function PlanosEspeciais() {
               <span className="velocidade">
                 {plano.velocidade}
               </span>
-
+            
               <div className="preco">
+                
                 R$ {plano.preco}
                 <small>/mês</small>
               </div>
