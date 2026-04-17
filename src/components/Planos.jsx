@@ -1,7 +1,7 @@
 import "../styles/components-styles/planos.css";
 import logoWatch from "../assets/watchTV.jpg"
 import logoTemSaude from "../assets/temSaude.png"
-import logoVamoLe from "../assets/vamoLe.png"
+import logoGraviola from "../assets/graviola/logo.png"
 
 import {
   FaWifi,
@@ -21,7 +21,7 @@ const planos = [
       "Suporte 24h",
     ],
     servicos: [
-      { src: logoVamoLe, fundo: true }
+      { src: logoGraviola, fundo: true }
     ]
   },
   {
@@ -36,7 +36,7 @@ const planos = [
     servicos: [
       { src: logoTemSaude, fundo: false },
       { src: logoWatch, fundo: false },
-      { src: logoVamoLe, fundo: true }
+      { src: logoGraviola, fundo: true }
     ]
   },
   {
@@ -49,7 +49,7 @@ const planos = [
       "Suporte 24h",
     ],
     servicos: [
-      { src: logoVamoLe, fundo: true }
+      { src: logoGraviola, fundo: true, nome: "graviola" }
     ]
   },
 ];
@@ -108,8 +108,9 @@ export default function Planos() {
                       height: 55,
                       objectFit: "contain",
                       borderRadius: 12,
-                      background: item.fundo ? "#f9f9f9" : "transparent",
-                      border: item.fundo ? "1px solid #eee" : "none",
+
+                      backgroundColor: item.fundo ? "#4caf50" : "transparent",
+                      border: item.fundo ? "1px solid #4caf50" : "none",
                       boxShadow: item.fundo ? "0 6px 18px rgba(0,0,0,0.15)" : "none",
                       transition: "all 0.3s ease",
 

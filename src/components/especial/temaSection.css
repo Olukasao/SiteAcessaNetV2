@@ -1,0 +1,112 @@
+.tema-section {
+  background: linear-gradient(135deg,
+      var(--cor-tema),
+      rgba(0, 0, 0, 0.9));
+  background-size: cover;
+  background-position: center;
+}
+
+/* overlay com cor dinâmica */
+.tema-overlay {
+  padding: 90px 20px;
+ 
+  background: linear-gradient(135deg,
+      var(--cor-tema),
+      rgba(0, 0, 0, 0.9));
+}
+
+.tema-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+  color: #fff;
+}
+
+/* HEADER */
+.tema-header h2 {
+  font-size: 34px;
+  margin-bottom: 12px;
+}
+
+.tema-header p {
+  font-size: 17px;
+  opacity: 0.9;
+  margin-bottom: 45px;
+}
+
+/* COMBOS */
+.tema-combos {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* CARD */
+.combo-card {
+  background: #fff;
+  color: #1a1a1a;
+  padding: 28px 22px;
+  border-radius: 14px;
+  width: 240px;
+  transition: 0.25s;
+  position: relative;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.combo-card:hover {
+  transform: translateY(-6px);
+}
+
+/* destaque */
+.combo-card.highlight {
+  transform: scale(1.04);
+  border: 2px solid var(--cor-tema);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+/* BADGE */
+.combo-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--cor-tema);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* PREÇO */
+.combo-preco {
+  font-size: 26px;
+  margin: 12px 0 18px;
+}
+
+.combo-preco span {
+  font-size: 14px;
+}
+
+/* BOTÃO */
+.btn-combo {
+  display: block;
+  margin-top: 10px;
+  padding: 11px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+
+  background: linear-gradient(135deg,
+      var(--cor-tema),
+      color-mix(in srgb, var(--cor-tema), black 30%));
+
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+  transition: 0.25s;
+}
+
+.btn-combo:hover {
+  transform: translateY(-2px);
+}

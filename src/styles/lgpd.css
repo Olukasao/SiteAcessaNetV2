@@ -1,0 +1,53 @@
+.lgpd-container {
+  background: linear-gradient(180deg, #ffffff, #f4f8fc);
+  padding: 60px 20px;
+}
+
+.lgpd-content {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.lgpd-content h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #0d6efd;
+}
+
+.lgpd-content h2 {
+  margin-top: 30px;
+  font-size: 22px;
+  color: #0a2540;
+}
+
+.lgpd-content p {
+  margin: 15px 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.lgpd-content ul {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.lgpd-content li {
+  margin-bottom: 8px;
+  color: #334155;
+}
+
+.lgpd-email {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0d6efd;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.lgpd-email:hover {
+  text-decoration: underline;
+}

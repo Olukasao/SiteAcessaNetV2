@@ -18,7 +18,7 @@ export default function Contatos() {
                     <h2>Atendimento</h2>
 
                     <p><FaPhone /> (55) 0800 444 5799</p>
-                    <p><FaWhatsapp /> WhatsApp: (11) 99999-9999</p>
+                    <p><FaWhatsapp /> WhatsApp: (55) 0800 444 5799</p>
                     <p><FaEnvelope /> contato@acessanet.com.br</p>
                     <p><FaMapMarkerAlt /> Franco da Rocha - SP</p>
                 </div>

@@ -1,6 +1,8 @@
 import "../styles/historia.css";
 import { FaNetworkWired, FaUsers, FaRocket, FaWifi } from "react-icons/fa";
 
+import logo from "../assets/logo.png"
+
 export default function Historia() {
   return (
     <section className="historia">
@@ -43,7 +45,7 @@ export default function Historia() {
         </div>
 
         <div className="historia-image">
-          <img src="/empresa/equipe.jpg" alt="Equipe AcessaNet" />
+          <img src={logo} alt="Equipe AcessaNet" />
         </div>
 
       </div>

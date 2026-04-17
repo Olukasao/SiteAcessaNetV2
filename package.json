@@ -14,6 +14,7 @@
     "framer-motion": "^12.34.3",
     "leaflet": "^1.9.4",
     "lenis": "^1.3.17",
+    "lucide-react": "^1.8.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-helmet": "^6.1.0",

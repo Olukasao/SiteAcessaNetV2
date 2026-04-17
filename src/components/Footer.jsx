@@ -62,7 +62,8 @@ export default function Footer() {
                     <Link to="/historia" >Nossa História</Link>
                     <Link to="/trabalhe-conosco" >Trabalhe Conosco</Link>
                     <Link to="/contatos" >Contatos</Link>
-                     <Link to="/disponibilidade" >Disponibilidade</Link>
+                    <Link to="/lgpd" >LGPD</Link>
+                    <Link to="/disponibilidade" >Disponibilidade</Link>
                 </div>
                 {/* Área */}
                 <div className="footer-col">

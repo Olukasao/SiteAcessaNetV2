@@ -4,6 +4,11 @@ import logoWatch from "../assets/watchTV.jpg"
 import logoTemSaude from "../assets/temSaude.png"
 import logoVamoLe from "../assets/vamoLe.png"
 
+import TemaSection from "../components/especial/TemaSection";
+
+
+
+
 
 const planos = [
   {
@@ -45,18 +50,6 @@ const planos = [
     ]
   },
 
-];
-
-const planosEspeciais = [
-  { nome: "Promo Páscoa 🐰", desc: "Upgrade de velocidade por 3 meses" },
-  {
-    nome: "Corporativo 🎄",
-    beneficios: [
-      "IP ",
-      "Atendimento ",
-      "Ideal para Gamers",
-    ], desc: "Watch TV Premium incluso"
-  },
 ];
 
 export default function Planos() {
@@ -135,19 +128,8 @@ export default function Planos() {
         </div>
 
         {/* PLANOS ESPECIAIS */}
-        < div className="container especiais" >
-          <h2>Planos Especiais</h2>
+          <TemaSection/>
 
-          <div className="especiais-grid">
-            {planosEspeciais.map((p, i) => (
-              <div key={i} className="especial-card">
-                <FaRocket />
-                <h3>{p.nome}</h3>
-                <p>{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       <section className="corp">

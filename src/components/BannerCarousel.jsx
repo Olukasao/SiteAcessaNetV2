@@ -1,25 +1,39 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
 import b1 from "../assets/pascoa/1.png"
+import temSaude from "../assets/banners/TemSaude.png"
+import { Heart, Wifi, Tv, BookOpen } from "lucide-react";
 
 const banners = [
   {
-    title: "Promoção de Páscoa",
-    subtitle: "Alta velocidade e estabilidade para sua casa",
-      image: b1,
+    title: "Promoção Mês das Mães",
+    subtitle: "Ofertas especiais para conectar você a quem mais importa",
+    icon: Heart,
+    image: b1,
   },
-
   {
     title: "700 MEGA + Watch TV",
-    subtitle: "Planos com ofertas exclusivas",
+    subtitle: "Internet ultra rápida + TV inclusa sem custo extra",
+    icon: Tv,
     image: "/banners/banner3.jpg",
   },
+  {
+    title: "App de Leitura Graviola",
+    subtitle: "Milhares de livros digitais inclusos no seu plano",
+    icon: BookOpen,
+    image: "/banners/banner3.jpg",
+  },
+  {
+    title: "TemSaude",
+    subtitle: "Adicione consultas médicas e telemedicina por um pequeno valor mensal",
+    icon: BookOpen,
+    image: temSaude,
+  }
 ];
 
 export default function BannerCarousel() {
   const [current, setCurrent] = useState(0);
 
-  // troca automática
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % banners.length);
@@ -39,26 +53,27 @@ export default function BannerCarousel() {
   return (
     <section className="carousel">
 
-      {banners.map((banner, index) => (
-        <div
-          key={index}
-          className={`slide ${
-            index === current ? "active" : ""
-          }`}
-          style={{ backgroundImage: `url(${banner.image})` }}
-        >
-          <div className="overlay">
+      {banners.map((banner, index) => {
+        const Icon = banner.icon;
 
-            <h1>{banner.title}</h1>
-            <p>{banner.subtitle}</p>
+        return (
+          <div
+            key={index}
+            className={`slide ${index === current ? "active" : ""}`}
+            style={{ backgroundImage: `url(${banner.image})` }}
+          >
+            <div className="overlay">
+              <h1>{banner.title}</h1>
+              <p>{banner.subtitle}</p>
 
-            <a href="/planos" className="carousel-btn">
-              Ver Planos
-            </a>
+              <a href="/planos" className="carousel-btn">
+                Ver Planos
+              </a>
 
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* SETAS */}
       <button className="arrow left" onClick={prev}>

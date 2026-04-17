@@ -1,0 +1,104 @@
+.disponibilidade {
+  display: flex;
+  justify-content: center;
+  padding: 30px 20px;
+  background: #f3f4f6;
+}
+
+.card {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  color: #1e3a8a;
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.card p {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.busca {
+  display: flex;
+  gap: 10px;
+}
+
+.busca input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  outline: none;
+}
+
+.busca input:focus {
+  border-color: #3b82f6;
+}
+
+.busca button {
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.busca button:hover {
+  opacity: 0.9;
+}
+
+.endereco {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.resultado {
+  margin-top: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.resultado.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.resultado.no {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.whatsapp {
+  display: block;
+  margin-top: 15px;
+  padding: 14px;
+  background: #25d366;
+  text-align: center;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.whatsapp:hover {
+  transform: scale(1.03);
+}
+
+.mapa {
+  height: 400px;
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+}

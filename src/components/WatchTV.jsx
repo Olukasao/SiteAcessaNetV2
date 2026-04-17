@@ -1,29 +1,49 @@
 import "../styles/components-styles/watchTV.css";
-import { useRef } from "react";
-import watch from "../assets/watchTV/watch.png"
+import { useRef, useEffect, useState } from "react";
+import watch from "../assets/watchTV/watch.png";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const filmes = Object.values(
-    import.meta.glob(
-        "../assets/watchTV/filmes/*.{png,jpg,jpeg,webp}",
-        { eager: true }
-    )
-)
-    .map((file) => file.default)
-    .sort();
+const filmesModules = import.meta.glob(
+    "../assets/watchTV/filmes/*.{png,jpg,jpeg,webp}"
+);
+
+const canaisModules = import.meta.glob(
+    "../assets/watchTV/canais/*.{png,jpg,jpeg,webp}"
+);
 
 
-const canais = Object.values(
-    import.meta.glob(
-        "../assets/watchTV/canais/*.{png,jpg,jpeg,webp}",
-        { eager: true }
-    )
-).map((file) => file.default).sort();
+const loadImages = async (modules) => {
+    const loaders = Object.values(modules);
 
+    const imgs = await Promise.all(
+        loaders.map(async (loader) => {
+            const mod = await loader();
+            return mod.default;
+        })
+    );
+
+    return imgs.sort();
+};
 
 export default function WatchTV() {
     const movieRef = useRef(null);
     const channelRef = useRef(null);
+
+    const [filmesImgs, setFilmesImgs] = useState([]);
+    const [canaisImgs, setCanaisImgs] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const filmesData = await loadImages(filmesModules);
+            const canaisData = await loadImages(canaisModules);
+
+            setFilmesImgs(filmesData);
+            setCanaisImgs(canaisData);
+        }
+
+        fetchData();
+    }, []);
+
 
     const scroll = (ref, dir) => {
         if (!ref.current) return;
@@ -38,9 +58,8 @@ export default function WatchTV() {
         <section className="watchtv">
             <div className="watchtv-container">
 
-                {/* HERO ISP */}
+                {/* HERO */}
                 <div className="watchtv-hero">
-
                     <div className="watchtv-info">
                         <span className="badge">INCLUSO NOS PLANOS</span>
 
@@ -58,10 +77,13 @@ export default function WatchTV() {
                     </div>
 
                     <div className="watchtv-mockup">
-                        {/* coloque a imagem em public/watchtv/mockup-tv.png */}
-                        <img src={watch} alt="Watch TV App" />
+                        <img
+                            src={watch}
+                            alt="Watch TV App"
+                            loading="lazy"
+                            decoding="async"
+                        />
                     </div>
-
                 </div>
 
                 {/* FILMES */}
@@ -79,12 +101,21 @@ export default function WatchTV() {
                 </div>
 
                 <div className="carousel-watch" ref={movieRef}>
-                    {filmes.map((img, i) => (
-                        <div className="movie-card" key={i}>
-                            <img src={img} className="imgs-watch" alt="Filme" />
-
-                        </div>
-                    ))}
+                    {filmesImgs.length === 0 ? (
+                        <p>Carregando filmes...</p>
+                    ) : (
+                        filmesImgs.map((img, i) => (
+                            <div className="movie-card" key={img}>
+                                <img
+                                    src={img}
+                                    className="imgs-watch"
+                                    loading="lazy"
+                                    decoding="async"
+                                    alt="Filme"
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 {/* CANAIS */}
@@ -102,11 +133,20 @@ export default function WatchTV() {
                 </div>
 
                 <div className="carousel-watch" ref={channelRef}>
-                    {canais.map((img, i) => (
-                        <div className="channel-card" key={i}>
-                            <img src={img} alt="Canal TV" />
-                        </div>
-                    ))}
+                    {canaisImgs.length === 0 ? (
+                        <p>Carregando canais...</p>
+                    ) : (
+                        canaisImgs.map((img, i) => (
+                            <div className="channel-card" key={img}>
+                                <img
+                                    src={img}
+                                    loading="lazy"
+                                    decoding="async"
+                                    alt="Canal TV"
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
 
             </div>

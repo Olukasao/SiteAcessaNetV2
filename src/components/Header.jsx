@@ -24,6 +24,8 @@ export default function Header() {
           <Link to="/historia">Nossa História</Link>
           <Link to="/trabalhe-conosco">Trabalhe Conosco</Link>
           <Link to="/contatos">Contatos</Link>
+          <Link to="/lgpd">LGPD</Link>
+          <Link to="/disponibilidade">Disponibilidade</Link>
         </nav>
 
         {/* SOCIAL */}

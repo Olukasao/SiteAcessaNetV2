@@ -5,6 +5,8 @@ import Planos from "../components/Planos";
 import PlanosEspeciais from "../components/PlanosEspeciais";
 import WatchTV from "../components/WatchTV";
 import TemSaude from "../components/TemSaude";
+import Graviola from "../components/Graviola";
+
 export default function HomePage() {
     return (
         <>
@@ -13,8 +15,8 @@ export default function HomePage() {
             <PlanosEspeciais />
             <WatchTV />
             <TemSaude />
+            <Graviola/>
             <AppProvedor />
-
         </>
     )
 }

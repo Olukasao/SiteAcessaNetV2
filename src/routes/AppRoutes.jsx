@@ -7,6 +7,7 @@ import TrabalheConosco from "../pages/TrabalheConosco";
 import Contatos from "../pages/Contatos";
 import Planos from "../pages/Planos";
 import Disponibilidade from "../pages/Disponibilidade";
+import LGPD from "../pages/LGPD";
 
 export default function AppRoutes() {
 
@@ -20,6 +21,7 @@ export default function AppRoutes() {
             <Route path="/contatos" element={<Contatos />} />
             <Route path="/disponibilidade" element={<Disponibilidade />} />
             <Route path="/contratos" element={<Contratos />} />
+            <Route path="/lgpd" element={<LGPD />} />
         </Routes>
     );
 }

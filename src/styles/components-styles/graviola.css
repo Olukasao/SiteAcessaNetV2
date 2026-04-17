@@ -1,0 +1,288 @@
+/* HERO BASE */
+.graviola-hero {
+    background: #f5e6c8;
+    padding: 80px 20px;
+}
+
+.graviola-hero-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* ESQUERDA */
+.graviola-hero-left {
+    flex: 1;
+    min-width: 280px;
+}
+
+.graviola-hero-left h2 {
+    font-size: 42px;
+    color: #2f7d32;
+    margin-bottom: 15px;
+}
+
+.graviola-hero-left p {
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    max-width: 500px;
+}
+
+/* BOTÃO */
+.btn-graviola {
+    display: inline-block;
+    padding: 14px 24px;
+    background: #2f7d32;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-graviola:hover {
+    background: #4caf50;
+}
+
+/* DIREITA */
+.graviola-hero-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.graviola-hero-box {
+    background: #2f7d32;
+    padding: 40px;
+    width: 15vw;
+    display: flex;
+    align-items: center;
+    object-fit: contain;
+    justify-content: center;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(47, 125, 50, 0.25);
+}
+
+.graviola-hero-box img {
+    width: 180px;
+    display: block;
+}
+
+.graviola-apps-logos {
+    margin-top: 120px;
+    text-align: center;
+}
+
+.graviola-apps-logos h2 {
+    margin-bottom: 50px;
+    color: #2f7d32;
+}
+
+
+.logos-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.logo-card {
+    background: #1a1a1a;
+    object-fit: contain;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.logo-card img {
+    width: 140px;
+    height: auto;
+}
+
+.logo-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    background: #222;
+}
+
+
+.graviola-library-wrap {
+    margin-top: 100px;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.graviola-library-wrap h2 {
+    color: #2f7d32;
+}
+
+.graviola-library {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* CARD DO LIVRO */
+.book {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+/* IMAGEM */
+.book img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+/* HOVER */
+.book:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* EFEITO OVERLAY (OPCIONAL) */
+.book::after {
+    content: "Ver livro";
+    position: absolute;
+    inset: 0;
+    background: rgba(47, 125, 50, 0.85);
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+
+.book {
+    position: relative;
+}
+
+.book:hover::after {
+    opacity: 1;
+}
+
+.library-more {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.library-more p {
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* ================= MOBILE (até 768px) ================= */
+@media (max-width: 768px) {
+
+    .graviola-hero {
+        padding: 50px 15px;
+    }
+
+    .graviola-hero-wrap {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .graviola-hero-left h2 {
+        font-size: 32px;
+    }
+
+    .graviola-hero-left p {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .graviola-hero-box {
+        width: 180px;
+        padding: 20px;
+    }
+
+    .graviola-hero-box img {
+        width: 120px;
+    }
+
+    /* APPS */
+    .logos-grid {
+        gap: 20px;
+    }
+
+    .logo-card {
+        padding: 15px;
+    }
+
+    .logo-card img {
+        width: 90px;
+    }
+
+    /* LIVROS */
+    .graviola-library {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .book img {
+        height: 180px;
+    }
+
+}
+
+
+/* ================= TABLET (769px até 1024px) ================= */
+@media (max-width: 1024px) {
+
+    .graviola-hero-wrap {
+        gap: 30px;
+    }
+
+    .graviola-hero-left h2 {
+        font-size: 36px;
+    }
+
+    .graviola-hero-box {
+        width: 220px;
+    }
+
+    /* LIVROS */
+    .graviola-library {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+
+/* ================= TELAS GRANDES ================= */
+@media (min-width: 1400px) {
+
+    .graviola-library {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .book img {
+        height: 260px;
+    }
+
+}
