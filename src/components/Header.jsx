@@ -1,6 +1,6 @@
 import "../styles/components-styles/header.css";
 import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FaFacebookF, FaInstagram, FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 
@@ -18,23 +18,46 @@ export default function Header() {
 
         {/* MENU */}
         <nav className={`menu ${menuOpen ? "active" : ""}`}>
-          <Link to="https://acessanet.sgp.net.br/accounts/central/login">Área do Cliente</Link>
-          <Link to="/planos">Planos</Link>
-          <Link to="/contratos">Contratos</Link>
-          <Link to="/historia">Nossa História</Link>
-          <Link to="/trabalhe-conosco">Trabalhe Conosco</Link>
-          <Link to="/contatos">Contatos</Link>
-          <Link to="/lgpd">LGPD</Link>
-          <Link to="/disponibilidade">Disponibilidade</Link>
+          <a href="https://acessanet.sgp.net.br/accounts/central/login">
+            Área do Cliente
+          </a>
+
+          <NavLink to="/planos" className={({ isActive }) => isActive ? "active" : ""}>
+            Planos
+          </NavLink>
+
+          <NavLink to="/contratos" className={({ isActive }) => isActive ? "active" : ""}>
+            Contratos
+          </NavLink>
+
+          <NavLink to="/historia" className={({ isActive }) => isActive ? "active" : ""}>
+            Nossa História
+          </NavLink>
+
+          <NavLink to="/trabalhe-conosco" className={({ isActive }) => isActive ? "active" : ""}>
+            Trabalhe Conosco
+          </NavLink>
+
+          <NavLink to="/contatos" className={({ isActive }) => isActive ? "active" : ""}>
+            Contatos
+          </NavLink>
+
+          <NavLink to="/lgpd" className={({ isActive }) => isActive ? "active" : ""}>
+            LGPD
+          </NavLink>
+
+          <NavLink to="/disponibilidade" className={({ isActive }) => isActive ? "active" : ""}>
+            Disponibilidade
+          </NavLink>
         </nav>
 
         {/* SOCIAL */}
         <div className="social">
-          <a href="https://www.facebook.com/people/Acessanet/61564243311224/" style={{textDecoration:"None",color:"white"}}>
+          <a href="https://www.facebook.com/people/Acessanet/61564243311224/" target="_black" style={{ textDecoration: "None", color: "white" }}>
             <FaFacebookF />
 
           </a>
-          <a href="https://www.instagram.com/acessanet_/" style={{textDecoration:"None",color:"white"}}>
+          <a href="https://www.instagram.com/acessanet_/" target="_black" style={{ textDecoration: "None", color: "white" }}>
             <FaInstagram />
           </a>
         </div>

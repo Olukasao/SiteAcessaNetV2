@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import "../styles/contratos.css";
 import contratoACS from "../assets/docs/ACS.pdf";
 import contratoCDE from "../assets/docs/CDE.pdf"
@@ -11,7 +11,24 @@ export default function Contratos() {
   return (
     <section className="contratos">
       <Helmet>
-        <title>Acessanet - Contratos</title>
+        <title>Contratos | Acessanet Telecom</title>
+
+        <meta
+          name="description"
+          content="Acesse e gerencie seus contratos com a Acessanet Telecom de forma rápida e segura."
+        />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Contratos | Acessanet Telecom" />
+        <meta
+          property="og:description"
+          content="Visualize e acompanhe seus contratos com facilidade."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://acessanet.com.br/contratos" />
+
+        {/* Extras */}
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <div className="contratos-container">
 
@@ -59,7 +76,7 @@ export default function Contratos() {
             <h3>Contrato de Prestação de Serviço D.E.C</h3>
 
             <p>
-             Documento que define as condições, direitos e responsabilidades relacionadas à prestação de serviços entre as partes.
+              Documento que define as condições, direitos e responsabilidades relacionadas à prestação de serviços entre as partes.
             </p>
 
             <a href={contratoDEC} target="_blank">

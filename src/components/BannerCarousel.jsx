@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
 import b1 from "../assets/pascoa/1.png"
+import mae from "../assets/banners/Maes.png"
 import temSaude from "../assets/banners/TemSaude.png"
 import { Heart, Wifi, Tv, BookOpen } from "lucide-react";
 
@@ -9,7 +10,7 @@ const banners = [
     title: "Promoção Mês das Mães",
     subtitle: "Ofertas especiais para conectar você a quem mais importa",
     icon: Heart,
-    image: b1,
+    image: mae,
   },
   {
     title: "700 MEGA + Watch TV",

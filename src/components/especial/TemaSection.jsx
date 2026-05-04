@@ -1,28 +1,15 @@
 import "./temaSection.css"
+import maes from "../../assets/banners/Maes.png"
 
 const temas = {
-    pascoa: {
-        titulo: "Páscoa Premiada 🐰",
-        desc: "Ofertas especiais por tempo limitado.",
-        cor: "#8b5cf6",
-        bg: "/banners/pascoa.jpg",
-        combos: [
-            { nome: "400 Mega", preco: "79,99", destaque: false },
-            { nome: "700 Mega", preco: "99,90", destaque: true },
-            { nome: "700 Mega + TV", preco: "149,90", destaque: false }
-        ]
-    },
-
     maes: {
-        titulo: "Especial Dia das Mães 💖",
-        desc: "Ofertas especiais para conectar você a quem mais importa",
-        cor: "#ce0a0a",
-        bg: "/banners/maes.jpg",
+        titulo: "Mês das Mães 💖",
+        desc: "Conecte quem sempre esteve ao seu lado com mais velocidade e estabilidade.",
+        imagem: maes,
         combos: [
-            { nome: "400 Mega", preco: "69,99", destaque: false },
-            { nome: "700 Mega", preco: "89,90", destaque: true },
+            { nome: "400 Mega", preco: "74,99", destaque: false },
+            { nome: "700 Mega", preco: "94,99", destaque: true },
             { nome: "700 Mega + TV", preco: "149,90", destaque: false }
-
         ]
     }
 }
@@ -30,58 +17,59 @@ const temas = {
 export default function TemaSection({ tema = "maes" }) {
     const data = temas[tema]
 
+    
     return (
-        <section
-            className="tema-section"
-            style={{
-                "--cor-tema": data.cor,
-                "--bg-imagem": `url(${data.bg})`
-            }}
-        >
-            <div className="tema-overlay">
+        <section className="tema-section">
+            <div className="tema-container">
 
-                <div className="tema-container">
+                <div className="tema-content">
 
-                    {/* HEADER */}
-                    <div className="tema-header">
+                    {/* TEXTO */}
+                    <div className="tema-texto">
+                        <span className="tema-tag">💖 Oferta especial</span>
+
                         <h2>{data.titulo}</h2>
                         <p>{data.desc}</p>
+
+                        <div className="tema-combos">
+                            {data.combos.map((combo, i) => (
+                                <div
+                                    key={i}
+                                    className={`combo-card ${combo.destaque ? "highlight" : ""}`}
+                                >
+                                    {combo.destaque && (
+                                        <span className="combo-badge">
+                                            MAIS VENDIDO
+                                        </span>
+                                    )}
+
+                                    <h3>{combo.nome}</h3>
+
+                                    <div className="combo-preco">
+                                        <span>R$</span>
+                                        <strong>{combo.preco}</strong>
+                                        <small>/mês</small>
+                                    </div>
+
+                                    <a
+                                        href={`https://wa.me/5508004445799?text=Quero o plano ${combo.nome}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="btn-combo"
+                                    >
+                                        Contratar
+                                    </a>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* COMBOS */}
-                    <div className="tema-combos">
-                        {data.combos.map((combo, i) => (
-                            <div
-                                key={i}
-                                className={`combo-card ${combo.destaque ? "highlight" : ""}`}
-                            >
-                                {combo.destaque && (
-                                    <span className="combo-badge">
-                                        🔥 MAIS VENDIDO
-                                    </span>
-                                )}
-
-                                <h3>{combo.nome}</h3>
-
-                                <div className="combo-preco">
-                                    <span>R$</span>
-                                    <strong>{combo.preco}</strong>
-                                    <small>/mês</small>
-                                </div>
-
-                                <a
-                                    href={`https://wa.me/5508004445799?text=Quero o plano ${combo.nome}`}
-                                    target="_blank"
-                                    className="btn-combo"
-                                >
-                                    Contratar
-                                </a>
-                            </div>
-                        ))}
+                    {/* IMAGEM */}
+                    <div className={`tema-imagem-${tema}`}>
+                        <img src={data.imagem} alt={data.titulo} />
                     </div>
 
                 </div>
-
             </div>
         </section>
     )

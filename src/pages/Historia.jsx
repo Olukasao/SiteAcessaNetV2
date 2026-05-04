@@ -2,11 +2,47 @@ import "../styles/historia.css";
 import { FaNetworkWired, FaUsers, FaRocket, FaWifi } from "react-icons/fa";
 
 import logo from "../assets/logo.png"
+import { Helmet } from "react-helmet-async";
 
 export default function Historia() {
   return (
     <section className="historia">
+      <Helmet>
+        <title>Nossa História | Acessanet Telecom</title>
 
+        <meta
+          name="description"
+          content="Conheça a história da Acessanet Telecom e nossa trajetória levando internet de qualidade para a região."
+        />
+
+        {/* SEO básico */}
+        <meta
+          name="keywords"
+          content="Acessanet Telecom, nossa história, provedor de internet, internet fibra SP"
+        />
+        <meta name="author" content="Acessanet Telecom" />
+
+        {/* Open Graph (WhatsApp / Facebook) */}
+        <meta property="og:title" content="Nossa História | Acessanet Telecom" />
+        <meta
+          property="og:description"
+          content="Descubra como a Acessanet Telecom cresceu e se tornou referência em internet de qualidade."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://acessanet.com.br/sobre" />
+        <meta property="og:locale" content="pt_BR" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Nossa História | Acessanet Telecom" />
+        <meta
+          name="twitter:description"
+          content="Conheça a história da Acessanet Telecom."
+        />
+
+        {/* Indexação */}
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       {/* HERO */}
       <div className="historia-hero">
         <div className="container">
@@ -93,30 +129,6 @@ export default function Historia() {
         </div>
       </div>
 
-      {/* LINHA DO TEMPO */}
-      <div className="timeline container">
-        <h2>Nossa Evolução</h2>
-
-        <div className="timeline-item">
-          <span>2018</span>
-          <p>Fundação da empresa e primeiros clientes conectados.</p>
-        </div>
-
-        <div className="timeline-item">
-          <span>2020</span>
-          <p>Expansão da rede e implantação de fibra óptica.</p>
-        </div>
-
-        <div className="timeline-item">
-          <span>2023</span>
-          <p>Lançamento do Watch TV e novos serviços digitais.</p>
-        </div>
-
-        <div className="timeline-item">
-          <span>Hoje</span>
-          <p>Centenas de clientes conectados com alta performance.</p>
-        </div>
-      </div>
 
     </section>
   );

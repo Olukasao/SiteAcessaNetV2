@@ -5,6 +5,8 @@ import logoTemSaude from "../assets/temSaude.png"
 import logoVamoLe from "../assets/vamoLe.png"
 
 import TemaSection from "../components/especial/TemaSection";
+import HeroMaes from "../components/especial/HeroMaes";
+import { Helmet } from "react-helmet-async";
 
 
 
@@ -55,7 +57,43 @@ const planos = [
 export default function Planos() {
   return (
     <>
+      <Helmet>
+        <title>Planos de Internet Fibra | Acessanet Telecom</title>
 
+        <meta
+          name="description"
+          content="Confira os planos de internet fibra da Acessanet Telecom com alta velocidade e estabilidade em Franco da Rocha e região. Escolha o ideal para você."
+        />
+
+        {/* SEO básico */}
+        <meta
+          name="keywords"
+          content="planos de internet, internet fibra Franco da Rocha, provedor internet SP, internet rápida, Acessanet Telecom"
+        />
+        <meta name="author" content="Acessanet Telecom" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Planos de Internet Fibra | Acessanet Telecom" />
+        <meta
+          property="og:description"
+          content="Escolha o melhor plano de internet para sua casa ou empresa com alta velocidade e estabilidade."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://acessanet.com.br/planos" />
+        <meta property="og:image" content="https://acessanet.com.br/banner-planos.jpg" />
+        <meta property="og:locale" content="pt_BR" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Planos de Internet | Acessanet Telecom" />
+        <meta
+          name="twitter:description"
+          content="Internet rápida e estável com planos acessíveis. Confira agora."
+        />
+
+        {/* Indexação */}
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <section className="planos-containers">
         <div className="planos-hero-container">
           <h1>Escolha seu Plano</h1>
@@ -128,7 +166,8 @@ export default function Planos() {
         </div>
 
         {/* PLANOS ESPECIAIS */}
-          <TemaSection/>
+
+        <TemaSection />
 
       </section>
 

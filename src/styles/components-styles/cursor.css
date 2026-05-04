@@ -1,7 +1,4 @@
 /* esconder cursor padrão */
-body {
-  cursor: none;
-}
 
 /* cursor base */
 .cursor {

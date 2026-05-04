@@ -1,5 +1,5 @@
 .header {
-  background: linear-gradient(90deg,#1B3C88,#2FA4E7);
+  background: linear-gradient(90deg, #1B3C88, #2FA4E7);
   padding: 14px 30px;
   position: sticky;
   top: 0;
@@ -15,7 +15,7 @@
 }
 
 .logo {
-  height: 52px;
+  height: 60px;
 }
 
 /* MENU DESKTOP */
@@ -34,9 +34,19 @@
   transition: .3s;
 }
 
+.menu a.active {
+  border-bottom: 2px solid #fff;
+  padding-bottom: 4px;
+  opacity: 1;
+}
+
+.menu a.active:hover {
+  transform: none;
+}
+
 .menu a:hover {
   opacity: .8;
- transform: translateY(-20%)
+  transform: translateY(-20%)
 }
 
 /* SOCIAL */

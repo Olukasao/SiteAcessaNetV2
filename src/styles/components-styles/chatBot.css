@@ -1,117 +1,79 @@
-.chat-botao{
+.chat-botao {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
-  width: 65px;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  height: 65px;
-  border-radius: 50%;
-  border: none;
+
+  bottom: 20px;
+  right: 20px;
+
+ 
+  /* mais alto que cursor */
+
+  /* força layer separado */
+
+  width: 60px;
+  height: 60px;
+
   background: #25D366;
   color: white;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: 26px;
-  cursor: pointer;
-  box-shadow: 0 8px 25px rgba(0,0,0,.2);
-  transition:.3s;
-  z-index: 999;
-}
-.chat-header img{
-  width:60px;
-  height:60px;
-  object-fit:contain;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .2);
+ 
+
+  transition: .3s;
+
+  /* 🔥 ESSENCIAL */
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 20px);
 }
 
-.chat-botao:hover{
+/* HOVER (desktop) */
+.chat-botao:hover {
   transform: scale(1.1);
 }
 
-.container-chat{
-  position: fixed;
-  bottom: 100px;
-  z-index: 999;
-  right: 25px;
-  width: 320px;
-  height: 420px;
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,.25);
-  display:flex;
-  flex-direction:column;
-  animation: abrir .25s ease;
-}
-
-@keyframes abrir{
-  from{
-    opacity:0;
-    transform:translateY(20px);
+/* ================= TABLET ================= */
+@media (max-width: 768px) {
+  .chat-botao {
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+    bottom: 18px;
+    right: 18px;
   }
 }
 
-.chat-header{
-  background:#2FA4E7;
-  color:white;
-  padding:14px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+/* ================= MOBILE ================= */
+@media (max-width: 480px) {
+  .chat-botao {
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
+    bottom: 16px;
+    right: 16px;
+  }
 }
 
-.chat-header img{
-  width:40px;
+/* ================= MOBILE PEQUENO ================= */
+@media (max-width: 360px) {
+  .chat-botao {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    bottom: 14px;
+    right: 14px;
+  }
 }
 
-.chat-mensagens{
-  flex:1;
-  padding:12px;
-  overflow:auto;
-}
-
-.msg{
-  padding:8px 12px;
-  border-radius:8px;
-  margin:6px 0;
-  max-width:80%;
-}
-
-.msg.bot{
-  background:#f1f4f8;
-}
-
-.msg.user{
-  background:#2FA4E7;
-  color:white;
-  margin-left:auto;
-}
-
-.respostas{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  margin-top:10px;
-}
-
-.respostas button{
-  border:none;
-  background:#eef3f8;
-  padding:8px;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.chat-footer{
-  padding:10px;
-  border-top:1px solid #eee;
-}
-
-.chat-footer a{
-  display:block;
-  text-align:center;
-  background:#25D366;
-  color:white;
-  padding:8px;
-  border-radius:6px;
-  text-decoration:none;
+/* ================= iPHONE SAFE AREA ================= */
+@supports (padding: max(0px)) {
+  .chat-botao {
+    bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
+  }
 }

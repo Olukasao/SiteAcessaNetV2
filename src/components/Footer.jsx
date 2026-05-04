@@ -37,7 +37,7 @@ export default function Footer() {
                         <FaPhoneAlt />{" "}
                         <a href="tel:08004445799">0800 444 5799</a>
                     </p>
-                    <span>Segunda à Sábado<br />08:00 às 19:00</span>
+                    <span>Segunda à Segunda<br />24H</span>
 
                     {/* WhatsApp */}
                     <p className="whats">

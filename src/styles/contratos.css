@@ -1,5 +1,5 @@
 .contratos {
-  padding: 110px 20px;
+  padding: 90px 20px;
   background: #f6f9fc;
   text-align: center;
 }
@@ -9,78 +9,124 @@
   margin: auto;
 }
 
+/* TÍTULOS */
 .contratos h1 {
-  font-size: 38px;
+  font-size: clamp(28px, 5vw, 38px);
   color: #081833;
   margin-bottom: 10px;
 }
 
 .subtitle {
   color: #5c6b80;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
+  font-size: clamp(14px, 2vw, 16px);
 }
 
 /* GRID */
-
 .contratos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
 }
 
 /* CARD */
-
 .contrato-card {
-  background: white;
-  padding: 35px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  padding: 28px;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
   border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, .06);
-  transition: .3s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
+  transition: all .3s ease;
   text-align: left;
+  border: 1px solid rgba(0,0,0,0.04);
 }
 
 .contrato-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .12);
 }
 
 .contrato-card h3 {
   color: #081833;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .contrato-card p {
   color: #5c6b80;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 /* BOTÃO */
-
 .contrato-card a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 
-  min-width: 140px;
+  width: fit-content;
 
-  background: #2FA4E7;
+  background: linear-gradient(135deg, #2FA4E7, #1d8fd1);
   color: #fff;
 
-  padding: 10px 18px;
+  padding: 9px 16px;
   border-radius: 8px;
 
   text-decoration: none;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
 
   transition: all 0.3s ease;
 }
 
 .contrato-card a:hover {
-  background: #1d8fd1;
-  transform: translateY(-4px);
-  box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(47,164,231,0.3);
+}
+
+/* ================= RESPONSIVO ================= */
+
+@media (max-width: 768px) {
+
+  .contratos {
+    padding: 70px 15px;
+  }
+
+  .subtitle {
+    margin-bottom: 40px;
+  }
+
+  .contrato-card {
+    padding: 22px;
+  }
+}
+
+/* MOBILE PEQUENO */
+@media (max-width: 480px) {
+
+  .contratos-grid {
+    gap: 18px;
+  }
+
+  .contrato-card {
+    padding: 20px;
+  }
+
+  .contrato-card h3 {
+    font-size: 16px;
+  }
+
+  .contrato-card p {
+    font-size: 13px;
+  }
+
+  .contrato-card a {
+    width: 100%;
+    text-align: center;
+  }
 }

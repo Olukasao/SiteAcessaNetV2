@@ -8,6 +8,8 @@ import {
     useMap
 } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+import { Helmet } from "react-helmet-async";
+
 
 // 🔥 move o mapa suavemente
 function MoverMapa({ posicao }) {
@@ -116,76 +118,115 @@ export default function Disponibilidade() {
         }
     }
 
-    // 💬 mensagem WhatsApp
+
     const mensagem = `Olá, consultei meu CEP (${cep}) em ${cidade} e quero saber sobre os planos`
 
     return (
-        <div className="disponibilidade">
+        <>
+            <Helmet>
+                <title>Consultar Disponibilidade de Internet | Acessanet Telecom</title>
 
-            <div className="card">
+                <meta
+                    name="description"
+                    content="Verifique se a internet fibra da Acessanet Telecom está disponível no seu endereço em Franco da Rocha e região. Consulte agora!"
+                />
 
-                <h2>Consulte disponibilidade</h2>
-                <p>Descubra se já atendemos sua região em segundos</p>
+                {/* SEO básico */}
+                <meta
+                    name="keywords"
+                    content="disponibilidade internet, cobertura fibra Franco da Rocha, consultar internet por endereço, Acessanet Telecom"
+                />
+                <meta name="author" content="Acessanet Telecom" />
 
-                <div className="busca">
+                {/* Open Graph */}
+                <meta property="og:title" content="Consultar Disponibilidade | Acessanet Telecom" />
+                <meta
+                    property="og:description"
+                    content="Descubra se temos cobertura de internet fibra no seu endereço."
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://acessanet.com.br/disponibilidade" />
+                
+                <meta property="og:locale" content="pt_BR" />
 
-                    <input
-                        placeholder="Digite seu CEP"
-                        value={cep}
-                        onChange={(e) => buscarCep(e.target.value)}
-                        maxLength={9}
-                    />
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="Disponibilidade de Internet | Acessanet Telecom" />
+                <meta
+                    name="twitter:description"
+                    content="Consulte a cobertura de internet fibra na sua região."
+                />
 
-                    <button onClick={verificar}>
-                        {loading ? "Buscando..." : "Verificar"}
-                    </button>
+                {/* Indexação */}
+                <meta name="robots" content="index, follow" />
+            </Helmet>
+            <div className="disponibilidade">
+
+                <div className="card">
+
+                    <h2>Consulte disponibilidade</h2>
+                    <p>Descubra se já atendemos sua região em segundos</p>
+
+                    <div className="busca">
+
+                        <input
+                            placeholder="Digite seu CEP"
+                            value={cep}
+                            onChange={(e) => buscarCep(e.target.value)}
+                            maxLength={9}
+                        />
+
+                        <button onClick={verificar}>
+                            {loading ? "Buscando..." : "Verificar"}
+                        </button>
+
+                    </div>
+
+                    {endereco && (
+                        <div className="endereco">
+                            📍 {endereco}
+                        </div>
+                    )}
+
+                    {status === "ok" && (
+                        <div className="resultado ok">
+                            ✅ Cobertura disponível em {cidade}
+                        </div>
+                    )}
+
+                    {status === "no" && (
+                        <div className="resultado no">
+                            🚧 Ainda não atendemos {cidade}
+                        </div>
+                    )}
+
+                    {status && (
+                        <a
+                            href={`https://wa.me/5508004445799?text=${encodeURIComponent(mensagem)}`}
+                            target="_blank"
+                            className="whatsapp"
+                        >
+                            💬 Falar no WhatsApp
+                        </a>
+                    )}
+
+                    <MapContainer center={posicao} zoom={15} className="mapa">
+
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                        <MoverMapa posicao={posicao} />
+
+                        <Marker position={posicao}>
+                            <Popup>
+                                📍 {endereco || "Localização do cliente"}
+                            </Popup>
+                        </Marker>
+
+                    </MapContainer>
 
                 </div>
 
-                {endereco && (
-                    <div className="endereco">
-                        📍 {endereco}
-                    </div>
-                )}
-
-                {status === "ok" && (
-                    <div className="resultado ok">
-                        ✅ Cobertura disponível em {cidade}
-                    </div>
-                )}
-
-                {status === "no" && (
-                    <div className="resultado no">
-                        🚧 Ainda não atendemos {cidade}
-                    </div>
-                )}
-
-                {status && (
-                    <a
-                        href={`https://wa.me/5511999999999?text=${encodeURIComponent(mensagem)}`}
-                        target="_blank"
-                        className="whatsapp"
-                    >
-                        💬 Falar no WhatsApp
-                    </a>
-                )}
-
-                <MapContainer center={posicao} zoom={15} className="mapa">
-
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-                    <MoverMapa posicao={posicao} />
-
-                    <Marker position={posicao}>
-                        <Popup>
-                            📍 {endereco || "Localização do cliente"}
-                        </Popup>
-                    </Marker>
-
-                </MapContainer>
-
             </div>
-
-        </div>
+        </>
     )
 }
