@@ -1,4 +1,4 @@
-import maes from "../../assets/banners/Maes.png"
+
 import "./heroMaes.css"
 
 export default function HeroMaes() {

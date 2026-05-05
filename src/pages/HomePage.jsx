@@ -49,7 +49,6 @@ export default function HomePage() {
             </Helmet>
             <BannerCarousel />
             <Planos />
-            <PlanosEspeciais />
             <WatchTV />
             <TemSaude />
             <Graviola />

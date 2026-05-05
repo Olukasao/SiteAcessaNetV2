@@ -13,7 +13,7 @@ const apps = [
         id: 1,
         name: "Conta Outra Vez",
         logo: contaOutraVezLogo,
-        link: "#"
+        link: "https://contaoutravez.com.br/"
     },
     {
         id: 2,
@@ -25,7 +25,7 @@ const apps = [
         id: 3,
         name: "Máquina de Contos",
         logo: maquinaContosLogo,
-        link: "#"
+        link: "https://www.maquinadecontos.com.br/"
     }
 ]
 
@@ -62,7 +62,7 @@ export default function Graviola() {
                         conteúdos exclusivos.
                     </p>
 
-                    <a href="#" className="btn-graviola">
+                    <a href="https://www.gravioladigital.com.br/" target="_blank" className="btn-graviola">
                         Acessar plataforma
                     </a>
                 </div>
@@ -84,6 +84,7 @@ export default function Graviola() {
                         <a
                             href={app.link}
                             key={app.id}
+                            target="_blank"
                             className="logo-card"
                         >
                             <img src={app.logo} alt={app.name} />
@@ -95,7 +96,7 @@ export default function Graviola() {
             {/* LIVROS */}
             <div className="graviola-library-wrap">
                 <div>
-                    <h2>Explore os livros</h2>
+                    <h2>Confira nosso livros</h2>
                 </div>
 
                 <div className="graviola-library">
@@ -111,13 +112,7 @@ export default function Graviola() {
                 </div>
 
             </div>
-            <div className="library-more">
-                <p>Explore uma biblioteca completa com muito mais conteúdos.</p>
-
-                <a href="#" className="btn-graviola">
-                    Ver todos os livros
-                </a>
-            </div>
+           
 
         </section>
     )

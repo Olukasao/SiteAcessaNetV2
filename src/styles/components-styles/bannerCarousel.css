@@ -1,7 +1,7 @@
 .carousel {
   position: relative;
   width: 100%;
-  height: 520px;
+  height: 700px;
   overflow: hidden;
 }
 
@@ -29,11 +29,6 @@
   width: 100%;
   height: 100%;
 
-  background: linear-gradient(
-    90deg,
-    rgba(11,30,75,0.85),
-    rgba(47,164,231,0.4)
-  );
 
   display: flex;
   flex-direction: column;

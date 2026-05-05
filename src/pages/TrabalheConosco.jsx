@@ -28,7 +28,7 @@ export default function TrabalheConosco() {
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://acessanet.com.br/trabalhe-conosco" />
-       
+
         <meta property="og:locale" content="pt_BR" />
 
         {/* Twitter */}
@@ -79,7 +79,7 @@ export default function TrabalheConosco() {
         <div className="container form-area">
           <h2>Envie seu currículo</h2>
 
-          <form className="trabalhe-form">
+          <form className="trabalhe-form" method="post" action="mailto:rh@acessanet.com,comercial@acessanet.com">
             <input type="text" placeholder="Nome completo" required />
             <input type="email" placeholder="E-mail" required />
             <input type="tel" placeholder="Telefone" required />

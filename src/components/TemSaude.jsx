@@ -16,7 +16,7 @@ export default function TemSaude() {
                             Mais cuidado com a saúde da sua família com preço acessível e sem burocracia.
                         </p>
 
-                        <a href="#" className="btn-temsaude">
+                        <a href="/planos" className="btn-temsaude">
                             Ver planos do Tem Saúde
                         </a>
                     </div>
@@ -48,7 +48,16 @@ export default function TemSaude() {
                                 <li>Farmácias conveniadas</li>
                             </ul>
 
-                            <button>Contratar</button>
+                            <button
+                                onClick={() =>
+                                    window.open(
+                                        "https://api.whatsapp.com/send/?phone=5508004445799&text=Quero%20contratar%20o%20plano%20do%20TemSa%C3%BAde",
+                                        "_blank"
+                                    )
+                                }
+                            >
+                                Contratar
+                            </button>
                         </div>
 
                         <div className="temsaude-plan highlight">
@@ -63,7 +72,16 @@ export default function TemSaude() {
                                 <li>Melhor custo-benefício</li>
                             </ul>
 
-                            <button>Contratar</button>
+                            <button
+                                onClick={() =>
+                                    window.open(
+                                        "https://api.whatsapp.com/send/?phone=5508004445799&text=Quero%20contratar%20o%20plano%20do%20TemSa%C3%BAde",
+                                        "_blank"
+                                    )
+                                }
+                            >
+                                Contratar
+                            </button>
                         </div>
 
                     </div>

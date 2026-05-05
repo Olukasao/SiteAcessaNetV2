@@ -2,7 +2,7 @@ import "../styles/pagePlanos.css";
 import { FaWifi, FaTv, FaWhatsapp, FaRocket } from "react-icons/fa";
 import logoWatch from "../assets/watchTV.jpg"
 import logoTemSaude from "../assets/temSaude.png"
-import logoVamoLe from "../assets/vamoLe.png"
+import logoVamoLe from "../assets/graviola/logo.png"
 
 import TemaSection from "../components/especial/TemaSection";
 import HeroMaes from "../components/especial/HeroMaes";
@@ -24,7 +24,7 @@ const planos = [
   },
   {
     nome: "700 MEGA",
-    preco: "99,90",
+    preco: "99,99",
     destaque: false,
     beneficios: [
       "Internet Fibra Óptica",
@@ -38,7 +38,7 @@ const planos = [
   },
   {
     nome: "700 MEGA + TV",
-    preco: "149,90",
+    preco: "149,99",
     destaque: true,
     beneficios: [
       "Ultra Velocidade",
@@ -135,7 +135,7 @@ export default function Planos() {
                       height: 55,
                       objectFit: "contain",
                       borderRadius: 12,
-                      background: item.fundo ? "#f9f9f9" : "transparent",
+                      background: item.fundo ? "#105b04" : "transparent",
                       border: item.fundo ? "1px solid #eee" : "none",
                       boxShadow: item.fundo ? "0 6px 18px rgba(0,0,0,0.15)" : "none",
                       transition: "all 0.3s ease",

@@ -3,6 +3,24 @@ import "../styles/contatos.css";
 import { FaWhatsapp, FaPhone, FaMapMarkerAlt, FaEnvelope } from "react-icons/fa";
 
 export default function Contatos() {
+
+    function enviarWhats() {
+        const nome = document.getElementById("nome").value;
+        const email = document.getElementById("email").value;
+        const assunto = document.getElementById("assunto").value;
+        const mensagem = document.getElementById("mensagem").value;
+
+        const texto = `Olá, me chamo ${nome}
+        Email: ${email}
+        Assunto: ${assunto}
+        Mensagem: ${mensagem}`;
+
+        const telefone = "5508004445799";
+
+        const url = `https://wa.me/${telefone}?text=${encodeURIComponent(texto)}`;
+
+        window.location.href = url
+    }
     return (
         <>
             <Helmet>
@@ -54,19 +72,19 @@ export default function Contatos() {
                     </div>
 
                     {/* FORM */}
-                    <form className="contato-form" action ="malito:">
-                        <input type="text" placeholder="Seu nome" required />
-                        <input type="email" placeholder="Seu e-mail" required />
-                        <input type="text" placeholder="Assunto" />
+                    <div className="contato-form" >
+                        <input type="text" placeholder="Seu nome" id="nome" required />
+                        <input type="email" placeholder="Seu e-mail" id="email" required />
+                        <input type="text" placeholder="Assunto" id="assunto" />
 
-                        <textarea placeholder="Digite sua mensagem"></textarea>
+                        <textarea placeholder="Digite sua mensagem" id="mensagem" ></textarea>
 
-                        <button type="submit">Enviar Mensagem</button>
-                    </form>
+                        <button onClick={enviarWhats}>Enviar Mensagem</button>
+                    </div>
 
                 </div>
 
-            </section>
+            </section >
         </>
     );
 }

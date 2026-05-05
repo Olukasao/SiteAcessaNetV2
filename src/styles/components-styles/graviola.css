@@ -144,7 +144,7 @@
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     transition: 0.3s;
-    cursor: pointer;
+   
 }
 
 /* IMAGEM */
@@ -163,10 +163,10 @@
 
 /* EFEITO OVERLAY (OPCIONAL) */
 .book::after {
-    content: "Ver livro";
+    
     position: absolute;
     inset: 0;
-    background: rgba(47, 125, 50, 0.85);
+
     color: #fff;
     font-weight: 600;
     display: flex;

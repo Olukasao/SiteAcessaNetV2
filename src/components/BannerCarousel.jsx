@@ -1,35 +1,23 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
-import b1 from "../assets/pascoa/1.png"
-import mae from "../assets/banners/Maes.png"
-import temSaude from "../assets/banners/TemSaude.png"
-import { Heart, Wifi, Tv, BookOpen } from "lucide-react";
+import mae from "../assets/banners/banner-maes.png"
+import temsaude from "../assets/banners/temsaude.jpeg"
+import { Heart, Wifi, Tv, BookOpen } from "lucide-react"; 
 
 const banners = [
   {
-    title: "Promoção Mês das Mães",
-    subtitle: "Ofertas especiais para conectar você a quem mais importa",
+    title: "",
+    subtitle: "",
     icon: Heart,
     image: mae,
   },
-  {
-    title: "700 MEGA + Watch TV",
-    subtitle: "Internet ultra rápida + TV inclusa sem custo extra",
-    icon: Tv,
-    image: "/banners/banner3.jpg",
+ 
+   {
+    title: "",
+    subtitle: "",
+    icon: Heart,
+    image: temsaude,
   },
-  {
-    title: "App de Leitura Graviola",
-    subtitle: "Milhares de livros digitais inclusos no seu plano",
-    icon: BookOpen,
-    image: "/banners/banner3.jpg",
-  },
-  {
-    title: "TemSaude",
-    subtitle: "Adicione consultas médicas e telemedicina por um pequeno valor mensal",
-    icon: BookOpen,
-    image: temSaude,
-  }
 ];
 
 export default function BannerCarousel() {
@@ -67,9 +55,7 @@ export default function BannerCarousel() {
               <h1>{banner.title}</h1>
               <p>{banner.subtitle}</p>
 
-              <a href="/planos" className="carousel-btn">
-                Ver Planos
-              </a>
+            
 
             </div>
           </div>

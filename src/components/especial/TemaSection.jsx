@@ -1,15 +1,15 @@
 import "./temaSection.css"
-import maes from "../../assets/banners/Maes.png"
+import mae from "../../assets/banners/banner-maes.png"
 
 const temas = {
     maes: {
         titulo: "Mês das Mães 💖",
         desc: "Conecte quem sempre esteve ao seu lado com mais velocidade e estabilidade.",
-        imagem: maes,
+        imagem: mae,
         combos: [
             { nome: "400 Mega", preco: "74,99", destaque: false },
             { nome: "700 Mega", preco: "94,99", destaque: true },
-            { nome: "700 Mega + TV", preco: "149,90", destaque: false }
+            { nome: "700 Mega + TV", preco: "149,99", destaque: false }
         ]
     }
 }
