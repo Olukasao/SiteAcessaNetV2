@@ -4,17 +4,13 @@
   bottom: 20px;
   right: 20px;
 
- 
-  /* mais alto que cursor */
-
-  /* força layer separado */
 
   width: 60px;
   height: 60px;
 
   background: #25D366;
   color: white;
-
+  position: fixed;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -23,8 +19,7 @@
   font-size: 26px;
 
   box-shadow: 0 8px 20px rgba(0, 0, 0, .2);
- 
-
+  z-index: 999;
   transition: .3s;
 
   /* 🔥 ESSENCIAL */
@@ -38,42 +33,3 @@
 }
 
 /* ================= TABLET ================= */
-@media (max-width: 768px) {
-  .chat-botao {
-    width: 55px;
-    height: 55px;
-    font-size: 24px;
-    bottom: 18px;
-    right: 18px;
-  }
-}
-
-/* ================= MOBILE ================= */
-@media (max-width: 480px) {
-  .chat-botao {
-    width: 52px;
-    height: 52px;
-    font-size: 22px;
-    bottom: 16px;
-    right: 16px;
-  }
-}
-
-/* ================= MOBILE PEQUENO ================= */
-@media (max-width: 360px) {
-  .chat-botao {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-    bottom: 14px;
-    right: 14px;
-  }
-}
-
-/* ================= iPHONE SAFE AREA ================= */
-@supports (padding: max(0px)) {
-  .chat-botao {
-    bottom: max(16px, env(safe-area-inset-bottom));
-    right: max(16px, env(safe-area-inset-right));
-  }
-}

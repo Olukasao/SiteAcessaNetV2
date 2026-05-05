@@ -54,7 +54,7 @@ export default function Contatos() {
                     </div>
 
                     {/* FORM */}
-                    <form className="contato-form">
+                    <form className="contato-form" action ="malito:">
                         <input type="text" placeholder="Seu nome" required />
                         <input type="email" placeholder="Seu e-mail" required />
                         <input type="text" placeholder="Assunto" />

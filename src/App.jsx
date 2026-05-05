@@ -9,7 +9,7 @@ import ChatBot from "./components/Chatbot";
 function App() {
   return (
     <>
-     
+      <ScrollToTop/>
       <CustomCursor />
       <SmoothScroll />
       <ChatBot/>
