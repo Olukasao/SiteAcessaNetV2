@@ -6,6 +6,7 @@ import PlanosEspeciais from "../components/PlanosEspeciais";
 import WatchTV from "../components/WatchTV";
 import TemSaude from "../components/TemSaude";
 import Graviola from "../components/Graviola";
+import BotaoFlutuante from "../components/copa/BotaoFlutuante";
 
 export default function HomePage() {
     return (

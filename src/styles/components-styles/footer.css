@@ -2,7 +2,7 @@
    FOOTER ACESSA NET
 ========================= */
 .footer {
-  background: #0B1E4B;
+  background: #4b0b21;
   color: white;
   padding: 70px 30px 40px;
   font-family: "Poppins", sans-serif;
@@ -36,7 +36,7 @@
 /* TITULOS */
 
 .footer-col h3 {
-  color: #2FA4E7;
+  color: #f71c1c;
   font-size: 15px;
   letter-spacing: 1px;
   margin-bottom: 22px;
@@ -62,7 +62,7 @@
 }
 
 .footer-col a:hover {
-  color: #2FA4E7;
+  color: #530d44;
   transform: translateX(4px);
 }
 

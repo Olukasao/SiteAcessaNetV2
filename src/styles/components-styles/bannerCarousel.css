@@ -1,7 +1,7 @@
 .carousel {
   position: relative;
   width: 100%;
-  height: 700px;
+  height: 600px;
   overflow: hidden;
 }
 
@@ -71,12 +71,17 @@
   font-size: 30px;
   padding: 10px 15px;
   cursor: pointer;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   color: white;
 }
 
-.left { left: 15px; }
-.right { right: 15px; }
+.left {
+  left: 15px;
+}
+
+.right {
+  right: 15px;
+}
 
 /* DOTS */
 
@@ -105,17 +110,14 @@
 
 /* MOBILE */
 
-@media (max-width: 900px) {
-
-  .overlay {
-    padding: 30px;
-    text-align: center;
-    align-items: center;
+@media (max-width: 600px) {
+  .banner,
+  .carousel,
+  .slide {
+    height: 220px !important;
+    min-height: unset !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
   }
-
-  .overlay h1 {
-    font-size: 30px;
-  }
-
 }
-

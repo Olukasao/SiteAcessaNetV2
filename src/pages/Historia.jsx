@@ -1,7 +1,7 @@
 import "../styles/historia.css";
 import { FaNetworkWired, FaUsers, FaRocket, FaWifi } from "react-icons/fa";
 
-import logo from "../assets/logo.png"
+import logo from "../assets/logobase.png"
 import { Helmet } from "react-helmet-async";
 
 export default function Historia() {

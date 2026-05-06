@@ -1,0 +1,93 @@
+/* Container geral */
+.container-form-mundiale {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  padding: 20px;
+}
+
+/* Card do formulário */
+.form-mundiale {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Título */
+.form-mundiale > div:first-child {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+/* Cada campo */
+.form-mundiale div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.form-mundiale label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* Input */
+.form-mundiale input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  outline: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+/* Focus bonito */
+.form-mundiale input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Botão */
+.form-mundiale button {
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Hover botão */
+.form-mundiale button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Clique */
+.form-mundiale button:active {
+  transform: scale(0.98);
+}
+
+/* Responsivo */
+@media (max-width: 500px) {
+  .form-mundiale {
+    padding: 20px;
+  }
+}

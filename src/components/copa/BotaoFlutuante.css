@@ -1,0 +1,26 @@
+.container-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button {
+    display: flex;
+    gap: 40px;
+    padding: 30px;
+    align-items: center;
+    justify-content: center;
+    background-color: aliceblue;
+    border-radius: 20px;
+}
+
+.button div {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-preco {
+    background-color: yellow;
+    padding: 20px;
+    border-radius: 20px;
+}
