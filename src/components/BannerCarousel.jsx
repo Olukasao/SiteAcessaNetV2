@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
 import mae from "../assets/banners/banner-maes.png"
 import temsaude from "../assets/banners/temsaude.jpeg"
-import { Heart, Wifi, Tv, BookOpen } from "lucide-react"; 
+import { Heart, Wifi, Tv, BookOpen } from "lucide-react";
+import FloatingButton from "../components/maes/FloatingButton";
+import BotaoCopa from "../components/copa/BotaoCopa";
+import testecopa from "../assets/copa/testecopa.png"
 
 const banners = [
   {
@@ -54,6 +57,8 @@ export default function BannerCarousel() {
             <div className="overlay">
               <h1>{banner.title}</h1>
               <p>{banner.subtitle}</p>
+
+              {index === 0 && <FloatingButton/>}
 
             
 

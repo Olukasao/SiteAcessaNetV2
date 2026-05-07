@@ -1,0 +1,104 @@
+.floating-button {
+  position: absolute;
+  left: clamp(45px, 6vw, 95px);
+  bottom: clamp(80px, 9vw, 130px);
+  z-index: 50;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: clamp(12px, 1.1vw, 15px) clamp(28px, 3vw, 42px);
+
+  border: none;
+  outline: none;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, #f23869 0%, #e3285a 100%);
+  color: #ffffff;
+
+  font-size: clamp(15px, 1.25vw, 18px);
+  font-weight: 700;
+  font-family: Poppins, Arial, sans-serif;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+
+  box-shadow: 0 12px 26px rgba(226, 40, 90, 0.32);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    filter 0.25s ease;
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.floating-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: linear-gradient(135deg, #ff4775 0%, #e3285a 100%);
+  box-shadow: 0 18px 36px rgba(226, 40, 90, 0.42);
+  filter: brightness(1.03);
+}
+
+.floating-button:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.floating-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+}
+
+/* TABLET / MOBILE */
+@media (max-width: 900px) {
+  .floating-button {
+    left: 22px;
+    bottom: 36pt;
+
+    padding: 5px 10px ;
+    font-size: 9.5pt;
+    min-height: 26pt;
+    max-width: 105px;
+
+    border-radius: 999pt;
+    box-shadow: 0 6px 14px rgba(226, 40, 90, 0.25);
+  }
+
+  .floating-button:hover {
+    transform: translateY(-3px) scale(1.03);
+  }
+}
+
+/* CELULAR */
+@media (max-width: 480px) {
+  .floating-button {
+     left: 18px !important;
+    bottom: 28px !important;
+
+    padding: 5px 9px !important;
+    font-size: 9px !important;
+    min-height: 24px !important;
+    max-width: 98px !important;
+  }
+}
+
+/* CELULAR MUITO PEQUENO */
+@media (max-width: 360px) {
+  .floating-button {
+    left: 15px;
+    bottom: 24px;
+
+    width: auto;
+    height: auto;
+    line-height: 1;
+
+    padding:2px 14px;
+    font-size: 9px;
+    min-height: 30px;
+    max-width: 130px;
+  }
+}

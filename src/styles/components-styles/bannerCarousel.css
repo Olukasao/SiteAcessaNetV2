@@ -1,7 +1,7 @@
 .carousel {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: clamp(180px, min(48.5vw, 82svh), 760px);
   overflow: hidden;
 }
 
@@ -14,13 +14,17 @@
 
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.8s ease;
 }
 
 .slide.active {
   opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
 }
 
 /* OVERLAY */
@@ -34,19 +38,22 @@
   flex-direction: column;
   justify-content: center;
 
-  padding-left: 8%;
+  padding-left: clamp(24px, 8vw, 120px);
+  padding-right: clamp(24px, 8vw, 120px);
   color: white;
   font-family: "Poppins";
 }
 
 .overlay h1 {
-  font-size: 46px;
+  font-size: clamp(28px, 4vw, 56px);
   margin-bottom: 15px;
+  max-width: 720px;
 }
 
 .overlay p {
-  font-size: 18px;
+  font-size: clamp(15px, 1.4vw, 20px);
   margin-bottom: 25px;
+  max-width: 620px;
 }
 
 /* BOTÃO */
@@ -54,11 +61,12 @@
 .carousel-btn {
   background: white;
   color: #1B3C88;
-  padding: 14px 26px;
+  padding: clamp(11px, 1vw, 14px) clamp(20px, 2vw, 28px);
   border-radius: 30px;
   text-decoration: none;
   font-weight: 600;
   width: fit-content;
+  font-size: clamp(14px, 1vw, 16px);
 }
 
 /* SETAS */
@@ -67,29 +75,66 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  border: none;
-  font-size: 30px;
-  padding: 10px 15px;
+
+  width: clamp(38px, 3.3vw, 50px);
+  height: clamp(38px, 3.3vw, 50px);
+  padding: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+
+  font-size: clamp(24px, 2vw, 32px);
+  font-weight: 300;
+  line-height: 1;
+
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
+  z-index: 10;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.arrow:hover {
+  transform: translateY(-50%) scale(1.12);
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(1.04);
 }
 
 .left {
-  left: 15px;
+  left: clamp(12px, 2vw, 28px);
 }
 
 .right {
-  right: 15px;
+  right: clamp(12px, 2vw, 28px);
 }
 
 /* DOTS */
 
 .dots {
   position: absolute;
-  bottom: 20px;
+  bottom: clamp(12px, 2vw, 24px);
   width: 100%;
   text-align: center;
+  z-index: 10;
 }
 
 .dot {
@@ -111,13 +156,29 @@
 /* MOBILE */
 
 @media (max-width: 600px) {
-  .banner,
-  .carousel,
+  .carousel {
+    height: clamp(170px, 52vw, 260px);
+  }
+
   .slide {
-    height: 220px !important;
-    min-height: unset !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
+    background-size: contain;
+    background-position: center;
+  }
+
+  .overlay {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 21px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
   }
 }
