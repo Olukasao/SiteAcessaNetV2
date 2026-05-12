@@ -1,15 +1,14 @@
 import "./temaSection.css";
-import mae from "../../assets/banners/banner-maes.png";
-
+import copa2026 from "../../assets/copa/copa2026.png"
 const temas = {
   maes: {
-    titulo: "Mês das Mães 💖",
-    desc: "Conecte quem sempre esteve ao seu lado com mais velocidade e estabilidade.",
-    imagem: mae,
+    titulo: "Promoção Copa 2026 🏆",
+    desc: "Internet rápida e estável para você não perder nenhum lance da Copa.",
+    imagem: copa2026,
     combos: [
       { nome: "400 Mega", preco: "74,99", destaque: false },
-      { nome: "700 Mega", preco: "94,99", destaque: true },
-      { nome: "700 Mega + TV", preco: "149,99", destaque: false },
+      { nome: "700 Mega", preco: "94,99", destaque: false },
+      { nome: "700 Mega + TV", preco: "149,99", destaque: true },
     ],
   },
 };
@@ -23,7 +22,7 @@ export default function TemaSection({ tema = "maes" }) {
         <div className="tema-content">
           {/* TEXTO */}
           <div className="tema-texto">
-            <span className="tema-tag">💖 Oferta especial</span>
+            <span className="tema-tag">🏆 Oferta especial</span>
 
             <h2>{data.titulo}</h2>
             <p>{data.desc}</p>

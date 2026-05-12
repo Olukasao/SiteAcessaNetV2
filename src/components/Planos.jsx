@@ -57,7 +57,7 @@ const planos = [
 export default function Planos() {
   return (
     <section className="planos">
-      <div className="planos-container">
+      <div className="">
 
         <h2>Nossos Planos de Internet</h2>
         <p className="subtitle">

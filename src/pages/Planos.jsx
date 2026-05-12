@@ -3,6 +3,7 @@ import { FaWifi, FaTv, FaWhatsapp, FaRocket } from "react-icons/fa";
 import logoWatch from "../assets/watchTV.jpg"
 import logoTemSaude from "../assets/temSaude.png"
 import logoVamoLe from "../assets/graviola/logo.png"
+import logoglobo from "../assets/globoplay.png"
 
 import TemaSection from "../components/especial/TemaSection";
 import HeroMaes from "../components/especial/HeroMaes";
@@ -19,7 +20,7 @@ const planos = [
     destaque: false,
     beneficios: ["Internet Fibra Óptica", "Wi-Fi Grátis", "Suporte Rápido"],
     servicos: [
-      { src: logoVamoLe, fundo: true }
+      { src: logoVamoLe, fundo: true, nome: "Graviola Digital" }
     ]
   },
   {
@@ -33,7 +34,7 @@ const planos = [
       "APP de leitura Vamolê!",
     ],
     servicos: [
-      { src: logoVamoLe, fundo: true }
+      { src: logoVamoLe, fundo: true, nome: "Graviola Digital" }
     ]
   },
   {
@@ -46,9 +47,10 @@ const planos = [
       "Ideal para Gamers",
     ],
     servicos: [
-      { src: logoTemSaude, fundo: false },
-      { src: logoWatch, fundo: false },
-      { src: logoVamoLe, fundo: true }
+      { src: logoglobo, fundo: false, nome: "Globo Play" },
+      { src: logoTemSaude, fundo: false, nome: "Tem Saúde" },
+      { src: logoWatch, fundo: false, nome: "Watch TV" },
+      { src: logoVamoLe, fundo: true, nome: "Graviola Digital" }
     ]
   },
 
@@ -125,34 +127,56 @@ export default function Planos() {
                 ))}
               </ul>
               <div style={{ display: "flex", gap: "20px", alignItems: "center", justifyContent: "center", marginBottom: "5px" }}>
-                {plano.servicos.map((item, index) => (
-                  <img
-                    key={index}
-                    src={item.src}
-                    alt=""
-                    style={{
-                      width: 55,
-                      height: 55,
-                      objectFit: "contain",
-                      borderRadius: 12,
-                      background: item.fundo ? "#105b04" : "transparent",
-                      border: item.fundo ? "1px solid #eee" : "none",
-                      boxShadow: item.fundo ? "0 6px 18px rgba(0,0,0,0.15)" : "none",
-                      transition: "all 0.3s ease",
+                {plano.servicos.map((item, index) => {
+                  const isGloboPlay = item.nome === "Globo Play";
+                  const boxShadow = item.fundo
+                    ? "0 6px 18px rgba(0,0,0,0.15)"
+                    : "none";
 
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = "translateY(-6px) scale(1.05)";
-                      e.currentTarget.style.boxShadow = "0 12px 25px rgba(0,0,0,0.25)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = "translateY(0) scale(1)";
-                      e.currentTarget.style.boxShadow = item.fundo
-                        ? "0 6px 18px rgba(0,0,0,0.15)"
-                        : "none";
-                    }}
-                  />
-                ))}
+                  return (
+                    <span
+                      key={index}
+                      style={{
+                        width: 55,
+                        height: 55,
+                        flex: "0 0 55px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        overflow: "hidden",
+                        borderRadius: 12,
+                        background: item.fundo ? "#105b04" : "transparent",
+                        border: item.fundo ? "1px solid #eee" : "none",
+                        boxShadow,
+                        transition: "all 0.3s ease",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = "translateY(-6px) scale(1.05)";
+                        e.currentTarget.style.boxShadow = "0 12px 25px rgba(0,0,0,0.25)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = "translateY(0) scale(1)";
+                        e.currentTarget.style.boxShadow = boxShadow;
+                      }}
+                    >
+                      <img
+                        src={item.src}
+                        alt={item.nome || "Serviço incluso"}
+                        style={{
+                          width: 55,
+                          height: 55,
+                          display: "block",
+                          objectFit: "contain",
+                          pointerEvents: "none",
+                          transform: isGloboPlay
+                            ? "translateX(0) scale(3)"
+                            : "scale(1)",
+                          transformOrigin: "center",
+                        }}
+                      />
+                    </span>
+                  );
+                })}
               </div>
               <a
                 href={`https://wa.me/5508004445799?text=Olá! Gostaria de contratar o plano de ${plano.nome} por ${plano.preco}`}

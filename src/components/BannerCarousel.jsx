@@ -1,26 +1,43 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
-import mae from "../assets/banners/banner-maes.png"
-import temsaude from "../assets/banners/temsaude.jpeg"
-import { Heart, Wifi, Tv, BookOpen } from "lucide-react";
+import "../components/copa/BotaoCopa.css";
+import "../components/copa/Assine.css";
+
+import temsaude from "../assets/banners/temsaude.jpeg";
+import testecopa from "../assets/copa/testecopa.png";
+import canarinho from "../assets/copa/canarinho.png";
+
+import { Heart } from "lucide-react";
+
 import FloatingButton from "../components/maes/FloatingButton";
 import BotaoCopa from "../components/copa/BotaoCopa";
-import testecopa from "../assets/copa/testecopa.png"
+import BotaoAssine from "../components/copa/Assine";
 
 const banners = [
+
   {
     title: "",
     subtitle: "",
     icon: Heart,
-    image: mae,
+    image: testecopa,
+    width: "50vw",
   },
- 
-   {
+
+  {
     title: "",
     subtitle: "",
     icon: Heart,
     image: temsaude,
   },
+
+  {
+    title: "",
+    subtitle: "",
+    icon: Heart,
+    image: canarinho,
+  },
+
+  
 ];
 
 export default function BannerCarousel() {
@@ -46,23 +63,34 @@ export default function BannerCarousel() {
     <section className="carousel">
 
       {banners.map((banner, index) => {
-        const Icon = banner.icon;
-
         return (
           <div
             key={index}
             className={`slide ${index === current ? "active" : ""}`}
-            style={{ backgroundImage: `url(${banner.image})` }}
           >
-            <div className="overlay">
-              <h1>{banner.title}</h1>
-              <p>{banner.subtitle}</p>
+            {index === 3 && <FloatingButton />}
 
-              {index === 0 && <FloatingButton/>}
+            {index === 2 && (
+              <div className="botao-assine-wrapper">
+                <BotaoAssine />
+              </div>
+            )}
 
+            {index === 0 && (
+              <div className="botao-copa-wrapper">
+                <BotaoCopa />
+              </div>
+            )}
             
 
-            </div>
+            <img
+              src={banner.image}
+              alt=""
+              style={{
+                width: "100%",
+                height: banner.height || "100%",
+              }}
+            />
           </div>
         );
       })}

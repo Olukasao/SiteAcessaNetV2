@@ -6,7 +6,7 @@
   width: 18px;
   height: 18px;
   cursor: none;
-  background: #e50965;
+  background: #e5bd09;
   border-radius: 50%;
   pointer-events: none;
   transform: translate(-50%, -50%);
@@ -23,6 +23,6 @@
   width: 30px;
   cursor: none;
   height: 30px;
-  background: #e50965;
+  background: #09b2e5;
   backdrop-filter: blur(4px);
 }

@@ -1,14 +1,15 @@
 .planos {
   padding: 110px 20px;
-  background: linear-gradient(180deg,
-      #ffffff 0%,
-      #f4f8fc 100%);
+  background:
+    radial-gradient(circle at top right, rgba(245, 183, 0, 0.12), transparent 35%),
+    linear-gradient(180deg, #F7FFF4 0%, #FFFFFF 45%, #F1FAEE 100%);
   text-align: center;
 }
 
 .planos-container {
   max-width: 1200px;
   margin: auto;
+  background-color: #081833;
 }
 
 .planos h2 {

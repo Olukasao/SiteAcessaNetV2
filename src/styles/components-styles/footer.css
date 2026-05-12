@@ -2,10 +2,16 @@
    FOOTER ACESSA NET
 ========================= */
 .footer {
-  background: #4b0b21;
-  color: white;
-  padding: 70px 30px 40px;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(180deg, #0b4b16 0%, #063b10 55%, #032b0a 100%);
+  color: #ffffff;
+
+  padding: 80px 30px 36px;
   font-family: "Poppins", sans-serif;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* CONTAINER */
@@ -36,7 +42,7 @@
 /* TITULOS */
 
 .footer-col h3 {
-  color: #f71c1c;
+  color: #0eabe9;
   font-size: 15px;
   letter-spacing: 1px;
   margin-bottom: 22px;
@@ -62,7 +68,7 @@
 }
 
 .footer-col a:hover {
-  color: #530d44;
+  color: #0d5316;
   transform: translateX(4px);
 }
 
