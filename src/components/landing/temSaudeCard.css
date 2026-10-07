@@ -1,0 +1,121 @@
+/* Posição/tamanho calculados a partir do card original desenhado na arte
+   outubrorosa.png (1774x887): bbox medida em pixels ~ x:1226-1728,
+   y:726-819. Este componente é renderizado DENTRO de .hero-poster-media
+   (ver HeroSection.jsx/landing.css), que trava a proporção na mesma da
+   imagem (aspect-ratio: 1774/887) -- usar % aqui mantém o card no mesmo
+   lugar visual em qualquer largura de tela, desde que o posicionamento
+   continue relativo a essa caixa (nunca à seção inteira, que agora também
+   inclui a faixa de CTA abaixo do pôster). */
+.temsaude-card {
+  position: absolute;
+  z-index: 2;
+  left: 69.1%;
+  top: 81.9%;
+  width: 28.3%;
+  height: 10.5%;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0 1em;
+  font-size: clamp(8px, 0.95vw, 15px);
+  background: linear-gradient(90deg, #fdeef4 0%, #fff6fa 55%, #ffffff 100%);
+  border: 1px solid rgba(233, 30, 99, 0.16);
+  border-radius: 1.1em;
+  box-shadow: 0 0.5em 1.4em rgba(216, 27, 96, 0.08);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.temsaude-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.7em 1.8em rgba(216, 27, 96, 0.14);
+  border-color: rgba(233, 30, 99, 0.34);
+}
+
+.temsaude-card:focus-visible {
+  outline: 2px solid #e91e63;
+  outline-offset: 3px;
+  transform: translateY(-2px);
+  box-shadow: 0 0.7em 1.8em rgba(216, 27, 96, 0.14);
+}
+
+.temsaude-card-icon {
+  flex: 0 0 auto;
+  width: 2.6em;
+  height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4393 0%, #e91e63 100%);
+  border-radius: 0.7em;
+}
+
+.temsaude-card-brand {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.temsaude-card-brand strong {
+  font-size: 1.15em;
+  font-weight: 800;
+  color: #3a3a42;
+}
+
+.temsaude-card-accent {
+  color: #e91e63;
+}
+
+.temsaude-card-brand small {
+  font-size: 0.78em;
+  font-weight: 500;
+  color: #7a7a84;
+}
+
+.temsaude-card-divider {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 1px;
+  margin: 0.3em 0;
+  background: rgba(233, 30, 99, 0.28);
+}
+
+.temsaude-card-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  font-size: 0.92em;
+  color: #55555f;
+  white-space: nowrap;
+}
+
+/* <= 760px: sai do overlay (texto ficaria ilegível espremido numa fatia
+   proporcional da imagem) e vira um bloco normal abaixo do banner. */
+@media (max-width: 760px) {
+  .temsaude-card {
+    /* "static": .hero-poster-media (landing.css) sempre ocupa espaço real no
+       fluxo nesse breakpoint (aspect-ratio ou height fixa), então o card só
+       precisa vir depois dela no fluxo normal -- sem position/z-index
+       especial, independente de como a imagem em si está posicionada. */
+    position: static;
+    width: auto;
+    height: auto;
+    /* margin-bottom cobre o `.stats-bar{margin-top:-44px}` da seção
+       seguinte, que puxa pra cima e cobriria o card sem essa folga. */
+    margin: 14px 18px 60px;
+    padding: 14px 16px;
+    font-size: 14px;
+    white-space: normal;
+  }
+
+  .temsaude-card-brand,
+  .temsaude-card-info {
+    white-space: normal;
+  }
+}

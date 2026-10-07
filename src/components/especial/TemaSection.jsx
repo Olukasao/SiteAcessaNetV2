@@ -1,71 +1,252 @@
 import "./temaSection.css";
-import copa2026 from "../../assets/copa/copa2026.png"
+import {
+  FaBookOpen,
+  FaHeartbeat,
+  FaPhoneAlt,
+  FaPlayCircle,
+  FaShieldAlt,
+  FaTv,
+  FaWifi,
+} from "react-icons/fa";
+import globoplayLogo from "../../assets/globoplay.png";
+
 const temas = {
-  maes: {
-    titulo: "Promoção Copa 2026 🏆",
-    desc: "Internet rápida e estável para você não perder nenhum lance da Copa.",
-    imagem: copa2026,
+  destaque: {
+    titulo: "Planos em destaque",
+    desc: "Internet rápida e estável com entretenimento e serviços digitais para sua casa.",
     combos: [
-      { nome: "400 Mega", preco: "74,99", destaque: false },
-      { nome: "700 Mega", preco: "94,99", destaque: false },
-      { nome: "700 Mega + TV", preco: "149,99", destaque: true },
+      {
+        id: "700-mbps",
+        nome: "700 Mbps",
+        preco: "114,99",
+        beneficios: [
+          {
+            icon: FaWifi,
+            titulo: "700 MEGA",
+            descricao: "Internet Fibra Óptica",
+          },
+          {
+            icon: FaBookOpen,
+            titulo: "APP LIVROS",
+            descricao: "Conteúdo para toda a família",
+          },
+          {
+            icon: FaPlayCircle,
+            logo: globoplayLogo,
+            logoAlt: "Globoplay",
+            titulo: "GLOBOPLAY",
+            descricao: "Padrão com anúncios",
+          },
+        ],
+      },
+      {
+        id: "combo-paizao",
+        nome: "PLANO 800 MEGA",
+        preco: "169,99",
+        destaque: true,
+        beneficios: [
+          {
+            icon: FaWifi,
+            titulo: "800 MEGA",
+            descricao: "Internet Fibra Óptica",
+          },
+          {
+            icon: FaPlayCircle,
+            logo: globoplayLogo,
+            logoAlt: "Globoplay",
+            titulo: "GLOBOPLAY",
+            descricao: "Padrão com anúncios",
+          },
+          {
+            icon: FaHeartbeat,
+            titulo: "TELEMEDICINA",
+            descricao: "Consultas sem sair de casa",
+          },
+          {
+            icon: FaTv,
+            titulo: "WATCH TV + PREMIERE",
+            descricao: "Canais ao vivo e esportes",
+          },
+          {
+            icon: FaPhoneAlt,
+            titulo: "TELEFONE FIXO",
+            descricao: "Minutagem ilimitada",
+          },
+        ],
+      },
     ],
   },
 };
 
-export default function TemaSection({ tema = "maes" }) {
-  const data = temas[tema] || temas.maes;
+export default function TemaSection({ tema = "destaque" }) {
+  const data = temas[tema] || temas.destaque;
 
   return (
     <section id="ofertas-tema" className="tema-section">
       <div className="tema-container">
         <div className="tema-content">
-          {/* TEXTO */}
           <div className="tema-texto">
-            <span className="tema-tag">🏆 Oferta especial</span>
-
             <h2>{data.titulo}</h2>
             <p>{data.desc}</p>
 
             <div className="tema-combos">
-              {data.combos.map((combo, i) => (
-                <div
-                  key={i}
-                  className={`combo-card ${combo.destaque ? "highlight" : ""}`}
-                >
-                  {combo.destaque && (
-                    <span className="combo-badge">
-                      MAIS VENDIDO
-                    </span>
-                  )}
-
-                  <h3>{combo.nome}</h3>
-
-                  <div className="combo-preco">
-                    <span>R$</span>
-                    <strong>{combo.preco}</strong>
-                    <small>/mês</small>
-                  </div>
-
-                  <a
-                    href={`https://wa.me/5508004445799?text=Quero o plano ${combo.nome}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-combo"
-                  >
-                    Contratar
-                  </a>
-                </div>
-              ))}
+              {data.combos.map((combo) =>
+                combo.id === "combo-paizao" ? (
+                  <ComboPaizaoCard key={combo.id} combo={combo} />
+                ) : (
+                  <Plano700Card key={combo.id} combo={combo} />
+                )
+              )}
             </div>
-          </div>
-
-          {/* IMAGEM */}
-          <div className={`tema-imagem-${tema}`}>
-            <img src={data.imagem} alt={data.titulo} />
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function Plano700Card({ combo }) {
+  const whatsappUrl = `https://wa.me/5508004445799?text=Quero contratar o plano ${combo.nome} por R$${combo.preco}`;
+
+  return (
+    <div id="plano-700-card" className="combo-card combo-700-card">
+      <div className="combo-700-main">
+        <div className="combo-paizao-heading combo-700-heading">
+          <h3 className="combo-paizao-title combo-700-title">
+            <span>PLANO</span>
+            <span>700 MEGA</span>
+          </h3>
+        </div>
+
+        <p className="combo-paizao-subtitle combo-700-subtitle">
+          Internet rápida e estável<br />
+          para aproveitar <strong>todos os momentos.</strong>
+        </p>
+
+        <ul className="combo-paizao-benefits combo-700-benefits">
+          {combo.beneficios.map((beneficio) => {
+            const Icon = beneficio.icon;
+
+            return (
+              <li key={beneficio.titulo}>
+                <span className="combo-paizao-benefit-icon" aria-hidden="true">
+                  {beneficio.logo ? (
+                    <img src={beneficio.logo} alt="" className="combo-paizao-benefit-logo" />
+                  ) : (
+                    <Icon />
+                  )}
+                </span>
+                <span className="combo-paizao-benefit-copy">
+                  <strong>{beneficio.titulo}</strong>
+                  <small>{beneficio.descricao}</small>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="combo-700-footer">
+        <div className="combo-paizao-price-box combo-700-price-box">
+          <div className="combo-price-now">
+            <span className="combo-price-kicker">POR APENAS</span>
+            <div className="combo-price-value">
+              <span className="combo-price-currency">R$</span>
+              <strong>114</strong>
+              <span className="combo-price-cents">,99</span>
+              <span className="combo-price-period">/mês</span>
+            </div>
+          </div>
+        </div>
+
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-combo combo-paizao-button combo-700-button"
+          aria-label={`Contratar plano ${combo.nome} por R$ ${combo.preco} por mês`}
+        >
+          Contratar agora
+        </a>
+
+        <p className="combo-paizao-note combo-700-note">
+          <FaShieldAlt aria-hidden="true" />
+          <span>Para novos assinantes</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ComboPaizaoCard({ combo }) {
+  const whatsappUrl = `https://wa.me/5508004445799?text=Quero contratar o plano ${combo.nome} por R$${combo.preco}`;
+
+  return (
+    <div id="combo-paizao-card" className="combo-card combo-paizao-card">
+      <span className="combo-badge combo-paizao-badge">
+        OFERTA ESPECIAL
+      </span>
+
+      <div className="combo-paizao-heading">
+        <h3 className="combo-paizao-title combo-800-title">
+          <span>PLANO</span>
+          <span>800 MEGA</span>
+        </h3>
+      </div>
+
+      <p className="combo-paizao-subtitle">
+        Mais conexão e entretenimento<br />
+        para <strong>toda a família.</strong>
+      </p>
+
+      <ul className="combo-paizao-benefits">
+        {combo.beneficios.map((beneficio) => {
+          const Icon = beneficio.icon;
+
+          return (
+            <li key={beneficio.titulo}>
+              <span className="combo-paizao-benefit-icon" aria-hidden="true">
+                {beneficio.logo ? (
+                  <img src={beneficio.logo} alt="" className="combo-paizao-benefit-logo" />
+                ) : (
+                  <Icon />
+                )}
+              </span>
+              <span className="combo-paizao-benefit-copy">
+                <strong>{beneficio.titulo}</strong>
+                <small>{beneficio.descricao}</small>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="combo-paizao-price-box">
+        <div className="combo-price-now">
+          <span className="combo-price-kicker">POR APENAS</span>
+          <div className="combo-price-value">
+            <span className="combo-price-currency">R$</span>
+            <strong>169</strong>
+            <span className="combo-price-cents">,99</span>
+            <span className="combo-price-period">/mês</span>
+          </div>
+        </div>
+      </div>
+
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="btn-combo combo-paizao-button"
+        aria-label="Contratar agora o plano 800 MEGA por R$ 169,99 por mês"
+      >
+        Contratar agora
+      </a>
+
+      <p className="combo-paizao-note">
+        <FaShieldAlt aria-hidden="true" />
+        <span>Para novos assinantes</span>
+      </p>
+    </div>
   );
 }

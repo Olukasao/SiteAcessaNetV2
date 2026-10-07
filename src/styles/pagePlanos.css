@@ -7,7 +7,7 @@
 }
 
 .planos-hero-container {
-  background: linear-gradient(90deg, #064E2F 0%, #0B8F45 100%);
+  background: linear-gradient(90deg, #06142d 0%, #0b2d5c 100%);
   color: white;
   text-align: center;
   padding: 90px 20px;
@@ -34,12 +34,13 @@
   padding: 35px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
-  transition: .3s;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
   position: relative;
+  contain: layout paint;
 }
 
 .plano-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-5px);
 }
 
 .plano-card.destaque {
@@ -99,7 +100,7 @@ li {
 }
 
 .especial-card {
-  background: #0a581f;
+  background: #0b2d5c;
   padding: 25px;
   border-radius: 12px;
 }
@@ -146,8 +147,7 @@ li {
 /* CARD BASE */
 .plan {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 26px;
   min-height: 230px;
@@ -155,7 +155,7 @@ li {
   max-width: 320px;
   border-radius: 16px;
   width: 260px;
-  transition: all 0.3s ease;
+  transition: transform 0.22s ease, border-color 0.22s ease;
 
   overflow: visible;
   /* 🔥 CORREÇÃO PRINCIPAL */
@@ -201,7 +201,7 @@ li {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  transition: 0.25s;
+  transition: transform 0.22s ease, background 0.22s ease;
 }
 
 .primary:hover {
@@ -216,7 +216,7 @@ li {
   border-radius: 8px;
   color: #cbd5f5;
   cursor: pointer;
-  transition: 0.25s;
+  transition: border-color 0.22s ease;
 }
 
 .ghost:hover {
@@ -237,7 +237,7 @@ li {
   inset: 0;
   background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 60%);
   opacity: 0;
-  transition: 0.3s;
+  transition: opacity 0.22s ease;
 }
 
 .plan:hover {

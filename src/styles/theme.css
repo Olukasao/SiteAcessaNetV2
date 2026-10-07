@@ -1,0 +1,1131 @@
+/**
+ * CONVENÇÃO DE BREAKPOINTS (site público)
+ * ----------------------------------------
+ * O projeto não tem Sass/PostCSS, então não dá pra usar uma variável CSS
+ * dentro de @media (max-width: var(--x)) -- isso só funciona com um
+ * pré-processador ou com a função CSS if()/container queries, nenhum dos
+ * dois disponível aqui hoje. Por isso esta convenção é documentada, não
+ * aplicada automaticamente: ao criar ou tocar uma seção, use um destes três
+ * valores em vez de escolher um número novo "no olho":
+ *
+ *   1360px -- navegação (header vira menu hambúrguer aqui)
+ *    900px -- grades de 2+ colunas colapsam pra 1 coluna / layout "tablet"
+ *    600px -- ajuste fino de tipografia/espaçamento pra celular estreito
+ *
+ * Migração é gradual: o CSS existente ainda tem dezenas de valores
+ * diferentes (520, 760, 768, 820...) espalhados por outros arquivos --
+ * não foram todos unificados de uma vez pra não arriscar quebrar layouts
+ * que já funcionam. Ajuste pro valor padrão quando for mexer na seção de
+ * qualquer forma, não como projeto à parte.
+ */
+
+body.theme-independencia {
+  --theme-navy: #061B35;
+  --theme-navy-soft: #08284E;
+  --theme-deep-teal: #063F56;
+  --theme-brand-blue: #0095F6;
+  --theme-sky-blue: #19B8FF;
+  --theme-green: #009C3B;
+  --theme-green-dark: #007A33;
+  --theme-yellow: #FFDF00;
+  --theme-gold: #F4C430;
+  --theme-white: #FFFFFF;
+  --theme-surface: #F5FAFE;
+  --theme-surface-2: #EAF6FF;
+  --theme-ink: #061B35;
+  --theme-muted: #52677D;
+  --theme-border: rgba(6, 27, 53, 0.12);
+  --theme-blue-glow: 0 18px 44px rgba(0, 149, 246, 0.16);
+  --theme-card-glow: 0 22px 54px rgba(6, 27, 53, 0.12);
+  --theme-premium-gradient: linear-gradient(135deg, #061B35 0%, #063F56 45%, #007A33 100%);
+  --theme-flag-line: linear-gradient(90deg, #0095F6 0%, #009C3B 55%, #FFDF00 100%);
+  --theme-cta-special: linear-gradient(90deg, #009C3B, #F4C430);
+  --landing-navy: var(--theme-navy);
+  --landing-blue: var(--theme-navy-soft);
+  --landing-blue-2: var(--theme-brand-blue);
+  --landing-cyan: var(--theme-sky-blue);
+  --landing-cyan-soft: #86DDFF;
+  --landing-ink: var(--theme-ink);
+  --landing-muted: var(--theme-muted);
+  --landing-surface: var(--theme-white);
+  --landing-border: var(--theme-border);
+  background: var(--theme-surface);
+}
+
+body.theme-independencia *::selection {
+  background: rgba(244, 196, 48, 0.78);
+  color: var(--theme-navy);
+}
+
+body.theme-independencia::-webkit-scrollbar-track {
+  background: var(--theme-white);
+}
+
+body.theme-independencia::-webkit-scrollbar-thumb {
+  background: var(--theme-premium-gradient);
+}
+
+body.theme-independencia::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia a:focus-visible,
+body.theme-independencia button:focus-visible {
+  outline-color: rgba(25, 184, 255, 0.78);
+}
+
+body.theme-independencia .header {
+  background: rgba(255, 255, 255, 0.985);
+  border-bottom-color: rgba(6, 27, 53, 0.08);
+  box-shadow: 0 12px 30px rgba(6, 27, 53, 0.08);
+}
+
+body.theme-independencia .header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--theme-flag-line);
+  pointer-events: none;
+}
+
+body.theme-independencia .menu a,
+body.theme-independencia .client-link {
+  color: #18304B;
+}
+
+body.theme-independencia .menu a::after {
+  background: var(--theme-flag-line);
+}
+
+body.theme-independencia .menu a:hover,
+body.theme-independencia .menu a.active,
+body.theme-independencia .client-link:hover {
+  color: var(--theme-green-dark);
+}
+
+body.theme-independencia .header-cta {
+  color: var(--theme-white);
+  background: var(--theme-brand-blue);
+  border-color: rgba(0, 149, 246, 0.22);
+  box-shadow: 0 14px 30px rgba(0, 149, 246, 0.28);
+}
+
+body.theme-independencia .header-cta:hover {
+  background: var(--theme-green-dark);
+  box-shadow: 0 18px 38px rgba(0, 122, 51, 0.28);
+}
+
+body.theme-independencia .hamburger {
+  color: var(--theme-navy);
+  border-color: rgba(0, 149, 246, 0.2);
+  box-shadow: 0 8px 20px rgba(6, 27, 53, 0.08);
+}
+
+body.theme-independencia .hamburger:hover {
+  border-color: rgba(0, 156, 59, 0.42);
+  color: var(--theme-green-dark);
+}
+
+@media (max-width: 1360px) {
+  body.theme-independencia .mobile-nav-panel {
+    background: rgba(255, 255, 255, 0.985);
+    border-color: rgba(0, 149, 246, 0.12);
+    box-shadow: 0 24px 54px rgba(6, 27, 53, 0.14);
+  }
+}
+
+body.theme-independencia .landing-page,
+body.theme-independencia .planos-containers {
+  background:
+    radial-gradient(circle at 86% 8%, rgba(0, 156, 59, 0.08), transparent 28%),
+    linear-gradient(180deg, #F5FAFE 0%, #FFFFFF 46%, #EDF8FF 100%);
+}
+
+body.theme-independencia .landing-hero {
+  background: var(--theme-premium-gradient);
+}
+
+body.theme-independencia .landing-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.46;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 223, 0, 0.2) 0 2px, transparent 3px),
+    radial-gradient(circle at 74% 18%, rgba(25, 184, 255, 0.22) 0 2px, transparent 3px),
+    radial-gradient(circle at 86% 66%, rgba(0, 156, 59, 0.18) 0 2px, transparent 3px);
+  background-size: 260px 190px, 320px 220px, 280px 210px;
+  pointer-events: none;
+}
+
+body.theme-independencia .hero-background-overlay {
+  background:
+    linear-gradient(90deg, rgba(6, 27, 53, 0.82) 0%, rgba(6, 63, 86, 0.48) 46%, rgba(6, 27, 53, 0.08) 74%),
+    radial-gradient(circle at 78% 18%, rgba(0, 156, 59, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(0, 149, 246, 0.16), rgba(0, 122, 51, 0.16));
+}
+
+body.theme-independencia .hero-fiber-lines {
+  opacity: 0.5;
+  background:
+    linear-gradient(116deg, transparent 0%, transparent 21%, rgba(25, 184, 255, 0.36) 22%, transparent 23%),
+    linear-gradient(142deg, transparent 0%, transparent 42%, rgba(0, 156, 59, 0.24) 43%, transparent 44%),
+    linear-gradient(128deg, transparent 0%, transparent 62%, rgba(255, 223, 0, 0.18) 62.4%, transparent 63%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 96px);
+}
+
+body.theme-independencia .hero-connection-panel {
+  background: rgba(0, 149, 246, 0.12);
+  border-color: rgba(0, 156, 59, 0.18);
+  box-shadow: 0 0 80px rgba(25, 184, 255, 0.1);
+}
+
+body.theme-independencia .hero-copy-card {
+  border-color: rgba(0, 149, 246, 0.18);
+  box-shadow:
+    0 30px 74px rgba(3, 10, 24, 0.3),
+    inset 0 3px 0 rgba(0, 156, 59, 0.72);
+}
+
+body.theme-independencia .hero-eyebrow,
+body.theme-independencia .planos-label,
+body.theme-independencia .benefits-heading span {
+  color: var(--theme-green-dark);
+}
+
+body.theme-independencia .hero-eyebrow {
+  background: rgba(0, 156, 59, 0.08);
+  border-color: rgba(0, 156, 59, 0.2);
+}
+
+body.theme-independencia .hero-copy-card h1 strong,
+body.theme-independencia .linha-fixa-price,
+body.theme-independencia .combo-preco strong,
+body.theme-independencia .combo-price-value,
+body.theme-independencia .combo-price-value strong,
+body.theme-independencia .combo-price-cents,
+body.theme-independencia .combo-700-title span:last-child,
+body.theme-independencia .combo-paizao-title span:last-child {
+  color: var(--theme-brand-blue);
+}
+
+body.theme-independencia .hero-primary,
+body.theme-independencia .watchtv-btn,
+body.theme-independencia .btn-temsaude,
+body.theme-independencia .btn-contratar,
+body.theme-independencia .linha-fixa-btn--primary,
+body.theme-independencia .contrato-card a,
+body.theme-independencia .contato-form button,
+body.theme-independencia .trabalhe-form button,
+body.theme-independencia .busca button,
+body.theme-independencia .form-mundiale button,
+body.theme-independencia .assinar-pdf-fallback a {
+  color: var(--theme-white);
+  background: var(--theme-brand-blue);
+  box-shadow: 0 14px 30px rgba(0, 149, 246, 0.22);
+}
+
+body.theme-independencia .hero-primary:hover,
+body.theme-independencia .watchtv-btn:hover,
+body.theme-independencia .btn-temsaude:hover,
+body.theme-independencia .btn-contratar:hover,
+body.theme-independencia .linha-fixa-btn--primary:hover,
+body.theme-independencia .contrato-card a:hover,
+body.theme-independencia .contato-form button:hover,
+body.theme-independencia .trabalhe-form button:hover,
+body.theme-independencia .busca button:hover,
+body.theme-independencia .form-mundiale button:hover,
+body.theme-independencia .assinar-pdf-fallback a:hover {
+  background: var(--theme-green-dark);
+  box-shadow: 0 18px 38px rgba(0, 122, 51, 0.24);
+}
+
+body.theme-independencia .hero-secondary,
+body.theme-independencia .hero-trust svg {
+  color: var(--theme-brand-blue);
+}
+
+body.theme-independencia .hero-float-card,
+body.theme-independencia .stats-bar-inner,
+body.theme-independencia .benefit-card,
+body.theme-independencia .plano-card,
+body.theme-independencia .combo-card,
+body.theme-independencia .linha-fixa-container,
+body.theme-independencia .app-container,
+body.theme-independencia .contrato-card,
+body.theme-independencia .valor-card,
+body.theme-independencia .beneficio,
+body.theme-independencia .lgpd-content,
+body.theme-independencia .card,
+body.theme-independencia .assinar-card,
+body.theme-independencia .form-mundiale {
+  border-color: rgba(0, 149, 246, 0.14);
+  box-shadow: var(--theme-card-glow);
+}
+
+body.theme-independencia .hero-float-card span,
+body.theme-independencia .stat-icon,
+body.theme-independencia .benefit-card > span,
+body.theme-independencia .linha-fixa-info-icon,
+body.theme-independencia .footer-contact-icon,
+body.theme-independencia .app-badge {
+  color: var(--theme-brand-blue);
+  background: rgba(0, 149, 246, 0.12);
+  border: 1px solid rgba(0, 149, 246, 0.12);
+}
+
+body.theme-independencia .hero-float-card.fiber span,
+body.theme-independencia .stat-item:nth-child(2) .stat-icon,
+body.theme-independencia .benefit-card:nth-child(2) > span {
+  color: var(--theme-green-dark);
+  background: rgba(0, 156, 59, 0.1);
+  border-color: rgba(0, 156, 59, 0.18);
+}
+
+body.theme-independencia .hero-float-card.support span,
+body.theme-independencia .stat-item:nth-child(3) .stat-icon,
+body.theme-independencia .benefit-card:nth-child(3) > span {
+  color: var(--theme-navy);
+  background: rgba(244, 196, 48, 0.22);
+  border-color: rgba(244, 196, 48, 0.36);
+}
+
+body.theme-independencia .stats-bar-inner,
+body.theme-independencia .benefit-card,
+body.theme-independencia .plano-card,
+body.theme-independencia .combo-card,
+body.theme-independencia .temsaude-plan,
+body.theme-independencia .contrato-card,
+body.theme-independencia .valor-card,
+body.theme-independencia .beneficio {
+  position: relative;
+}
+
+body.theme-independencia .temsaude-plan::before,
+body.theme-independencia .contrato-card::before,
+body.theme-independencia .valor-card::before,
+body.theme-independencia .beneficio::before,
+body.theme-independencia .lgpd-content::before,
+body.theme-independencia .card::before,
+body.theme-independencia .assinar-card::before,
+body.theme-independencia .form-mundiale::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: inherit;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  background: var(--theme-flag-line);
+  pointer-events: none;
+}
+
+body.theme-independencia .benefits-section,
+body.theme-independencia .planos,
+body.theme-independencia .app-provedor,
+body.theme-independencia .contratos,
+body.theme-independencia .lgpd-container,
+body.theme-independencia .disponibilidade {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(0, 149, 246, 0.11), transparent 30%),
+    radial-gradient(circle at 88% 16%, rgba(0, 156, 59, 0.07), transparent 26%),
+    linear-gradient(180deg, #F5FAFE 0%, #FFFFFF 48%, #ECF8FF 100%);
+}
+
+body.theme-independencia .benefit-card:hover,
+body.theme-independencia .plano-card:hover,
+body.theme-independencia .combo-card:hover,
+body.theme-independencia .contrato-card:hover,
+body.theme-independencia .valor-card:hover,
+body.theme-independencia .beneficio:hover {
+  border-color: rgba(0, 156, 59, 0.28);
+  box-shadow: 0 26px 58px rgba(6, 27, 53, 0.14), 0 0 0 1px rgba(25, 184, 255, 0.08);
+}
+
+body.theme-independencia .plano-card.destaque {
+  border-color: var(--theme-brand-blue);
+  box-shadow:
+    0 24px 56px rgba(0, 149, 246, 0.18),
+    0 0 0 1px rgba(0, 156, 59, 0.16);
+}
+
+body.theme-independencia .plan-badge,
+body.theme-independencia .badge,
+body.theme-independencia .badge-t,
+body.theme-independencia .combo-badge,
+body.theme-independencia .combo-paizao-badge {
+  color: var(--theme-white);
+  background: linear-gradient(90deg, var(--theme-brand-blue) 0%, var(--theme-green) 100%);
+  box-shadow: 0 12px 26px rgba(0, 149, 246, 0.24);
+}
+
+body.theme-independencia .badge.strong {
+  color: var(--theme-navy);
+  background: var(--theme-cta-special);
+}
+
+body.theme-independencia .preco,
+body.theme-independencia .card h2,
+body.theme-independencia .lgpd-content h1,
+body.theme-independencia .lgpd-email {
+  color: var(--theme-brand-blue);
+}
+
+body.theme-independencia .icon-check,
+body.theme-independencia .linha-fixa-benefit svg,
+body.theme-independencia .app-beneficios svg,
+body.theme-independencia .valor-card .icon,
+body.theme-independencia .beneficio .icon,
+body.theme-independencia .assinar-card h1 svg,
+body.theme-independencia .assinar-section-title svg,
+body.theme-independencia .assinar-pdf-fallback svg {
+  color: var(--theme-green);
+}
+
+body.theme-independencia .icon-tv,
+body.theme-independencia .combo-paizao-badge svg,
+body.theme-independencia .combo-paizao-note svg,
+body.theme-independencia .footer-service-area svg {
+  color: var(--theme-gold);
+}
+
+body.theme-independencia .service-logo.dark {
+  background: var(--theme-navy);
+  border-color: rgba(244, 196, 48, 0.32);
+  box-shadow: 0 10px 24px rgba(6, 27, 53, 0.2);
+}
+
+body.theme-independencia .planos-hero-container,
+body.theme-independencia .historia-hero,
+body.theme-independencia .contato-hero,
+body.theme-independencia .trabalhe-hero,
+body.theme-independencia .container-form-mundiale {
+  background: var(--theme-premium-gradient);
+  color: var(--theme-white);
+}
+
+body.theme-independencia .tema-section {
+  background-color: var(--theme-navy);
+}
+
+body.theme-independencia .tema-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(6, 27, 53, 0.86) 0%, rgba(6, 63, 86, 0.46) 48%, rgba(0, 122, 51, 0.08) 78%),
+    radial-gradient(circle at 18% 22%, rgba(25, 184, 255, 0.18), transparent 28%),
+    radial-gradient(circle at 78% 16%, rgba(255, 223, 0, 0.1), transparent 24%);
+  pointer-events: none;
+}
+
+body.theme-independencia .tema-texto h2,
+body.theme-independencia .watchtv-info h2,
+body.theme-independencia .temsaude-info-left h2,
+body.theme-independencia .temsaude-plans-wrap h2 {
+  color: var(--theme-white);
+}
+
+body.theme-independencia .combo-700-card,
+body.theme-independencia .combo-paizao-card,
+body.theme-independencia .combo-card {
+  background:
+    linear-gradient(180deg, rgba(234, 246, 255, 0.72) 0%, rgba(255, 255, 255, 0) 28%),
+    var(--theme-white);
+  border-color: rgba(0, 149, 246, 0.2);
+}
+
+body.theme-independencia .beneficio-check,
+body.theme-independencia .combo-paizao-benefit-icon {
+  color: var(--theme-green-dark);
+  background: rgba(244, 196, 48, 0.16);
+  border-color: rgba(244, 196, 48, 0.32);
+  box-shadow: 0 8px 18px rgba(244, 196, 48, 0.14);
+}
+
+body.theme-independencia .combo-paizao-price-box {
+  background:
+    linear-gradient(90deg, rgba(0, 149, 246, 0.08), rgba(0, 156, 59, 0.08)),
+    #F4FAFF;
+  border-color: rgba(0, 156, 59, 0.18);
+}
+
+body.theme-independencia .btn-combo,
+body.theme-independencia .combo-paizao-button,
+body.theme-independencia .combo-700-button,
+body.theme-independencia .assinar-submit-button {
+  color: var(--theme-navy);
+  background: var(--theme-cta-special);
+  box-shadow: 0 14px 28px rgba(0, 156, 59, 0.2);
+}
+
+body.theme-independencia .btn-combo:hover,
+body.theme-independencia .combo-paizao-button:hover,
+body.theme-independencia .combo-700-button:hover,
+body.theme-independencia .assinar-submit-button:hover {
+  background: linear-gradient(90deg, var(--theme-green-dark), var(--theme-gold));
+  box-shadow: 0 18px 34px rgba(0, 122, 51, 0.24);
+}
+
+body.theme-independencia .linha-fixa-section {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(0, 149, 246, 0.12), transparent 30%),
+    radial-gradient(circle at 88% 22%, rgba(0, 156, 59, 0.08), transparent 28%),
+    linear-gradient(180deg, #FFFFFF 0%, #F4FAFF 100%);
+}
+
+body.theme-independencia .linha-fixa-container {
+  background:
+    radial-gradient(circle at 82% 30%, rgba(25, 184, 255, 0.12), transparent 28%),
+    radial-gradient(circle at 10% 84%, rgba(0, 156, 59, 0.07), transparent 24%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.99), rgba(245, 250, 254, 0.96));
+}
+
+body.theme-independencia .linha-fixa-tag,
+body.theme-independencia .linha-fixa-modal-tag,
+body.theme-independencia .linha-fixa-inline-action,
+body.theme-independencia .assinar-clear-button {
+  color: var(--theme-green-dark);
+  background: rgba(0, 156, 59, 0.08);
+  border-color: rgba(0, 156, 59, 0.16);
+}
+
+body.theme-independencia .linha-fixa-new {
+  background: var(--theme-navy);
+  box-shadow: 0 12px 28px rgba(6, 27, 53, 0.22);
+}
+
+body.theme-independencia .linha-fixa-btn--light {
+  color: var(--theme-brand-blue);
+  border-color: rgba(0, 149, 246, 0.24);
+}
+
+body.theme-independencia .linha-fixa-light-trails {
+  background-image: url("data:image/svg+xml,%3Csvg width='1200' height='460' viewBox='0 0 1200 460' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 282C202 180 364 214 532 226C738 241 866 187 1200 74' stroke='%230095F6' stroke-width='18' stroke-linecap='round' opacity='.18'/%3E%3Cpath d='M0 326C238 201 406 256 570 263C761 271 899 214 1200 123' stroke='%2319B8FF' stroke-width='8' stroke-linecap='round' opacity='.56'/%3E%3Cpath d='M10 362C248 244 403 301 586 303C807 306 929 247 1200 164' stroke='%23009C3B' stroke-width='5' stroke-linecap='round' opacity='.44'/%3E%3Cpath d='M0 229C249 167 421 159 610 184C800 209 928 175 1200 38' stroke='white' stroke-width='3' stroke-linecap='round' opacity='.82'/%3E%3Cpath d='M37 391C272 311 438 334 620 332C825 330 974 286 1180 231' stroke='%23FFDF00' stroke-width='4' stroke-linecap='round' opacity='.5'/%3E%3Ccircle cx='1070' cy='80' r='8' fill='white' opacity='.8'/%3E%3Ccircle cx='1016' cy='127' r='5' fill='%23009C3B' opacity='.62'/%3E%3Ccircle cx='893' cy='211' r='5' fill='%23FFDF00' opacity='.56'/%3E%3C/svg%3E");
+}
+
+body.theme-independencia .watchtv,
+body.theme-independencia .temsaude-info,
+body.theme-independencia .temsaude-plans-section,
+body.theme-independencia .corp {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(25, 184, 255, 0.18), transparent 28%),
+    radial-gradient(circle at 86% 18%, rgba(0, 156, 59, 0.12), transparent 26%),
+    var(--theme-premium-gradient);
+}
+
+body.theme-independencia .watchtv::before,
+body.theme-independencia .temsaude-info::before,
+body.theme-independencia .temsaude-plans-section::before,
+body.theme-independencia .corp::before,
+body.theme-independencia .footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 0 34%, rgba(25, 184, 255, 0.12) 34.3%, transparent 34.9%),
+    linear-gradient(132deg, transparent 0 58%, rgba(0, 156, 59, 0.12) 58.3%, transparent 58.9%),
+    linear-gradient(124deg, transparent 0 70%, rgba(255, 223, 0, 0.08) 70.2%, transparent 70.7%);
+  pointer-events: none;
+}
+
+body.theme-independencia .watchtv-container,
+body.theme-independencia .temsaude-info-wrap,
+body.theme-independencia .temsaude-plans-wrap,
+body.theme-independencia .corp-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+body.theme-independencia .watchtv-badge,
+body.theme-independencia .section-header h3 {
+  color: var(--theme-sky-blue);
+  background: rgba(0, 149, 246, 0.12);
+  border: 1px solid rgba(25, 184, 255, 0.18);
+}
+
+body.theme-independencia .nav button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.theme-independencia .nav button:hover {
+  background: rgba(0, 156, 59, 0.72);
+}
+
+body.theme-independencia .movie-card:hover {
+  box-shadow: 0 20px 44px rgba(0, 149, 246, 0.28), 0 0 0 1px rgba(244, 196, 48, 0.24);
+}
+
+body.theme-independencia .movie-overlay svg {
+  color: var(--theme-navy);
+  background: var(--theme-gold);
+}
+
+body.theme-independencia .channel-card {
+  border: 1px solid rgba(25, 184, 255, 0.14);
+}
+
+body.theme-independencia .channel-card:hover {
+  background: rgba(0, 156, 59, 0.18);
+  border-color: rgba(244, 196, 48, 0.26);
+}
+
+body.theme-independencia .temsaude-box {
+  background: linear-gradient(135deg, var(--theme-brand-blue), var(--theme-green));
+  box-shadow: 0 22px 60px rgba(0, 149, 246, 0.22);
+}
+
+body.theme-independencia .temsaude-plan {
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(25, 184, 255, 0.18);
+  box-shadow: 0 20px 46px rgba(3, 10, 24, 0.16);
+}
+
+body.theme-independencia .temsaude-plan.highlight {
+  background:
+    linear-gradient(135deg, rgba(0, 149, 246, 0.22), rgba(0, 156, 59, 0.14)),
+    rgba(255, 255, 255, 0.08);
+  border-color: rgba(244, 196, 48, 0.44);
+}
+
+body.theme-independencia .temsaude-plan button {
+  background: var(--theme-brand-blue);
+}
+
+body.theme-independencia .temsaude-plan button:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia .graviola-hero {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(0, 156, 59, 0.1), transparent 26%),
+    linear-gradient(180deg, #F4FAFF 0%, #FFFFFF 100%);
+}
+
+body.theme-independencia .graviola-hero-left h2,
+body.theme-independencia .graviola-apps-logos h2,
+body.theme-independencia .graviola-library-wrap h2 {
+  color: var(--theme-green-dark);
+}
+
+body.theme-independencia .btn-graviola {
+  background: var(--theme-brand-blue);
+  box-shadow: 0 14px 30px rgba(0, 149, 246, 0.2);
+}
+
+body.theme-independencia .btn-graviola:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia .graviola-hero-box {
+  background: linear-gradient(135deg, var(--theme-green), var(--theme-brand-blue));
+  box-shadow: 0 22px 54px rgba(0, 156, 59, 0.18);
+}
+
+body.theme-independencia .logo-card,
+body.theme-independencia .book {
+  border: 1px solid rgba(0, 149, 246, 0.12);
+}
+
+body.theme-independencia .book:hover {
+  box-shadow: 0 20px 42px rgba(6, 27, 53, 0.16), 0 0 0 1px rgba(0, 156, 59, 0.16);
+}
+
+body.theme-independencia .app-badge {
+  color: var(--theme-green-dark);
+  background: rgba(0, 156, 59, 0.08);
+}
+
+body.theme-independencia .app-info h2,
+body.theme-independencia .planos h2,
+body.theme-independencia .benefits-heading h2,
+body.theme-independencia .contratos h1,
+body.theme-independencia .historia-text h2,
+body.theme-independencia .timeline h2,
+body.theme-independencia .form-area h2 {
+  color: var(--theme-ink);
+}
+
+body.theme-independencia .corp-highlight {
+  background: var(--theme-flag-line);
+}
+
+body.theme-independencia .corp-left p,
+body.theme-independencia .plan-desc,
+body.theme-independencia .temsaude-info-left p,
+body.theme-independencia .temsaude-plan li {
+  color: rgba(226, 242, 255, 0.84);
+}
+
+body.theme-independencia .primary {
+  background: var(--theme-brand-blue);
+  box-shadow: 0 14px 28px rgba(0, 149, 246, 0.2);
+}
+
+body.theme-independencia .primary:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia .plan {
+  border-color: rgba(25, 184, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+body.theme-independencia .plan:hover {
+  border-color: rgba(244, 196, 48, 0.26);
+}
+
+body.theme-independencia .highlight {
+  background: linear-gradient(135deg, rgba(0, 149, 246, 0.9), rgba(0, 122, 51, 0.9));
+}
+
+body.theme-independencia .ghost:hover {
+  border-color: rgba(244, 196, 48, 0.44);
+}
+
+body.theme-independencia .contato-info p svg,
+body.theme-independencia .footer-links svg {
+  color: var(--theme-gold);
+}
+
+body.theme-independencia .contato {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(0, 149, 246, 0.1), transparent 28%),
+    linear-gradient(180deg, #F5FAFE 0%, #FFFFFF 100%);
+}
+
+body.theme-independencia .contato-grid {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  padding: 50px 20px;
+  align-items: start;
+}
+
+body.theme-independencia .contato-form input:focus,
+body.theme-independencia .contato-form textarea:focus,
+body.theme-independencia .trabalhe-form input:focus,
+body.theme-independencia .trabalhe-form select:focus,
+body.theme-independencia .trabalhe-form textarea:focus,
+body.theme-independencia .busca input:focus,
+body.theme-independencia .form-mundiale input:focus,
+body.theme-independencia .assinar-form-grid input:focus {
+  border-color: var(--theme-green);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 156, 59, 0.14);
+}
+
+body.theme-independencia .resultado.ok {
+  color: #064E2D;
+  background: rgba(0, 156, 59, 0.12);
+  border: 1px solid rgba(0, 156, 59, 0.22);
+}
+
+body.theme-independencia .whatsapp,
+body.theme-independencia .chat-botao,
+body.theme-independencia .footer-contact-icon--whats {
+  background: var(--theme-green);
+  color: var(--theme-white);
+}
+
+body.theme-independencia .whatsapp:hover,
+body.theme-independencia .chat-botao:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia .whatsapp-float {
+  background: linear-gradient(135deg, var(--theme-brand-blue), var(--theme-green-dark));
+  box-shadow: 0 12px 28px rgba(0, 149, 246, 0.24);
+}
+
+body.theme-independencia .assinar-documento {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(0, 156, 59, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(0, 149, 246, 0.07) 0%, rgba(246, 249, 252, 0.96) 42%),
+    #F6F9FC;
+}
+
+body.theme-independencia .assinar-card,
+body.theme-independencia .lgpd-content,
+body.theme-independencia .card,
+body.theme-independencia .form-mundiale {
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-independencia .assinar-submit-button {
+  border: 0;
+}
+
+body.theme-independencia .footer {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(0, 156, 59, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(6, 63, 86, 0.96) 0%, rgba(6, 27, 53, 0.99) 58%, #041226 100%);
+}
+
+body.theme-independencia .footer::before {
+  background:
+    linear-gradient(90deg, rgba(25, 184, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 86% 12%, rgba(244, 196, 48, 0.12), transparent 26%);
+}
+
+body.theme-independencia .footer::after {
+  z-index: 0;
+  opacity: 0.78;
+}
+
+body.theme-independencia .footer-container,
+body.theme-independencia .footer-bottom {
+  position: relative;
+  z-index: 1;
+}
+
+body.theme-independencia .footer-col h3 {
+  color: var(--theme-sky-blue);
+}
+
+body.theme-independencia .footer-col h3::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 2px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: var(--theme-flag-line);
+}
+
+body.theme-independencia .footer-links a:hover {
+  color: var(--theme-gold);
+}
+
+body.theme-independencia .footer-contact-item {
+  border-color: rgba(25, 184, 255, 0.12);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+body.theme-independencia .footer-contact-item:hover {
+  border-color: rgba(244, 196, 48, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.theme-independencia .footer-bottom {
+  border-top-color: rgba(244, 196, 48, 0.18);
+}
+
+body.theme-independencia .guia-wifi-page {
+  --guide-bg: #FFFFFF;
+  --guide-bg-2: #F4FAFF;
+  --guide-bg-3: #EAF6FF;
+  --guide-panel: rgba(6, 27, 53, 0.86);
+  --guide-panel-strong: rgba(6, 27, 53, 0.94);
+  --guide-panel-soft: rgba(6, 63, 86, 0.6);
+  --guide-border: rgba(25, 184, 255, 0.24);
+  --guide-border-strong: rgba(0, 156, 59, 0.38);
+  --guide-cyan: var(--theme-sky-blue);
+  --guide-cyan-soft: #86DDFF;
+  --guide-blue: var(--theme-brand-blue);
+  --guide-white: #F8FCFF;
+  --guide-text: #DCEEFF;
+  --guide-muted: #A4BBD3;
+  --guide-ink: var(--theme-navy);
+  --guide-body: #4D6379;
+  --guide-heading: #064B8F;
+  --guide-surface: #FFFFFF;
+  --guide-surface-blue: #EEF9FF;
+  --guide-green: var(--theme-green);
+  --guide-red: #F87171;
+  --guide-warning: var(--theme-gold);
+}
+
+body.theme-independencia .guide-header {
+  border-bottom-color: rgba(0, 156, 59, 0.18);
+}
+
+body.theme-independencia .guide-header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--theme-flag-line);
+}
+
+body.theme-independencia .guide-support-link,
+body.theme-independencia .guide-primary-button.support {
+  color: var(--theme-white);
+  background: var(--theme-brand-blue);
+}
+
+body.theme-independencia .guide-support-link:hover,
+body.theme-independencia .guide-primary-button.support:hover {
+  background: var(--theme-green-dark);
+}
+
+body.theme-independencia .guide-primary-button:not(.support) {
+  color: var(--theme-navy);
+  background: var(--theme-cta-special);
+}
+
+body.theme-independencia .guide-nav a:hover,
+body.theme-independencia .guide-footer a:hover {
+  color: var(--theme-green-dark);
+}
+
+@media (max-width: 768px) {
+  body.theme-independencia .tema-section {
+    background-image: linear-gradient(180deg, var(--theme-navy) 0%, var(--theme-deep-teal) 58%, var(--theme-green-dark) 100%);
+  }
+
+  body.theme-independencia .tema-section::before {
+    background-image:
+      linear-gradient(180deg, rgba(6, 27, 53, 0) 48%, var(--theme-navy) 100%),
+      url("../assets/banners/fundoplanos.png");
+  }
+
+  body.theme-independencia .tema-section::after {
+    top: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  body.theme-independencia .hero-copy-card,
+  body.theme-independencia .stats-bar-inner,
+  body.theme-independencia .benefit-card,
+  body.theme-independencia .plano-card,
+  body.theme-independencia .combo-card,
+  body.theme-independencia .linha-fixa-container,
+  body.theme-independencia .temsaude-plan,
+  body.theme-independencia .contrato-card {
+    box-shadow: 0 16px 36px rgba(6, 27, 53, 0.1);
+  }
+
+  body.theme-independencia .footer-col h3::after {
+    width: 36px;
+  }
+}
+
+@media (max-width: 900px) {
+  body.theme-independencia .contato-grid {
+    padding: 40px 15px;
+  }
+}
+
+/* ==========================================================================
+   Campanha Outubro Rosa — tema sazonal temporário.
+   Ativar/desativar em src/theme/siteTheme.js (seasonalCampaign.enabled).
+   Quando desativado, nenhuma destas regras é aplicada e o site volta ao
+   tema padrão da AcessaNet.
+   ========================================================================== */
+
+body.theme-outubro-rosa {
+  --pink-primary: #e91e63;
+  --pink-primary-hover: #c2185b;
+  --pink-secondary: #f06292;
+  --pink-light: #fce4ec;
+  --pink-soft: #fff5f8;
+  --pink-dark: #ad1457;
+  --pink-border: rgba(233, 30, 99, 0.14);
+  --pink-border-strong: rgba(233, 30, 99, 0.3);
+  --pink-card-glow: 0 20px 48px rgba(173, 20, 87, 0.1);
+}
+
+body.theme-outubro-rosa *::selection {
+  background: rgba(233, 30, 99, 0.22);
+  color: var(--pink-dark);
+}
+
+body.theme-outubro-rosa::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--pink-primary), var(--pink-dark));
+}
+
+body.theme-outubro-rosa a:focus-visible,
+body.theme-outubro-rosa button:focus-visible {
+  outline-color: rgba(233, 30, 99, 0.6);
+}
+
+/* Header */
+body.theme-outubro-rosa .header::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pink-primary), var(--pink-secondary));
+  pointer-events: none;
+}
+
+body.theme-outubro-rosa .menu a::after {
+  background: var(--pink-primary);
+}
+
+body.theme-outubro-rosa .menu a:hover,
+body.theme-outubro-rosa .menu a.active {
+  color: var(--pink-dark);
+}
+
+body.theme-outubro-rosa .hamburger:hover {
+  border-color: rgba(233, 30, 99, 0.4);
+  color: var(--pink-dark);
+}
+
+/* Fundos suaves */
+body.theme-outubro-rosa .landing-page,
+body.theme-outubro-rosa .planos-containers {
+  background:
+    radial-gradient(circle at 88% 6%, rgba(233, 30, 99, 0.06), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #fff8fa 48%, #fff0f5 100%);
+}
+
+body.theme-outubro-rosa .hero-background-overlay {
+  background:
+    linear-gradient(90deg, rgba(6, 20, 45, 0.78) 0%, rgba(6, 20, 45, 0.4) 46%, rgba(6, 20, 45, 0.08) 74%),
+    radial-gradient(circle at 80% 18%, rgba(233, 30, 99, 0.18), transparent 32%);
+}
+
+body.theme-outubro-rosa .hero-copy-card {
+  box-shadow:
+    0 32px 70px rgba(3, 10, 24, 0.28),
+    inset 0 3px 0 var(--pink-primary);
+}
+
+/* Botões principais (CTAs de aquisição/contratação) */
+body.theme-outubro-rosa .hero-primary,
+body.theme-outubro-rosa .header-cta,
+body.theme-outubro-rosa .watchtv-btn,
+body.theme-outubro-rosa .btn-temsaude,
+body.theme-outubro-rosa .btn-contratar,
+body.theme-outubro-rosa .linha-fixa-btn--primary,
+body.theme-outubro-rosa .contrato-card a,
+body.theme-outubro-rosa .contato-form button,
+body.theme-outubro-rosa .trabalhe-form button,
+body.theme-outubro-rosa .busca button,
+body.theme-outubro-rosa .form-mundiale button,
+body.theme-outubro-rosa .assinar-pdf-fallback a,
+body.theme-outubro-rosa .assinar-submit-button,
+body.theme-outubro-rosa .btn-combo,
+body.theme-outubro-rosa .login-submit {
+  color: #ffffff;
+  background: var(--pink-primary);
+  box-shadow: 0 14px 30px rgba(233, 30, 99, 0.26);
+}
+
+body.theme-outubro-rosa .hero-primary:hover,
+body.theme-outubro-rosa .header-cta:hover,
+body.theme-outubro-rosa .watchtv-btn:hover,
+body.theme-outubro-rosa .btn-temsaude:hover,
+body.theme-outubro-rosa .btn-contratar:hover,
+body.theme-outubro-rosa .linha-fixa-btn--primary:hover,
+body.theme-outubro-rosa .contrato-card a:hover,
+body.theme-outubro-rosa .contato-form button:hover,
+body.theme-outubro-rosa .trabalhe-form button:hover,
+body.theme-outubro-rosa .busca button:hover,
+body.theme-outubro-rosa .form-mundiale button:hover,
+body.theme-outubro-rosa .assinar-pdf-fallback a:hover,
+body.theme-outubro-rosa .assinar-submit-button:hover,
+body.theme-outubro-rosa .btn-combo:hover,
+body.theme-outubro-rosa .login-submit:hover {
+  background: var(--pink-primary-hover);
+  box-shadow: 0 18px 38px rgba(194, 24, 91, 0.3);
+}
+
+/* Cards — detalhe sutil, sem virar cards rosa inteiros */
+body.theme-outubro-rosa .benefit-card,
+body.theme-outubro-rosa .plano-card,
+body.theme-outubro-rosa .combo-card,
+body.theme-outubro-rosa .linha-fixa-container,
+body.theme-outubro-rosa .app-container,
+body.theme-outubro-rosa .contrato-card,
+body.theme-outubro-rosa .valor-card,
+body.theme-outubro-rosa .beneficio,
+body.theme-outubro-rosa .lgpd-content,
+body.theme-outubro-rosa .card,
+body.theme-outubro-rosa .assinar-card,
+body.theme-outubro-rosa .form-mundiale,
+body.theme-outubro-rosa .temsaude-plan {
+  border-color: var(--pink-border);
+}
+
+body.theme-outubro-rosa .benefit-card:hover,
+body.theme-outubro-rosa .plano-card:hover,
+body.theme-outubro-rosa .combo-card:hover,
+body.theme-outubro-rosa .contrato-card:hover,
+body.theme-outubro-rosa .valor-card:hover,
+body.theme-outubro-rosa .beneficio:hover {
+  border-color: var(--pink-border-strong);
+  box-shadow: var(--pink-card-glow);
+}
+
+body.theme-outubro-rosa .plano-card.destaque {
+  border-color: var(--pink-primary);
+  box-shadow: 0 24px 56px rgba(233, 30, 99, 0.16);
+}
+
+/* Badges e selos */
+body.theme-outubro-rosa .plan-badge,
+body.theme-outubro-rosa .badge,
+body.theme-outubro-rosa .badge-t,
+body.theme-outubro-rosa .combo-badge,
+body.theme-outubro-rosa .combo-paizao-badge {
+  color: #ffffff;
+  background: linear-gradient(90deg, var(--pink-primary) 0%, var(--pink-dark) 100%);
+  box-shadow: 0 12px 26px rgba(233, 30, 99, 0.24);
+}
+
+/* Banner "Planos em destaque" */
+body.theme-outubro-rosa .tema-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(90, 10, 40, 0.5) 0%, rgba(173, 20, 87, 0.22) 48%, transparent 78%),
+    radial-gradient(circle at 80% 18%, rgba(233, 30, 99, 0.18), transparent 28%);
+  pointer-events: none;
+}
+
+body.theme-outubro-rosa .tema-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Páginas internas — linha de destaque discreta no banner superior */
+body.theme-outubro-rosa .planos-hero-container,
+body.theme-outubro-rosa .historia-hero,
+body.theme-outubro-rosa .contato-hero,
+body.theme-outubro-rosa .trabalhe-hero {
+  box-shadow: inset 0 -3px 0 var(--pink-primary);
+}
+
+/* Central do Assinante — apenas detalhes pontuais, sem tematizar faturas,
+   contratos, chamados ou indicadores de status (ONLINE/OFFLINE seguem
+   verde/vermelho normalmente). */
+body.theme-outubro-rosa .cliente-nav-item.is-active {
+  box-shadow: inset 3px 0 0 var(--pink-primary);
+  border-color: rgba(233, 30, 99, 0.3);
+}
+
+body.theme-outubro-rosa .cliente-topbar {
+  border-bottom-color: rgba(233, 30, 99, 0.18);
+}
+
+body.theme-outubro-rosa .login-card {
+  border-color: var(--pink-border-strong);
+  box-shadow: 0 28px 64px rgba(173, 20, 87, 0.14);
+}
+
+@media (max-width: 768px) {
+  body.theme-outubro-rosa .tema-section::after {
+    top: 260px;
+  }
+}

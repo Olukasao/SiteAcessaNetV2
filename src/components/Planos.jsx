@@ -1,80 +1,31 @@
 import "../styles/components-styles/planos.css";
-import logoWatch from "../assets/watchTV.jpg"
-import logoTemSaude from "../assets/temSaude.png"
-import logoGraviola from "../assets/graviola/logo.png"
+import { FaCheckCircle, FaWhatsapp, FaWifi } from "react-icons/fa";
+import planosData from "../data/planosData";
+import BeneficioItem from "./BeneficioItem";
 
-import {
-  FaWifi,
-  FaTv,
-  FaWhatsapp,
-  FaCheckCircle,
-} from "react-icons/fa";
-
-const planos = [
-  {
-    nome: "400 Mega",
-    preco: "79,99",
-    destaque: false,
-    beneficios: [
-      "Internet Fibra Óptica",
-      "Wi-Fi Grátis",
-      "Suporte 24h",
-    ],
-    servicos: [
-      { src: logoGraviola, fundo: true }
-    ]
-  },
-  {
-    nome: "700 MEGA + TV",
-    preco: "149,99",
-    destaque: true,
-    beneficios: [
-      "Internet Fibra Óptica",
-      "Wi-Fi Dual Band",
-      "Serviços inclusos",
-    ],
-    servicos: [
-      { src: logoTemSaude, fundo: false },
-      { src: logoWatch, fundo: false },
-      { src: logoGraviola, fundo: true }
-    ]
-  },
-  {
-    nome: "700 MEGA",
-    preco: "99,99",
-    destaque: false,
-    beneficios: [
-      "Internet Ultra Rápida",
-      "Instalação Grátis",
-      "Suporte 24h",
-    ],
-    servicos: [
-      { src: logoGraviola, fundo: true, nome: "graviola" }
-    ]
-  },
-];
+const planos = planosData;
 
 export default function Planos() {
   return (
-    <section className="planos">
-      <div className="">
+    <section className="planos" id="planos-home">
+      <div className="planos-container">
+        <span className="planos-label">
+          <FaWifi /> Internet residencial
+        </span>
 
-        <h2>Nossos Planos de Internet</h2>
+        <h2>Escolha seu Plano</h2>
         <p className="subtitle">
-          Velocidade, estabilidade e entretenimento completo para sua casa.
+          Planos em destaque com fibra óptica, entretenimento e serviços digitais.
         </p>
 
         <div className="planos-grid">
-          {planos.map((plano, i) => (
-            <div
-              key={i}
-              className={`plano-card ${plano.destaque ? "destaque" : ""
-                }`}
+          {planos.map((plano) => (
+            <article
+              key={plano.nome}
+              className={`plano-card ${plano.destaque ? "destaque" : ""} ${plano.cardClass || ""}`.trim()}
             >
               {plano.destaque && (
-                <div className="badge">
-                  ⭐ MAIS CONTRATADO
-                </div>
+                <span className="plan-badge">MAIS CONTRATADO</span>
               )}
 
               <h3>{plano.nome}</h3>
@@ -86,57 +37,38 @@ export default function Planos() {
               </div>
 
               <ul>
-                {plano.beneficios.map((item, index) => (
-                  <li key={index}>
-                    <FaCheckCircle className="icon-check" />
-                    {item.includes("Watch") && (
-                      <FaTv className="icon-tv" />
-                    )}
-                    {item}
+                {plano.beneficios.map((beneficio) => (
+                  <li key={beneficio}>
+                    <FaCheckCircle className="icon-check" /> <BeneficioItem texto={beneficio} />
                   </li>
                 ))}
               </ul>
 
-              <div style={{ display: "flex", gap: "20px", alignItems: "center", justifyContent: "center", marginBottom: "5px" }}>
-                {plano.servicos.map((item, index) => (
-                  <img
-                    key={index}
-                    src={item.src}
-                    alt=""
-                    style={{
-                      width: 55,
-                      height: 55,
-                      objectFit: "contain",
-                      borderRadius: 12,
-
-                      backgroundColor: item.fundo ? "#4caf50" : "transparent",
-                      border: item.fundo ? "1px solid #4caf50" : "none",
-                      boxShadow: item.fundo ? "0 6px 18px rgba(0,0,0,0.15)" : "none",
-                      transition: "all 0.3s ease",
-
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = "translateY(-6px) scale(1.05)";
-                      e.currentTarget.style.boxShadow = "0 12px 25px rgba(0,0,0,0.25)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = "translateY(0) scale(1)";
-                      e.currentTarget.style.boxShadow = item.fundo
-                        ? "0 6px 18px rgba(0,0,0,0.15)"
-                        : "none";
-                    }}
-                  />
+              <div className="plan-services">
+                {plano.servicos.map((servico) => (
+                  <span
+                    key={servico.nome}
+                    className={servico.fundo ? "service-logo dark" : "service-logo"}
+                  >
+                    <img
+                      src={servico.src}
+                      alt={servico.nome}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </span>
                 ))}
               </div>
+
               <a
-                href={`https://wa.me/5508004445799?text=Olá! Gostaria de contratar o plano de ${plano.nome} por ${plano.preco} `}
+                href={`https://wa.me/5508004445799?text=Olá! Gostaria de contratar o plano de ${plano.nome} por ${plano.preco}`}
                 target="_blank"
+                rel="noreferrer"
                 className="btn-contratar"
               >
-                <FaWhatsapp />
-                Contratar via WhatsApp
+                <FaWhatsapp /> Contratar
               </a>
-            </div>
+            </article>
           ))}
         </div>
       </div>

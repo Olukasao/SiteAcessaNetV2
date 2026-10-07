@@ -9,21 +9,21 @@ export default function BotaoCopa() {
     <button className="botao-copa" type="button" onClick={irParaPlanos}>
       <div className="botao-copa__left">
         <div className="botao-copa__700">700</div>
-        <div className="botao-copa__mega">MEGA</div>
+        <div className="botao-copa__mega">Mbps</div>
       </div>
 
       <div className="botao-copa__middle">
         <div className="botao-copa__watch-row">
           <span className="botao-copa__plus">+</span>
-          <span className="botao-copa__watch">WATCH TV</span>
+          <span className="botao-copa__watch">GLOBOPLAY</span>
         </div>
 
         <div className="botao-copa__desc">
-          CANAIS AO VIVO,
+          COM ANÚNCIO
           <br />
-          FILMES, SÉRIES
+          PADRÃO
           <br />
-          E MUITO MAIS!
+          + APP LIVRO
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default function BotaoCopa() {
 
         <div className="botao-copa__price-row">
           <span className="botao-copa__currency">R$</span>
-          <span className="botao-copa__price-main">149</span>
+          <span className="botao-copa__price-main">114</span>
 
           <div className="botao-copa__price-side">
             <span className="botao-copa__cents">,99</span>

@@ -1,0 +1,187 @@
+/* ---------- Promessa de pagamento: modal e card de status ---------- */
+
+.promise-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 27, 53, 0.55);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.promise-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--cliente-white);
+  border-radius: 20px;
+  border-top: 5px solid var(--cliente-amber);
+  padding: 32px 28px 26px;
+  box-shadow: var(--cliente-shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.promise-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--cliente-surface);
+  color: var(--cliente-amber);
+}
+
+.promise-modal-icon--success {
+  color: var(--cliente-green);
+}
+
+.promise-modal-icon--warning {
+  color: var(--cliente-red);
+}
+
+.promise-modal h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--cliente-navy);
+}
+
+.promise-modal p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--cliente-muted);
+  line-height: 1.5;
+}
+
+.promise-modal-disclaimer {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--cliente-surface);
+  font-size: 0.85rem !important;
+  text-align: left;
+}
+
+.promise-modal-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--cliente-surface);
+  text-align: left;
+}
+
+.promise-modal-details div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.promise-modal-details dt {
+  color: var(--cliente-muted);
+  font-size: 0.82rem;
+}
+
+.promise-modal-details dd {
+  margin: 0;
+  color: var(--cliente-ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.promise-modal-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.promise-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cliente-muted);
+  cursor: pointer;
+}
+
+.promise-modal-close:hover,
+.promise-modal-close:focus-visible {
+  background: rgba(16, 36, 61, 0.08);
+  color: var(--cliente-ink);
+}
+
+@media (max-width: 480px) {
+  .promise-modal {
+    padding: 28px 20px 22px;
+  }
+}
+
+/* Botão "Fazer promessa de pagamento" dentro do card da fatura -- mesma base de .cliente-invoice-actions (clienteArea.css), só com um acento âmbar pra se destacar como ação financeira. */
+.cliente-invoice-promise-action {
+  grid-column: 1 / -1;
+  border-color: rgba(244, 183, 64, 0.5) !important;
+  color: #8a5200 !important;
+}
+
+.cliente-invoice-promise-action:hover {
+  background: rgba(244, 183, 64, 0.1) !important;
+  border-color: var(--cliente-amber) !important;
+}
+
+/* Card "Promessa de pagamento ativa" no topo da aba Faturas */
+.promise-status-card {
+  border-left: 4px solid var(--cliente-amber);
+}
+
+.promise-status-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 10px 0 0;
+}
+
+.promise-status-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.promise-status-details dt {
+  color: var(--cliente-muted);
+  font-size: 0.78rem;
+}
+
+.promise-status-details dd {
+  margin: 0;
+  color: var(--cliente-ink);
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+
+.promise-status-note {
+  margin: 12px 0 0;
+  color: var(--cliente-amber);
+  font-size: 0.85rem;
+  font-weight: 700;
+}

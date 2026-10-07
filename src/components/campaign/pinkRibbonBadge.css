@@ -1,0 +1,20 @@
+.pink-ribbon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  color: #ad1457;
+  background: #fce4ec;
+  border: 1px solid rgba(233, 30, 99, 0.28);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pink-ribbon-badge svg {
+  flex: 0 0 auto;
+  color: #e91e63;
+}

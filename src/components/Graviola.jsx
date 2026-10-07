@@ -1,6 +1,6 @@
 import "../styles/components-styles/graviola.css"
 import logo from "../assets/graviola/logo.png"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import contaOutraVezLogo from "../assets/graviola/contaOutraVez.png"
 import clubeCinemaLogo from "../assets/graviola/clubeCinema.png"
 import maquinaContosLogo from "../assets/graviola/maquinaContos.png"
@@ -13,44 +13,98 @@ const apps = [
         id: 1,
         name: "Conta Outra Vez",
         logo: contaOutraVezLogo,
-        link: "https://contaoutravez.com.br/"
+        link: "https://contaoutravez.com.br/",
+        width: 216,
+        height: 169,
     },
     {
         id: 2,
         name: "Clube de Cinema",
         logo: clubeCinemaLogo,
-        link: "#"
+        link: "#",
+        width: 182,
+        height: 139,
     },
     {
         id: 3,
         name: "Máquina de Contos",
         logo: maquinaContosLogo,
-        link: "https://www.maquinadecontos.com.br/"
+        link: "https://www.maquinadecontos.com.br/",
+        width: 184,
+        height: 190,
     }
 ]
 
+function useNearViewport(rootMargin = "700px") {
+    const ref = useRef(null)
+    const [isNearViewport, setIsNearViewport] = useState(false)
+
+    useEffect(() => {
+        if (isNearViewport) return undefined
+
+        const element = ref.current
+        if (!element) return undefined
+
+        if (!("IntersectionObserver" in window)) {
+            const timeoutId = window.setTimeout(() => setIsNearViewport(true), 0)
+            return () => window.clearTimeout(timeoutId)
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsNearViewport(true)
+                    observer.disconnect()
+                }
+            },
+            { rootMargin }
+        )
+
+        observer.observe(element)
+
+        return () => observer.disconnect()
+    }, [isNearViewport, rootMargin])
+
+    return [ref, isNearViewport]
+}
+
 export default function Graviola() {
+    const [sectionRef, shouldLoadBooks] = useNearViewport()
     const [books, setBooks] = useState([])
 
     useEffect(() => {
+        if (!shouldLoadBooks) return undefined
+
+        let isMounted = true
+
         async function loadBooks() {
-            const loaders = Object.values(booksModules)
+            const entries = Object.entries(booksModules)
 
             const imgs = await Promise.all(
-                loaders.map(async (loader) => {
+                entries.map(async ([path, loader]) => {
                     const mod = await loader()
-                    return mod.default
+                    return { path, src: mod.default }
                 })
             )
 
-            setBooks(imgs)
+            if (isMounted) {
+                setBooks(
+                    imgs
+                        .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }))
+                        .map((item) => item.src)
+                )
+            }
         }
 
         loadBooks()
-    }, [])
+
+        return () => {
+            isMounted = false
+        }
+    }, [shouldLoadBooks])
 
     return (
-        <section className="graviola-hero">
+        <section className="graviola-hero" ref={sectionRef}>
 
             <div className="graviola-hero-wrap">
 
@@ -62,14 +116,21 @@ export default function Graviola() {
                         conteúdos exclusivos.
                     </p>
 
-                    <a href="https://www.gravioladigital.com.br/" target="_blank" className="btn-graviola">
+                    <a href="https://www.gravioladigital.com.br/" target="_blank" rel="noopener noreferrer" className="btn-graviola">
                         Acessar plataforma
                     </a>
                 </div>
 
                 <div className="graviola-hero-right">
                     <div className="graviola-hero-box">
-                        <img src={logo} alt="Graviola" />
+                        <img
+                            src={logo}
+                            alt="Graviola"
+                            width="222"
+                            height="256"
+                            loading="lazy"
+                            decoding="async"
+                        />
                     </div>
                 </div>
 
@@ -85,9 +146,17 @@ export default function Graviola() {
                             href={app.link}
                             key={app.id}
                             target="_blank"
+                            rel="noopener noreferrer"
                             className="logo-card"
                         >
-                            <img src={app.logo} alt={app.name} />
+                            <img
+                                src={app.logo}
+                                alt={app.name}
+                                width={app.width}
+                                height={app.height}
+                                loading="lazy"
+                                decoding="async"
+                            />
                         </a>
                     ))}
                 </div>
@@ -100,12 +169,23 @@ export default function Graviola() {
                 </div>
 
                 <div className="graviola-library">
-                    {books.length === 0 ? (
+                    {!shouldLoadBooks ? (
+                        Array.from({ length: 6 }).map((_, index) => (
+                            <div className="book book--placeholder" key={index} aria-hidden="true" />
+                        ))
+                    ) : books.length === 0 ? (
                         <p>Carregando livros...</p>
                     ) : (
-                        books.map((img, index) => (
+                        books.map((img) => (
                             <div className="book" key={img}>
-                                <img src={img} loading="lazy" alt="Livro" />
+                                <img
+                                    src={img}
+                                    width="160"
+                                    height="220"
+                                    loading="lazy"
+                                    decoding="async"
+                                    alt="Livro"
+                                />
                             </div>
                         ))
                     )}

@@ -1,0 +1,295 @@
+/* ---------- Avisos da Central: banner, card, modal ---------- */
+
+.central-notice-banner-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px 0;
+}
+
+.central-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--cliente-border);
+  background: var(--cliente-surface);
+  color: var(--cliente-ink);
+}
+
+.central-notice-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.central-notice-banner-copy strong {
+  font-size: 0.92rem;
+}
+
+.central-notice-banner-copy span {
+  font-size: 0.85rem;
+  color: var(--cliente-muted);
+}
+
+.central-notice-banner-thumb {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.central-notice-banner-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cliente-muted);
+  cursor: pointer;
+}
+
+.central-notice-banner-close:hover,
+.central-notice-banner-close:focus-visible {
+  background: rgba(16, 36, 61, 0.08);
+  color: var(--cliente-ink);
+}
+
+/* Tons por tipo -- so a borda esquerda e o icone mudam de cor, mantendo o resto neutro (nada de exagerar nas cores). */
+.central-notice-banner.tone-blue,
+.central-notice-card.tone-blue {
+  border-left: 4px solid var(--cliente-blue);
+}
+.central-notice-banner.tone-amber,
+.central-notice-card.tone-amber {
+  border-left: 4px solid var(--cliente-amber);
+}
+.central-notice-banner.tone-red,
+.central-notice-card.tone-red {
+  border-left: 4px solid var(--cliente-red);
+}
+.central-notice-banner.tone-green,
+.central-notice-card.tone-green {
+  border-left: 4px solid var(--cliente-green);
+}
+.central-notice-banner.tone-navy,
+.central-notice-card.tone-navy {
+  border-left: 4px solid var(--cliente-navy-2);
+}
+.central-notice-banner.tone-orange,
+.central-notice-card.tone-orange {
+  border-left: 4px solid var(--cliente-orange);
+}
+
+.central-notice-banner.tone-blue svg,
+.central-notice-card.tone-blue .central-notice-card-icon {
+  color: var(--cliente-blue);
+}
+.central-notice-banner.tone-amber svg,
+.central-notice-card.tone-amber .central-notice-card-icon {
+  color: var(--cliente-amber);
+}
+.central-notice-banner.tone-red svg,
+.central-notice-card.tone-red .central-notice-card-icon {
+  color: var(--cliente-red);
+}
+.central-notice-banner.tone-green svg,
+.central-notice-card.tone-green .central-notice-card-icon {
+  color: var(--cliente-green);
+}
+.central-notice-banner.tone-navy svg,
+.central-notice-card.tone-navy .central-notice-card-icon {
+  color: var(--cliente-navy-2);
+}
+.central-notice-banner.tone-orange svg,
+.central-notice-card.tone-orange .central-notice-card-icon {
+  color: var(--cliente-orange);
+}
+
+/* Card (home) */
+.central-notice-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cliente-white);
+  border: 1px solid var(--cliente-border);
+  border-radius: 20px;
+  padding: 18px 20px;
+  box-shadow: 0 14px 32px rgba(6, 27, 53, 0.05);
+  overflow: hidden;
+}
+
+.central-notice-card-image {
+  width: calc(100% + 40px);
+  margin: -18px -20px 14px;
+  max-height: 160px;
+  object-fit: cover;
+}
+
+.central-notice-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.central-notice-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 12px;
+  background: var(--cliente-surface);
+}
+
+.central-notice-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.central-notice-card-copy strong {
+  font-size: 0.95rem;
+  color: var(--cliente-ink);
+}
+
+.central-notice-card-copy p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--cliente-muted);
+  line-height: 1.4;
+}
+
+/* Modal */
+.central-notice-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 27, 53, 0.55);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.central-notice-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--cliente-white);
+  border-radius: 20px;
+  border-top: 5px solid var(--cliente-blue);
+  padding: 32px 28px 26px;
+  box-shadow: var(--cliente-shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.central-notice-modal.tone-blue {
+  border-top-color: var(--cliente-blue);
+}
+.central-notice-modal.tone-amber {
+  border-top-color: var(--cliente-amber);
+}
+.central-notice-modal.tone-red {
+  border-top-color: var(--cliente-red);
+}
+.central-notice-modal.tone-green {
+  border-top-color: var(--cliente-green);
+}
+.central-notice-modal.tone-navy {
+  border-top-color: var(--cliente-navy-2);
+}
+.central-notice-modal.tone-orange {
+  border-top-color: var(--cliente-orange);
+}
+
+.central-notice-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--cliente-surface);
+  color: var(--cliente-navy);
+}
+
+.central-notice-modal-image {
+  width: calc(100% + 56px);
+  margin: -32px -28px 4px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.central-notice-modal h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--cliente-navy);
+}
+
+.central-notice-modal p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--cliente-muted);
+  line-height: 1.5;
+}
+
+.central-notice-modal-confirm {
+  margin-top: 8px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  color: var(--cliente-white);
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.central-notice-modal-confirm:hover,
+.central-notice-modal-confirm:focus-visible {
+  filter: brightness(1.05);
+}
+
+.central-notice-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cliente-muted);
+  cursor: pointer;
+}
+
+.central-notice-modal-close:hover,
+.central-notice-modal-close:focus-visible {
+  background: rgba(16, 36, 61, 0.08);
+  color: var(--cliente-ink);
+}
+
+@media (max-width: 480px) {
+  .central-notice-modal {
+    padding: 28px 20px 22px;
+  }
+}

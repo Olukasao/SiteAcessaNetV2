@@ -1,11 +1,11 @@
 .carousel {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 1;
-  max-height: 760px;
-  min-height: 420px;
+  aspect-ratio: 16 / 9;
+  max-height: 820px;
+  min-height: 480px;
   overflow: hidden;
-  background: #063d1f;
+  background: #081833;
   border-radius: 0 0 42px 42px;
 }
 
@@ -33,12 +33,6 @@
   z-index: 1;
 }
 
-.botao-assine-wrapper {
-  position: absolute;
-  right: clamp(60px, 6vw, 120px);
-  bottom: clamp(45px, 5.5vw, 90px);
-  z-index: 50;
-}
 /* OVERLAY */
 
 .overlay {
@@ -78,16 +72,9 @@
   object-position: center;
 }
 
-.botao-copa-wrapper {
-  position: absolute;
-  left: 70px;
-  bottom: 90px;
-  z-index: 5;
-}
-
 .carousel-btn {
   background: white;
-  color: #1B3C88;
+  color: #081833;
   padding: clamp(11px, 1vw, 14px) clamp(20px, 2vw, 28px);
   border-radius: 30px;
   text-decoration: none;
@@ -122,9 +109,6 @@
 
   cursor: pointer;
   z-index: 10;
-
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
 
@@ -184,7 +168,7 @@
 
 @media (max-width: 600px) {
   .carousel {
-    height: clamp(170px, 52vw, 260px);
+    height: clamp(220px, 68vw, 340px);
     min-height: 0;
     max-height: none;
     aspect-ratio: auto;
@@ -193,13 +177,6 @@
   .slide img {
     object-fit: cover;
     object-position: center;
-  }
-
-  .botao-assine-wrapper {
-    right: 50%;
-    bottom: clamp(34px, 11vw, 46px);
-    transform: translateX(50%);
-    max-width: calc(100vw - 32px);
   }
 
   .overlay {

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8" />
@@ -9,15 +9,18 @@
   <style>
     html {
       scroll-behavior: smooth;
-      cursor: none;
+      scroll-padding-top: 96px;
     }
 
-    a,
-    button, span,div {
-      cursor: none;
+    html,
+    body {
+      overflow-x: hidden;
     }
 
-    * {
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
       margin: 0%;
       padding: 0%;
     }
@@ -27,6 +30,23 @@
       font-weight: 400;
       font-size: 16px;
       color: #1c1c1c;
+      zoom: 0.9;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* zoom: 0.9 encolhe o site inteiro 10% -- inclusive área de toque dos
+       botões/links e o tamanho efetivo de inputs. Em celular isso piora
+       usabilidade sem ganho nenhum (o motivo original era caber mais
+       conteúdo em telas grandes); por isso fica neutralizado abaixo de
+       768px, igual já era feito só pra Central do Assinante (clienteArea.css). */
+    @media (max-width: 768px) {
+      body {
+        zoom: 1;
+      }
     }
 
     /* SCROLLBAR */
@@ -40,23 +60,53 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg,
-          #F5B700,
-          #F5B700);
+      background: #020617;
       border-radius: 10px;
     }
 
 
     ::-webkit-scrollbar-thumb:hover {
-      background: #ffffff;
+      background: #111827;
     }
 
     ::selection {
-      background: #ffffff;
-      color: white;
+      background: #7dd3fc;
+      color: #081833;
+    }
+
+    @supports (content-visibility: auto) {
+      .planos,
+      .linha-fixa-section,
+      .watchtv,
+      .temsaude-info,
+      .temsaude-plans-section,
+      .graviola-hero,
+      .app-provedor,
+      .tema-section,
+      .corp {
+        content-visibility: auto;
+        contain-intrinsic-size: 820px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 
 <body>

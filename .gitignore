@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deploy/backup artifacts (binarios grandes, gerados localmente, nao sao codigo-fonte)
+/backups/
+/deploy/
+/acessanet-central-deploy/
+/acessanet-central-deploy.zip
+/tmp/
+/.kilo/

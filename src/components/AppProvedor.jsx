@@ -2,7 +2,6 @@ import "../styles/components-styles/appProvedor.css";
 import apple from "../assets/apple.png"
 import google from "../assets/google-play.png"
 
-import { motion } from "framer-motion";
 import logoAppProvedor from "../assets/AppProvedor.jpg"
 import {
   FaMobileAlt,
@@ -20,26 +19,21 @@ export default function AppProvedor() {
       <div className="app-container">
 
         {/* IMAGEM */}
-        <motion.div
-          className="app-image"
-          initial={{ opacity: 0, x: -80 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <img src={logoAppProvedor} />
-        </motion.div>
+        <div className="app-image">
+          <img
+            src={logoAppProvedor}
+            alt="Aplicativo Meu App Provedor"
+            width="521"
+            height="1024"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
 
         {/* TEXTO */}
-        <motion.div
-          className="app-info"
-          initial={{ opacity: 0, x: 80 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
+        <div className="app-info">
 
-          <span className="badge">
+          <span className="app-badge">
             <FaMobileAlt /> APP DO CLIENTE
           </span>
 
@@ -63,7 +57,14 @@ export default function AppProvedor() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={google} alt="Google Play Store" />
+              <img
+                src={google}
+                alt="Google Play Store"
+                width="170"
+                height="50"
+                loading="lazy"
+                decoding="async"
+              />
             </a>
 
             <a
@@ -71,11 +72,18 @@ export default function AppProvedor() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={apple} height ="200"alt="Apple App Store" />
+              <img
+                src={apple}
+                alt="Apple App Store"
+                width="169"
+                height="50"
+                loading="lazy"
+                decoding="async"
+              />
             </a>
           </div>
 
-        </motion.div>
+        </div>
 
       </div>
     </section>

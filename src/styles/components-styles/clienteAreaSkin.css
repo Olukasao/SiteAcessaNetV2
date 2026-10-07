@@ -1,0 +1,419 @@
+/* ==========================================================================
+   Área do Cliente — Skin premium (Internet, Faturas, Plano, Atendimento,
+   Chamados, Perfil e componentes compartilhados).
+
+   Este arquivo NÃO redefine layout (grid/flex/tamanhos) das classes já
+   existentes em clienteArea.css — só refina cor, raio, sombra e tipografia
+   para seguir o mesmo padrão visual aplicado na Home (clienteHome.css).
+   Carregado depois de clienteArea.css, então essas propriedades vencem por
+   ordem de cascata sem precisar de !important.
+   ========================================================================== */
+
+/* ---------- Sidebar / navegação ---------- */
+
+.cliente-sidebar {
+  /* position vem de clienteArea.css (fixed/off-canvas conforme breakpoint) — não sobrescrever aqui. */
+  overflow: hidden;
+  padding: 24px 14px;
+}
+
+.cliente-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(520px 320px at 100% 0%, rgba(25, 184, 255, 0.16), transparent 60%);
+  pointer-events: none;
+}
+
+.cliente-sidebar-head,
+.cliente-nav,
+.cliente-sidebar-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.cliente-sidebar-head {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cliente-nav {
+  gap: 4px;
+}
+
+.cliente-nav-item {
+  border-radius: 12px;
+  transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.cliente-nav-item svg {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease;
+}
+
+.cliente-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(1px);
+}
+
+.cliente-nav-item.is-active {
+  color: #ffffff;
+  background: rgba(25, 184, 255, 0.16);
+  border-color: transparent;
+  box-shadow: none;
+  font-weight: 700;
+}
+
+.cliente-nav-item.is-active svg {
+  color: var(--cliente-cyan);
+  background: rgba(25, 184, 255, 0.2);
+}
+
+/* A navegação inferior (mobile) usa ícone simples, sem o chip do menu lateral. */
+.cliente-nav-item.is-compact svg {
+  width: auto;
+  height: auto;
+  padding: 0;
+  background: transparent;
+}
+
+.cliente-sidebar-footer {
+  padding-top: 16px;
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.cliente-sidebar-footer button,
+.cliente-danger-action {
+  border-radius: 12px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.cliente-sidebar-footer button:hover,
+.cliente-danger-action:hover {
+  transform: translateY(-1px);
+}
+
+/* ---------- Topbar ---------- */
+
+.cliente-icon-button {
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(6, 27, 53, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cliente-icon-button:hover {
+  transform: translateY(-1px);
+  background: var(--cliente-surface-2);
+}
+
+.cliente-contract-select,
+.cliente-contract-chip {
+  border-radius: 999px;
+}
+
+.cliente-page-toolbar h2 {
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Cards genéricos (.cliente-panel) ---------- */
+
+.cliente-panel {
+  border-radius: 20px;
+  box-shadow: 0 14px 32px rgba(6, 27, 53, 0.05);
+}
+
+.cliente-panel-strong {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--cliente-navy) 0%, var(--cliente-navy-2) 55%, #0c3f63 100%);
+  box-shadow: 0 20px 44px rgba(6, 27, 53, 0.2);
+}
+
+.cliente-panel-strong::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 100% at 100% 0%, rgba(25, 184, 255, 0.22), transparent 55%);
+  pointer-events: none;
+}
+
+.cliente-panel-strong > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cliente-hero-panel {
+  border-radius: 20px;
+}
+
+.cliente-info-list div {
+  border-bottom-color: rgba(16, 36, 61, 0.08);
+}
+
+.cliente-option-card,
+.cliente-contract-card {
+  border-radius: 16px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cliente-option-card:hover,
+.cliente-contract-card:hover,
+.cliente-contract-card.is-selected {
+  background: var(--cliente-surface-2);
+  box-shadow: 0 14px 28px rgba(6, 27, 53, 0.08);
+}
+
+/* ---------- Botões ---------- */
+
+.cliente-primary-action {
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  box-shadow: 0 12px 24px rgba(0, 149, 246, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cliente-primary-action:hover {
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  box-shadow: 0 16px 30px rgba(0, 149, 246, 0.36);
+}
+
+.cliente-primary-action:active {
+  transform: scale(0.98);
+}
+
+.cliente-soft-action {
+  border: none;
+  border-radius: 14px;
+  background: var(--cliente-surface-2);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.cliente-soft-action:hover {
+  color: var(--cliente-navy-2);
+  background: #dcedf8;
+}
+
+.cliente-danger-action {
+  border-radius: 14px;
+}
+
+/* ---------- Avisos (InlineNotice) ---------- */
+
+.cliente-notice {
+  border-left-width: 3px;
+  border-radius: 16px;
+  background: rgba(0, 149, 246, 0.05);
+  box-shadow: none;
+}
+
+.cliente-notice.tone-success {
+  background: rgba(0, 156, 59, 0.06);
+}
+
+.cliente-notice.tone-warning {
+  background: rgba(244, 183, 64, 0.08);
+}
+
+.cliente-notice.tone-danger {
+  background: rgba(209, 67, 67, 0.06);
+}
+
+/* ---------- Agendamento / apontamentos ---------- */
+
+.cliente-appointment-notice {
+  border-radius: 14px;
+}
+
+.cliente-appointment-icon {
+  border-radius: 10px;
+}
+
+/* ---------- Loading ---------- */
+
+.cliente-loading-inline {
+  color: var(--cliente-muted);
+}
+
+/* ---------- Chat de atendimento ---------- */
+
+.cliente-chat-panel {
+  border-radius: 20px;
+}
+
+.cliente-message {
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(6, 27, 53, 0.05);
+}
+
+.cliente-message-customer {
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  border-color: transparent;
+}
+
+.cliente-chat-composer {
+  border-radius: 0 0 20px 20px;
+}
+
+.cliente-chat-composer input {
+  border-radius: 999px;
+  background: var(--cliente-surface-2);
+  border-color: transparent;
+}
+
+.cliente-chat-composer button {
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+}
+
+.cliente-chat-composer button:hover {
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  opacity: 0.92;
+}
+
+/* ---------- Triagem / atendimento guiado ---------- */
+
+.cliente-attendance-stepper,
+.cliente-attendance-flow-card,
+.cliente-attendance-side-card {
+  border-radius: 20px;
+  border-color: var(--cliente-border);
+  box-shadow: 0 14px 32px rgba(6, 27, 53, 0.05);
+}
+
+.cliente-attendance-step-number {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cliente-attendance-step.is-active .cliente-attendance-step-number,
+.cliente-attendance-step.is-done .cliente-attendance-step-number {
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+}
+
+.cliente-issue-card {
+  border-radius: 16px;
+  border-color: var(--cliente-border);
+}
+
+.cliente-issue-card:hover,
+.cliente-issue-card:focus-visible,
+.cliente-issue-card.is-selected {
+  background: var(--cliente-surface-2);
+  box-shadow: 0 10px 24px rgba(6, 27, 53, 0.07);
+}
+
+.cliente-issue-icon {
+  border-radius: 12px;
+}
+
+.cliente-selected-issue {
+  border-radius: 16px;
+  background: var(--cliente-surface-2);
+}
+
+.cliente-answer-card {
+  border-radius: 14px;
+  border-color: var(--cliente-border);
+}
+
+.cliente-answer-card:hover {
+  background: var(--cliente-surface-2);
+}
+
+.cliente-answer-card.is-selected {
+  color: var(--cliente-navy-2);
+  border-color: rgba(0, 149, 246, 0.45);
+  background: rgba(0, 149, 246, 0.1);
+}
+
+.cliente-attendance-text-form textarea,
+.cliente-attendance-text-form input,
+.cliente-offline-description {
+  border-radius: 14px;
+  background: var(--cliente-surface-2);
+  border-color: transparent;
+}
+
+.cliente-tip-head span {
+  border-radius: 12px;
+}
+
+/* ---------- Faturas ---------- */
+
+.cliente-invoice-tabs {
+  border-radius: 16px;
+}
+
+.cliente-invoice-tabs button {
+  border-radius: 12px;
+}
+
+.cliente-invoice-tabs button.is-active {
+  box-shadow: 0 8px 18px rgba(6, 27, 53, 0.08);
+}
+
+.cliente-invoice-card {
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(6, 27, 53, 0.05);
+}
+
+.cliente-invoice-status {
+  font-weight: 700;
+}
+
+.cliente-invoice-actions a,
+.cliente-invoice-actions button {
+  border: none;
+  border-radius: 12px;
+  background: var(--cliente-surface-2);
+  color: var(--cliente-navy-2);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.cliente-invoice-actions a:hover,
+.cliente-invoice-actions button:hover {
+  color: var(--cliente-navy-2);
+  background: #dcedf8;
+}
+
+.cliente-invoice-empty {
+  border-radius: 16px;
+}
+
+/* ---------- Meu plano — upgrade ---------- */
+
+.plano-upgrade-card {
+  grid-column: 1 / -1;
+}
+
+.plano-upgrade-card h3 {
+  margin: 8px 0 4px;
+  color: var(--cliente-navy);
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+}
+
+.plano-upgrade-card p {
+  max-width: 520px;
+  margin: 0 0 16px;
+  color: var(--cliente-muted);
+  line-height: 1.5;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 420px) {
+  .cliente-panel,
+  .cliente-panel-strong,
+  .cliente-attendance-flow-card,
+  .cliente-attendance-side-card,
+  .cliente-invoice-card {
+    border-radius: 18px;
+  }
+}

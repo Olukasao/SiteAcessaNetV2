@@ -20,6 +20,25 @@
     max-width: 480px;
 }
 
+.temsaude-campaign-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 6px 13px;
+    color: #ffd9e8;
+    background: rgba(233, 30, 99, 0.18);
+    border: 1px solid rgba(233, 30, 99, 0.4);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.temsaude-campaign-kicker svg {
+    color: #f48fb1;
+    flex: 0 0 auto;
+}
+
 .temsaude-info-left h2 {
     font-size: 38px;
     margin-bottom: 10px;
@@ -40,7 +59,7 @@
     color: white;
     text-decoration: none;
     font-weight: 500;
-    transition: 0.3s;
+    transition: transform 0.22s ease, background 0.22s ease;
 }
 
 .btn-temsaude:hover {
@@ -67,7 +86,8 @@
     justify-content: center;
 
     box-shadow: 0 20px 60px rgba(242, 97, 68, 0.25);
-    transition: 0.3s;
+    transition: transform 0.22s ease;
+    contain: layout paint;
 }
 
 .temsaude-box img {
@@ -116,11 +136,10 @@
     padding: 28px;
     border-radius: 16px;
 
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
-
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
+    transition: transform 0.22s ease, border-color 0.22s ease;
+    contain: layout paint;
 }
 
 .temsaude-plan:hover {
@@ -130,11 +149,10 @@
 
 /* DESTAQUE */
 .temsaude-plan.highlight {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid #f26144;
     color: white;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
+    transition: transform 0.22s ease, border-color 0.22s ease;
     text-align: center;
     display: flex;
     align-items: center;
@@ -192,12 +210,11 @@
     padding: 12px;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
     background: #020617;
     color: white;
     font-weight: 500;
     cursor: pointer;
-    transition: 0.3s;
+    transition: transform 0.22s ease, background 0.22s ease;
 }
 
 .temsaude-plan button:hover {
@@ -210,6 +227,17 @@
 ========================= */
 
 @media (max-width: 900px) {
+    /* Mesmo problema das outras seções da home: padding vertical de desktop
+       (120px/100px) sobrevivia ao colapso pra 1 coluna, inflando o scroll
+       mobile sem necessidade. */
+    .temsaude-info {
+        padding: 64px 18px 48px;
+    }
+
+    .temsaude-plans-section {
+        padding: 56px 18px 64px;
+    }
+
     .temsaude-info-wrap {
         flex-direction: column;
         text-align: left;

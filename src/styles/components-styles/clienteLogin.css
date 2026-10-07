@@ -1,0 +1,306 @@
+/* ==========================================================================
+   Área do Cliente — Login
+   Tela única e centralizada, sem bloco de cor lateral. Usa os tokens globais
+   --cliente-* (promovidos para :root em clienteArea.css).
+   ========================================================================== */
+
+.login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: clamp(20px, 5vw, 48px);
+  color: var(--cliente-ink);
+  background:
+    radial-gradient(1100px 600px at 12% -10%, rgba(25, 184, 255, 0.12), transparent 58%),
+    radial-gradient(900px 560px at 105% 110%, rgba(0, 149, 246, 0.08), transparent 55%),
+    var(--cliente-surface);
+}
+
+.login-card {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(28px, 5vw, 40px) clamp(24px, 5vw, 34px);
+  border: 1px solid var(--cliente-border);
+  border-radius: 24px;
+  background: var(--cliente-white);
+  box-shadow: 0 28px 64px rgba(6, 27, 53, 0.1);
+  animation: login-fade-in 0.4s ease both;
+}
+
+@keyframes login-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-logo {
+  display: block;
+  width: min(112px, 34vw);
+}
+
+.login-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.login-campaign-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -6px;
+  padding: 5px 12px;
+  color: #ad1457;
+  background: #fce4ec;
+  border: 1px solid rgba(233, 30, 99, 0.28);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.login-campaign-chip svg {
+  color: #e91e63;
+  flex: 0 0 auto;
+}
+
+.login-head {
+  text-align: center;
+}
+
+.login-head h1 {
+  margin: 0;
+  color: var(--cliente-navy);
+  font-size: clamp(1.4rem, 3vw, 1.7rem);
+  letter-spacing: -0.01em;
+}
+
+.login-head p {
+  max-width: 320px;
+  margin: 8px auto 0;
+  color: var(--cliente-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.login-form label {
+  color: var(--cliente-navy);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.login-form input {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--cliente-border-strong);
+  border-radius: 14px;
+  color: var(--cliente-ink);
+  background: var(--cliente-surface-2);
+  font-size: 1rem;
+  outline: 0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.login-form input:focus {
+  border-color: rgba(0, 149, 246, 0.55);
+  background: var(--cliente-white);
+  box-shadow: 0 0 0 4px rgba(0, 149, 246, 0.12);
+}
+
+.login-error {
+  margin: 0;
+  color: var(--cliente-red);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.login-hint {
+  margin: -2px 0 0;
+  color: var(--cliente-muted);
+  font-size: 0.8rem;
+}
+
+.login-password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-field input {
+  padding-right: 46px;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cliente-muted);
+}
+
+.login-password-toggle:hover {
+  color: var(--cliente-navy-2);
+  background: var(--cliente-surface-2);
+}
+
+.login-cpf-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--cliente-surface-2);
+}
+
+.login-cpf-chip span {
+  color: var(--cliente-navy);
+  font-weight: 700;
+}
+
+.login-cpf-chip button {
+  border: none;
+  background: transparent;
+  color: var(--cliente-blue);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.login-cpf-chip button:hover {
+  color: var(--cliente-navy-2);
+}
+
+.login-submit {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 6px;
+  font-size: 0.98rem;
+}
+
+.login-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--cliente-muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.login-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cliente-muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.login-back:hover {
+  color: var(--cliente-navy-2);
+}
+
+.login-link-forgot {
+  align-self: center;
+  margin-top: 4px;
+  border: none;
+  background: transparent;
+  color: var(--cliente-blue);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-link-forgot:hover {
+  color: var(--cliente-navy-2);
+}
+
+.login-link-forgot:disabled {
+  color: var(--cliente-muted);
+  cursor: not-allowed;
+}
+
+.login-otp-input {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.login-otp-input input {
+  width: 100%;
+  min-height: 54px;
+  padding: 0;
+  border: 1px solid var(--cliente-border-strong);
+  border-radius: 12px;
+  color: var(--cliente-navy);
+  background: var(--cliente-surface-2);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  outline: 0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.login-otp-input input:focus {
+  border-color: rgba(0, 149, 246, 0.55);
+  background: var(--cliente-white);
+  box-shadow: 0 0 0 4px rgba(0, 149, 246, 0.12);
+}
+
+.login-success {
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.login-success-icon {
+  color: var(--cliente-green, #1aa054);
+}
+
+.login-success p {
+  margin: 0;
+  color: var(--cliente-navy);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.login-loading {
+  gap: 16px;
+}
+
+.login-loading-logo {
+  width: min(120px, 40vw);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card {
+    animation: none;
+  }
+}

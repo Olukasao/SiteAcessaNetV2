@@ -1,0 +1,45 @@
+# NAO esta ativo em producao: o deploy atual roda em Fastify/Node (Hostinger
+# "Node.js App"), que nunca le .htaccess -- so Apache/LiteSpeed leem. A
+# estrategia de cache abaixo (assets com hash = imutavel, index.html = sempre
+# revalidar) foi reimplementada diretamente no app (server/src/app.ts,
+# fastifyStatic.setHeaders) e e essa versao que de fato vale em producao.
+# Mantido aqui so por retrocompatibilidade (caso a hospedagem volte a ser
+# Apache puro algum dia) -- NAO e onde mexer pra mudar cache ou headers.
+Options -MultiViews
+
+<IfModule mod_headers.c>
+  SetEnvIf Request_URI "^/cliente(/|$)" acessanet_noindex_route=1
+  Header set X-Robots-Tag "noindex, nofollow" env=acessanet_noindex_route
+
+  # Assets com hash de conteudo no nome (gerados pelo build do Vite, ex.:
+  # index-BM84uZkx.js) podem ser cacheados "para sempre": qualquer mudanca
+  # de conteudo gera um nome de arquivo novo, entao o cache antigo nunca
+  # fica desatualizado.
+  <FilesMatch "\.(js|mjs|css|woff2?|ttf|otf|svg|png|jpe?g|webp|gif|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # index.html NUNCA pode ficar em cache do navegador (nem de proxy/CDN
+  # intermediario). E ele quem referencia os nomes com hash do build atual
+  # -- se um index.html antigo for servido do cache depois de um deploy que
+  # trocou os arquivos, o navegador pede um .js/.css que nao existe mais.
+  # O Apache entao cai no fallback de SPA abaixo e devolve o proprio
+  # index.html (HTML) no lugar do JS esperado: "Unexpected token '<'" /
+  # "Expected a JavaScript module but the server responded with text/html".
+  # Isso quebra a tela sem gerar nenhum erro no servidor -- e some sozinho
+  # com Ctrl+F5 ou aba anonima porque os dois ignoram esse cache.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  RewriteRule ^ index.html [L]
+</IfModule>

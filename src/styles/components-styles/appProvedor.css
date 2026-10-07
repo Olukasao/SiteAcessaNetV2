@@ -1,6 +1,5 @@
 .app-provedor {
   padding: 110px 20px;
-  background: linear-gradient(180deg,#f6f9fc,#ffffff);
 }
 
 .app-container {
@@ -37,7 +36,7 @@
 
 /* BADGE */
 
-.badge {
+.app-badge {
   background: rgba(47,164,231,.1);
   color: #2FA4E7;
   padding: 6px 14px;
@@ -79,7 +78,7 @@
 
 .store-buttons img {
   height: 50px;
-  transition: .3s;
+  transition: transform .2s ease;
 }
 
 .store-buttons img:hover {
@@ -89,6 +88,13 @@
 /* RESPONSIVO */
 
 @media (max-width: 900px) {
+  /* Mesmo problema das outras seções da home: padding vertical de desktop
+     (110px) sobrevivia ao colapso pra 1 coluna, inflando o scroll mobile
+     sem necessidade. */
+  .app-provedor {
+    padding: 56px 18px;
+  }
+
   .app-container {
     grid-template-columns: 1fr;
     text-align: center;
@@ -106,11 +112,5 @@
 .app-image img {
   width: 100%;
   max-width: 420px;
-  animation: floatApp 6s ease-in-out infinite;
-}
-
-@keyframes floatApp {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-18px); }
-  100% { transform: translateY(0px); }
+  height: auto;
 }

@@ -13,19 +13,55 @@ const canaisModules = import.meta.glob(
 
 
 const loadImages = async (modules) => {
-    const loaders = Object.values(modules);
+    const entries = Object.entries(modules);
 
     const imgs = await Promise.all(
-        loaders.map(async (loader) => {
+        entries.map(async ([path, loader]) => {
             const mod = await loader();
-            return mod.default;
+            return { path, src: mod.default };
         })
     );
 
-    return imgs.sort();
+    return imgs
+        .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }))
+        .map((item) => item.src);
 };
 
+function useNearViewport(rootMargin = "700px") {
+    const ref = useRef(null);
+    const [isNearViewport, setIsNearViewport] = useState(false);
+
+    useEffect(() => {
+        if (isNearViewport) return undefined;
+
+        const element = ref.current;
+        if (!element) return undefined;
+
+        if (!("IntersectionObserver" in window)) {
+            const timeoutId = window.setTimeout(() => setIsNearViewport(true), 0);
+            return () => window.clearTimeout(timeoutId);
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsNearViewport(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin }
+        );
+
+        observer.observe(element);
+
+        return () => observer.disconnect();
+    }, [isNearViewport, rootMargin]);
+
+    return [ref, isNearViewport];
+}
+
 export default function WatchTV() {
+    const [sectionRef, shouldLoadAssets] = useNearViewport();
     const movieRef = useRef(null);
     const channelRef = useRef(null);
 
@@ -33,16 +69,26 @@ export default function WatchTV() {
     const [canaisImgs, setCanaisImgs] = useState([]);
 
     useEffect(() => {
+        if (!shouldLoadAssets) return undefined;
+
+        let isMounted = true;
+
         async function fetchData() {
             const filmesData = await loadImages(filmesModules);
             const canaisData = await loadImages(canaisModules);
 
-            setFilmesImgs(filmesData);
-            setCanaisImgs(canaisData);
+            if (isMounted) {
+                setFilmesImgs(filmesData);
+                setCanaisImgs(canaisData);
+            }
         }
 
         fetchData();
-    }, []);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [shouldLoadAssets]);
 
 
     const scroll = (ref, dir) => {
@@ -55,13 +101,13 @@ export default function WatchTV() {
     };
 
     return (
-        <section className="watchtv">
+        <section className="watchtv" ref={sectionRef}>
             <div className="watchtv-container">
 
                 {/* HERO */}
                 <div className="watchtv-hero">
                     <div className="watchtv-info">
-                        <span className="badge">INCLUSO NOS PLANOS</span>
+                        <span className="watchtv-badge">INCLUSO NOS PLANOS</span>
 
                         <h2>Watch TV</h2>
 
@@ -100,15 +146,21 @@ export default function WatchTV() {
                     </div>
                 </div>
 
-                <div className="carousel-watch" ref={movieRef}>
-                    {filmesImgs.length === 0 ? (
+                <div className="carousel-watch carousel-watch--movies" ref={movieRef}>
+                    {!shouldLoadAssets ? (
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <div className="movie-card movie-card--placeholder" key={index} aria-hidden="true" />
+                        ))
+                    ) : filmesImgs.length === 0 ? (
                         <p>Carregando filmes...</p>
                     ) : (
-                        filmesImgs.map((img, i) => (
+                        filmesImgs.map((img) => (
                             <div className="movie-card" key={img}>
                                 <img
                                     src={img}
                                     className="imgs-watch"
+                                    width="180"
+                                    height="260"
                                     loading="lazy"
                                     decoding="async"
                                     alt="Filme"
@@ -132,14 +184,20 @@ export default function WatchTV() {
                     </div>
                 </div>
 
-                <div className="carousel-watch" ref={channelRef}>
-                    {canaisImgs.length === 0 ? (
+                <div className="carousel-watch carousel-watch--channels" ref={channelRef}>
+                    {!shouldLoadAssets ? (
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <div className="channel-card channel-card--placeholder" key={index} aria-hidden="true" />
+                        ))
+                    ) : canaisImgs.length === 0 ? (
                         <p>Carregando canais...</p>
                     ) : (
-                        canaisImgs.map((img, i) => (
+                        canaisImgs.map((img) => (
                             <div className="channel-card" key={img}>
                                 <img
                                     src={img}
+                                    width="90"
+                                    height="60"
                                     loading="lazy"
                                     decoding="async"
                                     alt="Canal TV"

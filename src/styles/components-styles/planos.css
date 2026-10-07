@@ -1,15 +1,26 @@
 .planos {
   padding: 110px 20px;
   background:
-    radial-gradient(circle at top right, rgba(245, 183, 0, 0.12), transparent 35%),
-    linear-gradient(180deg, #F7FFF4 0%, #FFFFFF 45%, #F1FAEE 100%);
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.13), transparent 35%),
+    linear-gradient(180deg, #f4f8fc 0%, #FFFFFF 45%, #eef5ff 100%);
   text-align: center;
 }
 
 .planos-container {
   max-width: 1200px;
   margin: auto;
-  background-color: #081833;
+  background-color: transparent;
+}
+
+.planos-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #0b5fb3;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .planos h2 {
@@ -34,11 +45,12 @@
 /* CARD */
 
 .plano-card {
+  position: relative;
   background: white;
   border-radius: 18px;
+  padding: 34px 28px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.07);
-  transition: 0.35s;
-  display: flex;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -47,7 +59,12 @@
 }
 
 .plano-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-6px);
+}
+
+.plano-card.card-700,
+.plano-card.card-800 {
+  min-height: 430px;
 }
 
 /* DESTAQUE */
@@ -55,19 +72,30 @@
 .plano-card.destaque {
   border: 2px solid #2FA4E7;
   transform: scale(1.06);
+  padding-top: 50px;
+  overflow: visible;
 }
 
-.badge {
+.plan-badge {
   position: absolute;
-  top: -14px;
+  top: -16px;
   left: 50%;
   transform: translateX(-50%);
   background: #2FA4E7;
   color: white;
-  padding: 7px 16px;
+  padding: 8px 18px;
   border-radius: 30px;
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
+  z-index: 10;
+  line-height: 1.2;
+}
+
+.plano-card h3 {
+  margin: 0;
+  color: #081833;
+  font-size: 26px;
 }
 
 /* PREÇO */
@@ -109,6 +137,45 @@
   color: #445066;
 }
 
+.plan-services {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  min-height: 58px;
+  margin: auto 0 8px;
+}
+
+.service-logo {
+  width: 55px;
+  height: 55px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  contain: layout paint;
+}
+
+.service-logo.dark {
+  background: #0b2d5c;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.service-logo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.18);
+}
+
+.service-logo img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  display: block;
+}
+
 .icon-check {
   color: #2FA4E7;
 }
@@ -126,7 +193,6 @@
   font-weight: bold;
   letter-spacing: 0.5px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
   color: white;
   padding: 14px 22px;
   border-radius: 10px;
@@ -135,10 +201,24 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  transition: .3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-contratar:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 760px) {
+  .planos {
+    padding: 78px 18px;
+  }
+
+  .planos h2 {
+    font-size: 32px;
+  }
+
+  .plano-card.destaque {
+    transform: none;
+  }
 }

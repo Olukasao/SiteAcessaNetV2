@@ -1,75 +1,65 @@
 import "../styles/components-styles/header.css";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo acessa (2).png";
 import { Link, NavLink } from "react-router-dom";
-import { FaFacebookF, FaInstagram, FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="header">
       <div className="header-container">
-
-        {/* LOGO */}
-        <Link to="/">
-          <img src={logo} alt="Acessa Net" className="logo" />
+        <Link to="/" className="header-logo-link" onClick={closeMenu}>
+          <img
+            src={logo}
+            alt="Acessanet"
+            className="logo"
+            width="4240"
+            height="1545"
+            decoding="async"
+          />
         </Link>
 
-        {/* MENU */}
-        <nav className={`menu ${menuOpen ? "active" : ""}`}>
-          <a href="https://acessanet.sgp.net.br/accounts/central/login">
-            Área do Cliente
-          </a>
+        <div className={`mobile-nav-panel ${menuOpen ? "active" : ""}`}>
+          <nav className="menu">
+            <a href="/#inicio" onClick={closeMenu}>
+              Início
+            </a>
 
-          <NavLink to="/planos" className={({ isActive }) => isActive ? "active" : ""}>
-            Planos
-          </NavLink>
+            <NavLink to="/planos" onClick={closeMenu}>
+              Planos
+            </NavLink>
 
-          <NavLink to="/contratos" className={({ isActive }) => isActive ? "active" : ""}>
-            Contratos
-          </NavLink>
+            <NavLink to="/contatos" onClick={closeMenu}>
+              Atendimento
+            </NavLink>
 
-          <NavLink to="/historia" className={({ isActive }) => isActive ? "active" : ""}>
-            Nossa História
-          </NavLink>
+            <NavLink to="/cliente/guia-wifi" onClick={closeMenu}>
+              Boas Práticas Wi‑Fi
+            </NavLink>
+          </nav>
 
-          <NavLink to="/trabalhe-conosco" className={({ isActive }) => isActive ? "active" : ""}>
-            Trabalhe Conosco
-          </NavLink>
+          <div className="header-actions">
+            <Link className="client-link" to="/cliente" onClick={closeMenu}>
+              Central do Assinante
+            </Link>
 
-          <NavLink to="/contatos" className={({ isActive }) => isActive ? "active" : ""}>
-            Contatos
-          </NavLink>
-
-          <NavLink to="/lgpd" className={({ isActive }) => isActive ? "active" : ""}>
-            LGPD
-          </NavLink>
-
-          <NavLink to="/disponibilidade" className={({ isActive }) => isActive ? "active" : ""}>
-            Disponibilidade
-          </NavLink>
-        </nav>
-
-        {/* SOCIAL */}
-        <div className="social">
-          <a href="https://www.facebook.com/people/Acessanet/61564243311224/" target="_black" style={{ textDecoration: "None", color: "white" }}>
-            <FaFacebookF />
-
-          </a>
-          <a href="https://www.instagram.com/acessanet_/" target="_black" style={{ textDecoration: "None", color: "white" }}>
-            <FaInstagram />
-          </a>
+            <Link className="header-cta" to="/planos">
+              Conheça os planos
+            </Link>
+          </div>
         </div>
 
-        {/* HAMBURGER */}
-        <div
+        <button
           className="hamburger"
+          type="button"
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <FaTimes /> : <FaBars />}
-        </div>
-
+        </button>
       </div>
     </header>
   );

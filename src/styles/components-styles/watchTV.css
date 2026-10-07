@@ -23,7 +23,10 @@
   margin-bottom: 80px;
 }
 
-.badge {
+.watchtv-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #2FA4E7;
   padding: 6px 16px;
   border-radius: 20px;
@@ -51,7 +54,7 @@
   color: white;
   text-decoration: none;
   font-weight: 600;
-  transition: .3s;
+  transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
 }
 
 .watchtv-btn:hover {
@@ -86,7 +89,7 @@
   margin-left: 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: .3s;
+  transition: background .22s ease;
 }
 
 .nav button:hover {
@@ -101,7 +104,17 @@
   scroll-behavior: smooth;
   padding-bottom: 5px;
   margin-top: 20px;
-   margin-bottom: 20px;
+  margin-bottom: 20px;
+  overscroll-behavior-inline: contain;
+  contain: layout paint;
+}
+
+.carousel-watch--movies {
+  min-height: 265px;
+}
+
+.carousel-watch--channels {
+  min-height: 105px;
 }
 
 .carousel-watch::-webkit-scrollbar {
@@ -118,8 +131,9 @@
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  transition: .4s;
+  transition: transform .22s ease, box-shadow .22s ease;
   background: #000;
+  contain: layout paint;
 }
 
 .movie-card img {
@@ -129,7 +143,7 @@
 }
 
 .movie-card:hover {
-  transform: scale(1.08);
+  transform: scale(1.04);
   box-shadow: 0 20px 40px rgba(47,164,231,.35);
 }
 
@@ -141,7 +155,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: .4s;
+  transition: opacity .22s ease;
 }
 
 .movie-card:hover .movie-overlay {
@@ -167,7 +181,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: .3s;
+  transition: transform .22s ease, background .22s ease;
+  contain: layout paint;
 }
 
 .channel-card img {
@@ -179,9 +194,28 @@
   background: rgba(47,164,231,.2);
 }
 
+.movie-card--placeholder,
+.channel-card--placeholder {
+  background: rgba(255,255,255,0.08);
+}
+
+.movie-card--placeholder:hover,
+.channel-card--placeholder:hover {
+  box-shadow: none;
+  transform: none;
+}
+
 /* ===== RESPONSIVO ===== */
 
 @media (max-width: 900px) {
+  /* Padding vertical desktop (100px) ficava igual mesmo com a grade já
+     colapsada pra 1 coluna -- isso sozinho empurrava ~140px de espaço vazio
+     (topo+base) pra cada seção assim na home, somando com várias outras
+     seções no mesmo padrão, num scroll mobile já bem longo. */
+  .watchtv {
+    padding: 56px 18px;
+  }
+
   .watchtv-hero {
     grid-template-columns: 1fr;
     text-align: center;

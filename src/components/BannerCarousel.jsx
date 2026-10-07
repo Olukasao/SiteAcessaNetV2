@@ -1,55 +1,29 @@
 import { useState, useEffect } from "react";
 import "../styles/components-styles/bannerCarousel.css";
-import "../components/copa/BotaoCopa.css";
-import "../components/copa/Assine.css";
 
 import temsaude from "../assets/banners/temsaude.jpeg";
-import testecopa from "../assets/copa/testecopa.png";
-import canarinho from "../assets/copa/canarinho.png";
-
-import { Heart } from "lucide-react";
-
-import FloatingButton from "../components/maes/FloatingButton";
-import BotaoCopa from "../components/copa/BotaoCopa";
-import BotaoAssine from "../components/copa/Assine";
 
 const banners = [
-
   {
     title: "",
     subtitle: "",
-    icon: Heart,
-    image: testecopa,
-    width: "50vw",
-  },
-
-  {
-    title: "",
-    subtitle: "",
-    icon: Heart,
     image: temsaude,
   },
-
-  {
-    title: "",
-    subtitle: "",
-    icon: Heart,
-    image: canarinho,
-  },
-
-  
 ];
 
 export default function BannerCarousel() {
   const [current, setCurrent] = useState(0);
+  const hasMultipleBanners = banners.length > 1;
 
   useEffect(() => {
+    if (!hasMultipleBanners) return undefined;
+
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    }, 8500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [hasMultipleBanners]);
 
   const next = () =>
     setCurrent((current + 1) % banners.length);
@@ -68,27 +42,17 @@ export default function BannerCarousel() {
             key={index}
             className={`slide ${index === current ? "active" : ""}`}
           >
-            {index === 3 && <FloatingButton />}
-
-            {index === 2 && (
-              <div className="botao-assine-wrapper">
-                <BotaoAssine />
-              </div>
-            )}
-
-            {index === 0 && (
-              <div className="botao-copa-wrapper">
-                <BotaoCopa />
-              </div>
-            )}
-            
-
             <img
               src={banner.image}
               alt=""
+              width="1600"
+              height="800"
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
               style={{
                 width: "100%",
                 height: banner.height || "100%",
+                objectPosition: banner.objectPosition || "center",
               }}
             />
           </div>
@@ -96,24 +60,30 @@ export default function BannerCarousel() {
       })}
 
       {/* SETAS */}
-      <button className="arrow left" onClick={prev}>
-        ❮
-      </button>
+      {hasMultipleBanners && (
+        <>
+          <button className="arrow left" onClick={prev}>
+            ❮
+          </button>
 
-      <button className="arrow right" onClick={next}>
-        ❯
-      </button>
+          <button className="arrow right" onClick={next}>
+            ❯
+          </button>
+        </>
+      )}
 
       {/* INDICADORES */}
-      <div className="dots">
-        {banners.map((_, i) => (
-          <span
-            key={i}
-            className={i === current ? "dot active" : "dot"}
-            onClick={() => setCurrent(i)}
-          />
-        ))}
-      </div>
+      {hasMultipleBanners && (
+        <div className="dots">
+          {banners.map((_, i) => (
+            <span
+              key={i}
+              className={i === current ? "dot active" : "dot"}
+              onClick={() => setCurrent(i)}
+            />
+          ))}
+        </div>
+      )}
 
     </section>
   );

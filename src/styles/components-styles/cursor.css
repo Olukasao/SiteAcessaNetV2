@@ -1,28 +1,47 @@
-/* esconder cursor padrão */
-
-/* cursor base */
 .cursor {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 18px;
   height: 18px;
-  cursor: none;
-  background: #e5bd09;
+  display: none;
+  background: #7dd3fc;
   border-radius: 50%;
+  opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, -50%);
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
   transition:
     width .25s ease,
     height .25s ease,
     background .25s ease,
-    transform .08s linear;
+    opacity .18s ease;
+  will-change: transform;
   z-index: 9999;
 }
 
-/* efeito hover */
 .cursor-hover {
   width: 30px;
-  cursor: none;
   height: 30px;
-  background: #09b2e5;
-  backdrop-filter: blur(4px);
+  background: #38bdf8;
+}
+
+.cursor-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.custom-cursor-enabled,
+  html.custom-cursor-enabled a,
+  html.custom-cursor-enabled button,
+  html.custom-cursor-enabled input,
+  html.custom-cursor-enabled textarea,
+  html.custom-cursor-enabled select,
+  html.custom-cursor-enabled label,
+  html.custom-cursor-enabled [role='button'] {
+    cursor: none;
+  }
+
+  html.custom-cursor-enabled .cursor {
+    display: block;
+  }
 }

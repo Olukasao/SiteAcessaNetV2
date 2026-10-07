@@ -2,267 +2,269 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-
   width: 100%;
-  height: 78px;
-
-  background: linear-gradient(
-    90deg,
-    #05351f 0%,
-    #075f34 52%,
-    #07833f 100%
-  );
-
-  border-bottom: 4px solid #f5b700;
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  min-height: 96px;
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid rgba(8, 24, 51, 0.08);
+  box-shadow: 0 8px 24px rgba(8, 24, 51, 0.06);
 }
 
 .header-container {
-  max-width: 1240px;
-  height: 100%;
+  max-width: 1280px;
+  min-height: 96px;
   margin: 0 auto;
-  padding: 0 32px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-}
-
-.logo {
-  height: 58px;
-  width: auto;
-  display: block;
-  object-fit: contain;
-}
-
-/* MENU DESKTOP */
-
-.menu {
-  display: flex;
+  padding: 0 28px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 28px;
 }
 
+.header-logo-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.header-campaign-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  padding: 3px 9px;
+  font-size: 9px;
+  pointer-events: none;
+  box-shadow: 0 6px 14px rgba(233, 30, 99, 0.18);
+}
+
+.header-campaign-badge svg {
+  width: 10px;
+  height: 10px;
+}
+
+.logo {
+  width: 128px;
+  height: auto;
+  max-width: 128px;
+  display: block;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 2px 3px rgba(6, 20, 45, 0.36))
+    drop-shadow(0 0 1px rgba(6, 20, 45, 0.42));
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
 .menu a {
   position: relative;
-
-  color: #ffffff;
-  font-size: 14.5px;
-  text-decoration: none;
+  color: #233247;
   font-family: Poppins, sans-serif;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
+  text-decoration: none;
   white-space: nowrap;
-
-  transition:
-    color 0.25s ease,
-    transform 0.25s ease;
+  transition: color 0.22s ease, transform 0.22s ease;
 }
 
 .menu a::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -9px;
-
-  width: 0;
+  right: 0;
+  bottom: -11px;
   height: 2px;
   border-radius: 999px;
-
-  background: #f5b700;
-
-  transition: width 0.25s ease;
+  background: #38bdf8;
+  opacity: 0;
+  transform: scaleX(0.5);
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.menu a:hover {
-  color: #f5b700;
-  transform: translateY(-2px);
+.menu a:hover,
+.menu a.active {
+  color: #0b5fb3;
+  transform: translateY(-1px);
 }
 
 .menu a:hover::after,
 .menu a.active::after {
-  width: 100%;
+  opacity: 1;
+  transform: scaleX(1);
 }
 
-.menu a.active {
-  color: #f5b700;
-}
-
-/* BOTÃO DE DESTAQUE */
-
-.menu a.destaque {
-  padding: 12px 20px;
-  border-radius: 999px;
-
-  color: #07351f;
-  background: linear-gradient(180deg, #ffe45c 0%, #f5b700 100%);
-
-  box-shadow: 0 8px 20px rgba(245, 183, 0, 0.32);
-}
-
-.menu a.destaque::after {
-  display: none;
-}
-
-.menu a.destaque:hover {
-  color: #07351f;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(245, 183, 0, 0.42);
-}
-
-/* SOCIAL */
-
-.social {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-self: end;
+  gap: 14px;
+  transform: translateX(88px);
 }
 
-.social a {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.client-link {
+  color: #081833;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.22s ease;
+}
 
-  display: flex;
+.client-link:hover {
+  color: #0b5fb3;
+}
+
+.header-cta {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  color: #ffffff;
+  min-height: 42px;
+  padding: 0 20px;
+  color: #06142d;
+  background: #7dd3fc;
+  border: 1px solid rgba(8, 24, 51, 0.06);
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(56, 189, 248, 0.34);
+  font-size: 13px;
+  font-weight: 800;
   text-decoration: none;
-
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.08);
-
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease,
-    border-color 0.25s ease;
+  white-space: nowrap;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
-.social svg,
-.social i {
-  color: #ffffff;
-  font-size: 16px;
-}
-
-.social a:hover {
+.header-cta:hover {
+  background: #38bdf8;
   transform: translateY(-2px);
-  background: #f5b700;
-  border-color: #f5b700;
+  box-shadow: 0 18px 34px rgba(56, 189, 248, 0.42);
 }
-
-.social a:hover svg,
-.social a:hover i {
-  color: #07351f;
-}
-
-/* HAMBURGER */
 
 .hamburger {
   display: none;
-
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-
+  padding: 0;
+  border: 1px solid rgba(8, 24, 51, 0.12);
+  border-radius: 999px;
+  color: #081833;
+  background: #ffffff;
   align-items: center;
   justify-content: center;
-
-  color: white;
-  font-size: 24px;
+  font-size: 22px;
   cursor: pointer;
-
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.08);
-
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
+  transition: transform 0.22s ease, border-color 0.22s ease;
 }
 
 .hamburger:hover {
-  transform: scale(1.06);
-  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(56, 189, 248, 0.72);
+  transform: translateY(-1px);
 }
 
-/* MOBILE */
+/* No desktop o wrapper não participa do layout (display:contents) -- .menu
+   e .header-actions continuam como se fossem filhos diretos de
+   .header-container, exatamente como antes de existir esse wrapper. */
+.mobile-nav-panel {
+  display: contents;
+}
 
-@media (max-width: 900px) {
-  .header {
-    height: 72px;
-  }
-
+@media (max-width: 1360px) {
   .header-container {
-    padding: 0 20px;
-  }
-
-  .logo {
-    height: 52px;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
   }
 
   .hamburger {
+    display: inline-flex;
+  }
+
+  /* No mobile o wrapper vira o próprio painel flutuante: .menu e
+     .header-actions passam a ser filhos normais dele (flex-column, sem
+     position/top individuais) -- cresce com o conteúdo automaticamente,
+     nunca mais depende de um "top" em pixel calculado a olho pra altura do
+     menu acima. */
+  .mobile-nav-panel {
     display: flex;
-  }
-
-  .social {
-    display: none;
-  }
-
-  .menu {
-    position: absolute;
-    top: 72px;
-    left: 0;
-
-    width: 100%;
-
     flex-direction: column;
-    align-items: center;
-    gap: 24px;
-
-    padding: 34px 22px 38px;
-
-    background: linear-gradient(
-      180deg,
-      #05351f 0%,
-      #06703a 100%
-    );
-
-    border-bottom: 4px solid #f5b700;
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
-
+    position: absolute;
+    top: 108px;
+    left: 18px;
+    right: 18px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(8, 24, 51, 0.08);
+    border-radius: 22px;
+    box-shadow: 0 20px 48px rgba(8, 24, 51, 0.14);
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-18px);
-
-    transition:
-      opacity 0.3s ease,
-      transform 0.3s ease;
+    transform: translateY(-12px);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+    overflow: hidden;
   }
 
-  .menu.active {
+  .mobile-nav-panel.active {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+  }
+
+  .menu {
+    padding: 28px 22px 18px;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .header-actions {
+    padding: 18px 22px 24px;
+    border-top: 1px solid rgba(8, 24, 51, 0.08);
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .menu a {
     font-size: 16px;
   }
 
-  .menu a.destaque {
-    margin-top: 4px;
-    padding: 13px 24px;
+  .menu a::after {
+    bottom: -7px;
+  }
+
+  .client-link,
+  .header-cta {
+    justify-content: center;
+    text-align: center;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
+  .header {
+    min-height: 88px;
+  }
+
   .header-container {
+    min-height: 88px;
     padding: 0 16px;
   }
 
   .logo {
-    height: 48px;
+    width: 112px;
+    max-width: 112px;
+  }
+
+  .mobile-nav-panel {
+    top: 100px;
+  }
+
+  .header-campaign-badge span {
+    display: none;
+  }
+
+  .header-campaign-badge {
+    top: -6px;
+    right: -6px;
+    padding: 5px;
   }
 }

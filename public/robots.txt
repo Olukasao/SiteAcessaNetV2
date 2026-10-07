@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /cliente
+Disallow: /cliente/
+Disallow: /cliente/guia-wifi
+Disallow: /cliente/guia-wifi/

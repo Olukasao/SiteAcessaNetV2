@@ -1,0 +1,335 @@
+/* ---------- Assinaturas: banner, modal e página ---------- */
+
+.signature-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--cliente-border);
+  border-left: 4px solid var(--cliente-amber);
+  background: var(--cliente-surface);
+  color: var(--cliente-amber);
+  margin-bottom: 16px;
+}
+
+.signature-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  color: var(--cliente-ink);
+}
+
+.signature-banner-copy strong {
+  font-size: 0.92rem;
+}
+
+.signature-banner-copy span {
+  font-size: 0.85rem;
+  color: var(--cliente-muted);
+}
+
+.signature-banner-action {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  color: var(--cliente-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.signature-banner-action:hover,
+.signature-banner-action:focus-visible {
+  filter: brightness(1.05);
+}
+
+/* Modal */
+.signature-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 27, 53, 0.55);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.signature-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: var(--cliente-white);
+  border-radius: 20px;
+  border-top: 5px solid var(--cliente-amber);
+  padding: 32px 28px 26px;
+  box-shadow: var(--cliente-shadow);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.signature-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--cliente-surface);
+  color: var(--cliente-amber);
+}
+
+.signature-modal h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--cliente-navy);
+}
+
+.signature-modal p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--cliente-muted);
+  line-height: 1.5;
+}
+
+.signature-modal-document {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--cliente-surface);
+  text-align: left;
+}
+
+.signature-modal-document strong {
+  color: var(--cliente-ink);
+  font-size: 0.95rem;
+}
+
+.signature-modal-document span {
+  font-size: 0.85rem;
+  color: var(--cliente-muted);
+}
+
+.signature-modal-hint {
+  font-size: 0.85rem !important;
+}
+
+.signature-modal-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.signature-modal-list li {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--cliente-surface);
+  color: var(--cliente-ink);
+  font-size: 0.88rem;
+}
+
+.signature-modal-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.signature-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cliente-muted);
+  cursor: pointer;
+}
+
+.signature-modal-close:hover,
+.signature-modal-close:focus-visible {
+  background: rgba(16, 36, 61, 0.08);
+  color: var(--cliente-ink);
+}
+
+@media (max-width: 480px) {
+  .signature-modal {
+    padding: 28px 20px 22px;
+  }
+}
+
+/* Página "Assinaturas" */
+.cliente-signature-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cliente-signature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.cliente-signature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--cliente-border);
+  border-left: 4px solid var(--cliente-muted);
+  background: var(--cliente-white);
+  box-shadow: 0 14px 32px rgba(6, 27, 53, 0.05);
+}
+
+.cliente-signature-card.tone-amber {
+  border-left-color: var(--cliente-amber);
+}
+.cliente-signature-card.tone-blue {
+  border-left-color: var(--cliente-blue);
+}
+.cliente-signature-card.tone-green {
+  border-left-color: var(--cliente-green);
+}
+.cliente-signature-card.tone-neutral {
+  border-left-color: var(--cliente-muted);
+}
+.cliente-signature-card.tone-red {
+  border-left-color: var(--cliente-red);
+}
+
+.cliente-signature-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cliente-signature-card-head h4 {
+  margin: 0 0 2px;
+  font-size: 0.98rem;
+  color: var(--cliente-ink);
+}
+
+.cliente-signature-card-head span {
+  font-size: 0.82rem;
+  color: var(--cliente-muted);
+}
+
+.cliente-signature-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cliente-signature-status.tone-amber {
+  background: rgba(244, 183, 64, 0.16);
+  color: #8a6416;
+}
+.cliente-signature-status.tone-blue {
+  background: rgba(0, 149, 246, 0.14);
+  color: var(--cliente-navy-2);
+}
+.cliente-signature-status.tone-green {
+  background: rgba(0, 156, 59, 0.14);
+  color: var(--cliente-green);
+}
+.cliente-signature-status.tone-neutral {
+  background: rgba(16, 36, 61, 0.08);
+  color: var(--cliente-muted);
+}
+.cliente-signature-status.tone-red {
+  background: rgba(209, 67, 67, 0.14);
+  color: var(--cliente-red);
+}
+
+.cliente-signature-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--cliente-muted);
+  line-height: 1.4;
+}
+
+.cliente-signature-card-meta {
+  font-size: 0.82rem;
+  color: var(--cliente-muted);
+}
+
+.cliente-signature-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cliente-signature-card-actions a,
+.cliente-signature-card-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--cliente-border-strong);
+  background: var(--cliente-white);
+  color: var(--cliente-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  min-height: 40px;
+}
+
+.cliente-signature-card-actions a.is-primary,
+.cliente-signature-card-actions button.is-primary {
+  border: none;
+  background: linear-gradient(135deg, var(--cliente-blue), var(--cliente-cyan));
+  color: var(--cliente-white);
+}
+
+@media (max-width: 820px) {
+  .cliente-signature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .cliente-signature-card {
+    padding: 16px;
+  }
+
+  .cliente-signature-card-actions a,
+  .cliente-signature-card-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+}

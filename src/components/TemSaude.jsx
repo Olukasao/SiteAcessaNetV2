@@ -1,5 +1,7 @@
 import "../styles/components-styles/temSaude.css"
 import temSaude from "../assets/temSaude.png"
+import { Ribbon } from "lucide-react"
+import { seasonalCampaign } from "../theme/siteTheme"
 
 export default function TemSaude() {
     return (
@@ -9,6 +11,13 @@ export default function TemSaude() {
                 <div className="temsaude-info-wrap">
 
                     <div className="temsaude-info-left">
+                        {seasonalCampaign.enabled && (
+                            <span className="temsaude-campaign-kicker">
+                                <Ribbon size={13} aria-hidden="true" />
+                                Cuide da sua conexão e também da sua saúde
+                            </span>
+                        )}
+
                         <h2>Tem Saúde</h2>
 
                         <p>
@@ -23,7 +32,14 @@ export default function TemSaude() {
 
                     <div className="temsaude-info-right">
                         <div className="temsaude-box">
-                            <img src={temSaude} alt="Tem Saúde" />
+                            <img
+                                src={temSaude}
+                                alt="Tem Saúde"
+                                width="256"
+                                height="256"
+                                loading="lazy"
+                                decoding="async"
+                            />
                         </div>
                     </div>
 
