@@ -1,0 +1,159 @@
+.pm {
+  margin-top: 24px;
+}
+
+.pm-top {
+  padding: 22px 24px;
+  border-radius: var(--r-lg);
+  color: var(--on-dark);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(47, 107, 255, 0.4), transparent 60%),
+    var(--navy-800);
+}
+
+.pm-price {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: var(--font-display);
+}
+
+.pm-price strong {
+  font-size: 3.2rem;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.pm-price span {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.pm-price small {
+  margin-left: 4px;
+  font-family: var(--font-body);
+  color: var(--on-dark-3);
+}
+
+.pm-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: var(--fs-small);
+  color: var(--on-dark-2);
+}
+
+.pm-sub {
+  margin: 28px 0 14px;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.pm-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pm-list li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.pm-list strong {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.pm-list small {
+  color: var(--ink-3);
+  font-size: var(--fs-micro);
+}
+
+.pm-ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 12px;
+  color: var(--blue-500);
+  background: var(--white);
+  box-shadow: var(--shadow-1);
+}
+
+.pm-ico--logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pm-ico.is-dark {
+  background: var(--navy-700);
+}
+
+.pm-coverage {
+  margin-top: 20px;
+}
+
+.pm-cov-btn,
+.pm-cov-ok {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 700;
+  font-size: var(--fs-small);
+}
+
+.pm-cov-btn {
+  color: var(--blue-500);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.pm-cov-ok {
+  color: #0b5a37;
+}
+
+.pm-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.pm-legal {
+  margin-top: 14px;
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+}
+
+@media (max-width: 640px) {
+  .pm-list,
+  .pm-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* CTA de contratação sempre visível no sheet do celular */
+  .pm-actions {
+    position: sticky;
+    bottom: calc(-1 * max(24px, env(safe-area-inset-bottom)));
+    z-index: 2;
+    margin-inline: -24px;
+    padding: 14px 24px max(14px, env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), #fff 30%);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--line);
+  }
+}

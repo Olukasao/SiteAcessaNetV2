@@ -1,0 +1,71 @@
+.globe {
+  position: absolute;
+  inset: 0;
+}
+
+.globe-static,
+.globe-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.globe-static {
+  object-fit: contain;
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.globe-canvas {
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+
+.globe.is-ready .globe-canvas {
+  opacity: 1;
+}
+
+.globe.is-ready .globe-static {
+  opacity: 0;
+}
+
+.gs-arc {
+  stroke-dasharray: 260;
+  stroke-dashoffset: 260;
+  animation: gs-draw 3.6s var(--ease-out) infinite;
+}
+
+.gs-arc--2 {
+  animation-delay: 1.1s;
+}
+
+.gs-arc--3 {
+  animation-delay: 2.2s;
+}
+
+.gs-pulse {
+  transform-origin: 150px 250px;
+  animation: gs-pulse 2.4s var(--ease-out) infinite;
+}
+
+@keyframes gs-draw {
+  0% { stroke-dashoffset: 260; opacity: 1; }
+  60% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes gs-pulse {
+  from { transform: scale(0.4); opacity: 0.9; }
+  to { transform: scale(2.2); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-arc {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .gs-pulse {
+    animation: none;
+  }
+}
