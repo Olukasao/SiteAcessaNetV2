@@ -22,7 +22,6 @@ export default function Hero() {
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(null);
   const [userPaused, setUserPaused] = useState(false);
-  const [hoverPause, setHoverPause] = useState(false);
   const [offscreen, setOffscreen] = useState(false);
   const [reduced] = useState(prefersReducedMotion);
   const progressRef = useRef(0);
@@ -85,7 +84,9 @@ export default function Hero() {
 
   // Relógio da rotação: acumula tempo só enquanto não está pausado e
   // escreve o progresso direto no DOM (sem re-render a cada frame).
-  const paused = reduced || userPaused || hoverPause || offscreen;
+  // Sem pausa por hover/foco: a rotação sempre segue (pedido do usuário).
+  // Só para pelo botão de pausa ou quando o topo sai da tela.
+  const paused = reduced || userPaused || offscreen;
   useEffect(() => {
     if (paused) return undefined;
     let raf;
@@ -131,13 +132,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div
-        className="hero-copy container"
-        onPointerEnter={(e) => e.pointerType === "mouse" && setHoverPause(true)}
-        onPointerLeave={() => setHoverPause(false)}
-        onFocus={() => setHoverPause(true)}
-        onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setHoverPause(false)}
-      >
+      <div className="hero-copy container">
         <div className="hs-stage">
           {SLIDES.map((s, i) => {
             const state = stateOf(i);
