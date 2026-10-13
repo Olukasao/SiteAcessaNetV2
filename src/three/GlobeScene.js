@@ -23,6 +23,8 @@ import {
   WebGLRenderer,
   DoubleSide,
   MeshBasicMaterial,
+  LineSegments,
+  LineBasicMaterial,
 } from "three";
 
 const R = 1;
@@ -92,7 +94,8 @@ const dotsFragment = /* glsl */ `
     float alpha = smoothstep(0.5, 0.1, d);
     float front = smoothstep(-0.15, 0.6, vFacing);
     vec3 col = mix(uColorA, uColorB, front);
-    gl_FragColor = vec4(col, alpha * mix(0.18, 1.0, front) * vTwinkle);
+    gl_FragColor = vec4(col, alpha * mix(0.22, 1.0, front) * vTwinkle);
+    #include <colorspace_fragment>
   }
 `;
 
@@ -111,16 +114,22 @@ const atmosphereFragment = /* glsl */ `
   void main() {
     float i = pow(max(0.0, 0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0))), uPower);
     gl_FragColor = vec4(uColor, 1.0) * i * uIntensity;
+    #include <colorspace_fragment>
   }
 `;
 const coreFragment = /* glsl */ `
   uniform vec3 uDeep;
+  uniform vec3 uLit;
   uniform vec3 uRim;
   varying vec3 vNormal;
   void main() {
+    vec3 L = normalize(vec3(-0.55, 0.55, 0.65));
+    float diff = smoothstep(-0.2, 1.0, dot(vNormal, L));
     float f = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-    vec3 col = mix(uDeep, uRim, pow(f, 2.6));
+    vec3 col = mix(uDeep, uLit, diff * 0.85);
+    col += uRim * pow(f, 3.0) * 0.9;
     gl_FragColor = vec4(col, 1.0);
+    #include <colorspace_fragment>
   }
 `;
 
@@ -147,6 +156,7 @@ const arcFragment = /* glsl */ `
     vec3 col = mix(uColor, uHot, trail * trail + head);
     float a = max(uBase, trail * 0.95 + head);
     gl_FragColor = vec4(col, a);
+    #include <colorspace_fragment>
   }
 `;
 
@@ -169,6 +179,10 @@ export class GlobeScene {
       powerPreference: "high-performance",
     });
     this.renderer.setPixelRatio(this.pixelRatio);
+    this.failed = false;
+    this.renderer.debug.onShaderError = () => {
+      this.failed = true;
+    };
     this.renderer.setClearColor(0x000000, 0);
 
     this.scene = new Scene();
@@ -186,7 +200,11 @@ export class GlobeScene {
       new ShaderMaterial({
         vertexShader: atmosphereVertex,
         fragmentShader: coreFragment,
-        uniforms: { uDeep: { value: new Color("#060e26") }, uRim: { value: new Color("#173477") } },
+        uniforms: {
+          uDeep: { value: new Color("#071338") },
+          uLit: { value: new Color("#1c4fd8") },
+          uRim: { value: new Color("#3ad6ff") },
+        },
       })
     );
     this.globe.add(core);
@@ -205,7 +223,7 @@ export class GlobeScene {
       pos[i * 3] = Math.cos(th) * rad * R;
       pos[i * 3 + 1] = y * R;
       pos[i * 3 + 2] = Math.sin(th) * rad * R;
-      size[i] = 2.4 + Math.random() * 2.2;
+      size[i] = 2.8 + Math.random() * 2.6;
       seed[i] = Math.random();
     }
     const dotsGeo = new BufferGeometry();
@@ -220,11 +238,31 @@ export class GlobeScene {
       uniforms: {
         uTime: { value: 0 },
         uPixelRatio: { value: this.pixelRatio },
-        uColorA: { value: new Color("#2a55b8") },
-        uColorB: { value: new Color("#bfeeff") },
+        uColorA: { value: new Color("#3d6fe0") },
+        uColorB: { value: new Color("#e6faff") },
       },
     });
     this.globe.add(new Points(dotsGeo, this.dotsMat));
+
+    const grat = [];
+    const seg = 96;
+    const pushCircle = (fn) => {
+      for (let k = 0; k < seg; k++) grat.push(...fn(k / seg), ...fn((k + 1) / seg));
+    };
+    for (let lat = -60; lat <= 60; lat += 30) {
+      pushCircle((t) => latLonToVec3(lat, t * 360 - 180, R * 1.002).toArray());
+    }
+    for (let lon = -180; lon < 180; lon += 30) {
+      pushCircle((t) => latLonToVec3(t * 180 - 90, lon, R * 1.002).toArray());
+    }
+    const gratGeo = new BufferGeometry();
+    gratGeo.setAttribute("position", new BufferAttribute(new Float32Array(grat), 3));
+    this.globe.add(
+      new LineSegments(
+        gratGeo,
+        new LineBasicMaterial({ color: "#6f9cff", transparent: true, opacity: 0.16, blending: AdditiveBlending, depthWrite: false })
+      )
+    );
 
     // Atmosfera (fresnel, face de trás, aditiva) -- a "iluminação cinematográfica"
     const atmosphere = new Mesh(
@@ -309,6 +347,8 @@ export class GlobeScene {
 
     this.intro = 0; // 0..1 entrada da câmera
     this.renderer.compile(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera);
+    if (this.failed || this.renderer.getContext().isContextLost()) throw new Error("globe-shader");
     onReady?.();
   }
 
