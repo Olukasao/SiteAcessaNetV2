@@ -1,0 +1,150 @@
+.ct {
+  background: var(--surface-2);
+}
+
+.page-hero + .ct {
+  padding-top: clamp(40px, 5vw, 64px);
+}
+
+.ct-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ct-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border-radius: var(--r-xl);
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-2);
+  transition: transform 0.5s var(--ease-out), border-color var(--dur-fast);
+}
+
+.ct-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--blue-300);
+}
+
+.ct-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ct-ico {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: var(--blue-500);
+  background: rgba(47, 107, 255, 0.08);
+}
+
+.ct-code {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+
+.ct-title {
+  font-size: 1.2rem;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.ct-party {
+  font-weight: 800;
+  color: var(--blue-500);
+}
+
+.ct-aud {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+.ct-reg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 4px;
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+}
+
+.ct-reg svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--success);
+}
+
+.ct-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.ct-meta {
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+}
+
+.ct-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 40px;
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: var(--r-xl);
+  color: var(--on-dark);
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgba(47, 107, 255, 0.35), transparent 60%),
+    var(--navy-800);
+}
+
+.ct-help h2 {
+  font-size: var(--fs-h3);
+}
+
+.ct-help p {
+  margin-top: 6px;
+  color: var(--on-dark-2);
+}
+
+.ct-help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ct-help .btn--ghost {
+  background: transparent;
+  color: var(--on-dark);
+  border-color: rgba(143, 178, 255, 0.3);
+}
+
+@media (max-width: 1000px) {
+  .ct-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ct-grid {
+    grid-template-columns: 1fr;
+  }
+}

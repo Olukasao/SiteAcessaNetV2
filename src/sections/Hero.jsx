@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Clock3, MapPin, Pause, Play, ShieldCheck } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Clock3, MapPin, Pause, Play, ShieldCheck } from "lucide-react";
 import Globe from "../components/Globe";
 import { useUI } from "../context/UIContext";
 import { company, coveredCitiesLabel, plans, services } from "../data/site";
@@ -12,7 +12,7 @@ import "./hero.css";
 // fixo; só a área de texto troca. Tempos em ms.
 const SLIDES = [
   { id: "brand", label: "Início", duration: 4000 },
-  ...plans.map((p) => ({ id: p.id, label: `${p.speed} ${p.unit}`, duration: 4500, plan: p })),
+  ...plans.map((p) => ({ id: p.id, label: p.short, duration: 4500, plan: p })),
 ];
 const INTRO_MS = 1000; // a contagem só começa depois da entrada inicial
 
@@ -179,7 +179,7 @@ export default function Hero() {
               <div key={s.id} className={`hs-slide hs-slide--plan ${p.featured ? "is-featured" : ""}`} {...common}>
                 <p className="hero-eyebrow hs-item" style={{ "--i": 0 }}>
                   <span className="hero-dot" aria-hidden="true" />
-                  {p.featured ? p.badge : "Plano residencial"} · Fibra óptica
+                  {p.featured ? p.badge : "Plano residencial"} · {p.variant ? p.variant.replace(/^com /, "Com ") : "Fibra óptica"}
                 </p>
                 <h2 className="hero-title hs-plan-title">
                   <span className="hero-line" style={{ "--i": 1 }}>
@@ -215,7 +215,23 @@ export default function Hero() {
           })}
         </div>
 
-        <div className="hero-rotator" role="group" aria-label="Destaques do topo">
+        <div
+          className="hero-rotator"
+          role="group"
+          aria-label="Destaques do topo"
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") goTo((active + 1) % SLIDES.length);
+            if (e.key === "ArrowLeft") goTo((active - 1 + SLIDES.length) % SLIDES.length);
+          }}
+        >
+          <div className="hr-arrows">
+            <button type="button" className="hr-arrow" aria-label="Destaque anterior" onClick={() => goTo((active - 1 + SLIDES.length) % SLIDES.length)}>
+              <ChevronLeft size={18} aria-hidden="true" />
+            </button>
+            <button type="button" className="hr-arrow" aria-label="Próximo destaque" onClick={() => goTo((active + 1) % SLIDES.length)}>
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
+          </div>
           {SLIDES.map((s, i) => (
             <button
               key={s.id}

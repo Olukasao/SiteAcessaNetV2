@@ -43,10 +43,11 @@ export default function PlanCard({ plan }) {
       {plan.badge && <span className="plan-badge">{plan.badge}</span>}
 
       <header className="plan-card-head">
-        <span className="plan-kicker">Internet fibra óptica</span>
+        <span className="plan-kicker">Internet fibra óptica{plan.variant ? ` ${plan.variant}` : ""}</span>
         <h3 id={`plan-${plan.id}-title`} className="plan-speed">
           {plan.speed}
           <span>{plan.unit}</span>
+          {plan.variant && <span className="sr-only"> {plan.variant}</span>}
         </h3>
         <p className="plan-tagline">{plan.tagline}</p>
       </header>

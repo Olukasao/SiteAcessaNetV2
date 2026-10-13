@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { MapPin, Phone } from "lucide-react";
 import logo from "../assets/logo-acessanet.png";
-import { company, coveredCitiesLabel, whatsappLink } from "../data/site";
+import { company, coveredCitiesLabel, whatsappLink, wifiGuideUrl } from "../data/site";
 import "./footer.css";
 
 export default function Footer() {
@@ -40,7 +40,8 @@ export default function Footer() {
             <Link to="/planos">Planos residenciais</Link>
             <Link to="/empresas">Para empresas</Link>
             <a href={company.centralUrl}>Central do Assinante</a>
-            <a href="https://acessanet.com.br/contratos">Contratos e termos</a>
+            <Link to="/contratos">Contratos e termos</Link>
+            <a href={wifiGuideUrl}>Boas práticas Wi-Fi</a>
             <a href="https://acessanet.com.br/lgpd">LGPD</a>
             <a href="https://acessanet.com.br/trabalhe-conosco">Trabalhe conosco</a>
           </nav>

@@ -506,3 +506,62 @@
     margin-top: 22px;
   }
 }
+
+/* Setas anterior/próximo */
+.hr-arrows {
+  display: flex;
+  gap: 8px;
+  margin-right: 6px;
+}
+
+.hr-arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(143, 178, 255, 0.28);
+  backdrop-filter: blur(8px);
+  transition: background-color var(--dur-fast), border-color var(--dur-fast), transform var(--dur-med) var(--ease-out);
+}
+
+.hr-arrow:hover {
+  background: rgba(47, 107, 255, 0.35);
+  border-color: rgba(138, 232, 255, 0.7);
+}
+
+.hr-arrow:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 520px) {
+  /* Celular: uma linha só -- setas, barrinhas (sem texto) e pausa */
+  .hero-rotator {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .hr-arrows {
+    margin-right: 2px;
+  }
+
+  .hr-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hr-label {
+    display: none;
+  }
+
+  .hr-bar {
+    width: 34px;
+  }
+
+  .hr-toggle {
+    margin-left: auto;
+    flex: none;
+  }
+}

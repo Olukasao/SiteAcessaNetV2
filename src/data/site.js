@@ -59,6 +59,24 @@ export const plans = [
     tagline: "Internet rápida e estável para aproveitar todos os momentos.",
     featured: false,
     includes: ["globoplay", "livros"],
+    variant: "com Globoplay",
+    short: "700 Mega",
+    note: "Para novos assinantes",
+  },
+  {
+    // Mesmo 700 Mega, com telefone fixo no lugar do Globoplay (pedido do
+    // usuário em 2026-10-13). Preço assumido igual ao 700 -- confirmar.
+    id: "700-fixo",
+    speed: 700,
+    unit: "Mega",
+    name: "Plano 700 Mega + Telefone Fixo",
+    price: { int: "114", cents: "99" },
+    priceText: "R$ 114,99",
+    tagline: "Internet rápida e estável com telefone fixo para falar à vontade.",
+    featured: false,
+    includes: ["fixo", "livros"],
+    variant: "com Telefone fixo",
+    short: "700 + Fixo",
     note: "Para novos assinantes",
   },
   {
@@ -73,19 +91,23 @@ export const plans = [
     badge: "Mais contratado",
     includes: ["globoplay", "watch", "espn", "temsaude", "livros", "fixo"],
     pendingConfirmation: ["espn", "livros", "fixo"],
+    short: "800 Mega",
     note: "Para novos assinantes",
   },
 ];
 
+const compareServices = [
+  ["globoplay", "Globoplay (padrão com anúncios)"],
+  ["livros", "App Livros (Graviola Digital)"],
+  ["fixo", "Telefone fixo ilimitado"],
+  ["watch", "Watch TV + Premiere"],
+  ["espn", "ESPN + SporTV"],
+  ["temsaude", "Telemedicina TemSaúde"],
+];
 export const comparisonRows = [
-  { label: "Velocidade", values: ["700 Mega", "800 Mega"] },
-  { label: "Fibra óptica", values: [true, true] },
-  { label: "Globoplay (padrão com anúncios)", values: [true, true] },
-  { label: "App Livros (Graviola Digital)", values: [true, true] },
-  { label: "Watch TV + Premiere", values: [false, true] },
-  { label: "ESPN + SporTV", values: [false, true] },
-  { label: "Telemedicina TemSaúde", values: [false, true] },
-  { label: "Telefone fixo ilimitado", values: [false, true] },
+  { label: "Velocidade", values: plans.map((p) => `${p.speed} ${p.unit}`) },
+  { label: "Fibra óptica", values: plans.map(() => true) },
+  ...compareServices.map(([key, label]) => ({ label, values: plans.map((p) => p.includes.includes(key)) })),
 ];
 
 // linhaFixaData.js
@@ -125,3 +147,43 @@ export const businessPlans = [
 
 // AppProvedor.jsx
 export const appFeatures = ["Segunda via de fatura", "Pagamento via Pix", "Teste de velocidade", "Suporte imediato"];
+
+// Contratos (mesmos PDFs de src/assets/docs da produção). Descrições tiradas
+// do próprio conteúdo/registro de cada PDF.
+export const contracts = [
+  {
+    id: "acs",
+    code: "A.C.S",
+    title: "Contrato de Prestação de Serviços de Comunicação Multimídia (SCM)",
+    party: "AcessaNet Telecom",
+    audience: "Contratante pessoa jurídica (empresas)",
+    registry: "Registrado no Cartório de Franco da Rocha · nº 33.641 · 06/03/2026",
+    pages: 13,
+    size: "386 KB",
+    href: "/docs/ACS.pdf",
+  },
+  {
+    id: "cde",
+    code: "C.D.E",
+    title: "Contrato de Prestação de Serviços de Comunicação Multimídia (SCM)",
+    party: "CDE Tecnologia da Comunicação",
+    audience: "Contratante pessoa física",
+    registry: "Registrado no Cartório de Franco da Rocha · nº 33.640 · 06/03/2026",
+    pages: 13,
+    size: "381 KB",
+    href: "/docs/CDE.pdf",
+  },
+  {
+    id: "dec",
+    code: "D.E.C",
+    title: "Contrato de Prestação de Serviço",
+    party: "DEC Tecnologia da Comunicação Ltda",
+    audience: "Condições, direitos e responsabilidades entre as partes",
+    registry: "Registrado no Cartório de Francisco Morato · nº 2870 · 24/02/2026",
+    pages: 14,
+    size: "10,3 MB",
+    href: "/docs/DEC.pdf",
+  },
+];
+
+export const wifiGuideUrl = "https://acessanet.com.br/cliente/guia-wifi";

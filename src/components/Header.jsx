@@ -3,13 +3,19 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, UserRound, X } from "lucide-react";
 import logo from "../assets/logo-acessanet.png";
-import { company } from "../data/site";
+import { company, wifiGuideUrl } from "../data/site";
 import { useUI } from "../context/UIContext";
 import "./header.css";
 
+// Barra do desktop: o essencial. Benefícios/Atendimento (âncoras da home)
+// ficam no menu móvel e no rodapé pra não lotar a barra.
 const links = [
   { to: "/planos", label: "Planos" },
   { to: "/empresas", label: "Empresas" },
+  { href: wifiGuideUrl, label: "Boas práticas Wi-Fi" },
+  { to: "/contratos", label: "Contratos e Termos" },
+];
+const mobileExtra = [
   { to: "/#beneficios", label: "Benefícios" },
   { to: "/#atendimento", label: "Atendimento" },
 ];
@@ -60,7 +66,11 @@ export default function Header() {
 
         <nav className="hdr-nav" aria-label="Principal">
           {links.map((l) =>
-            l.to.includes("#") ? (
+            l.href ? (
+              <a key={l.href} href={l.href} className="hdr-link">
+                {l.label}
+              </a>
+            ) : l.to.includes("#") ? (
               <Link key={l.to} to={l.to} className="hdr-link">
                 {l.label}
               </Link>
@@ -105,12 +115,12 @@ export default function Header() {
             exit={{ opacity: 0, y: -8, transition: { duration: 0.2 } }}
           >
             <nav aria-label="Menu móvel" className="hdr-mobile-nav">
-              {links.map((l, i) => (
-                <motion.div key={l.to} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0, transition: { delay: 0.05 * i + 0.08 } }}>
-                  <Link to={l.to}>{l.label}</Link>
+              {[...links, ...mobileExtra].map((l, i) => (
+                <motion.div key={l.label} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0, transition: { delay: 0.04 * i + 0.08 } }}>
+                  {l.href ? <a href={l.href}>{l.label}</a> : <Link to={l.to}>{l.label}</Link>}
                 </motion.div>
               ))}
-              <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}>
+              <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0, transition: { delay: 0.36 } }}>
                 <button type="button" onClick={() => { setOpen(false); openCoverage(); }}>Consultar cobertura</button>
               </motion.div>
             </nav>

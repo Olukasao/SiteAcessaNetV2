@@ -27,6 +27,7 @@ export default function CompareSection() {
                 {plans.map((p) => (
                   <th key={p.id} scope="col" className={p.featured ? "is-featured" : ""}>
                     <span>{p.speed} {p.unit}</span>
+                    {p.variant && <em className="compare-variant">{p.variant}</em>}
                     <small>{p.priceText}/mês</small>
                   </th>
                 ))}
@@ -56,7 +57,7 @@ export default function CompareSection() {
                 {plans.map((p) => (
                   <td key={p.id} className={p.featured ? "is-featured" : ""}>
                     <button type="button" className={`btn btn--sm ${p.featured ? "btn--primary" : "btn--ghost"}`} onClick={() => openPlan(p.id)}>
-                      Escolher {p.speed}
+                      Escolher
                     </button>
                   </td>
                 ))}

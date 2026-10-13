@@ -38,7 +38,7 @@ export default function CoverageModal() {
                     openPlan(p.id);
                   }}
                 >
-                  Ver {p.speed} {p.unit} · {p.priceText}
+                  {p.short} · {p.priceText}
                 </button>
               ))}
             </div>

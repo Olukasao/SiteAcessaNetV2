@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 
 const PlanosPage = lazy(() => import("./pages/PlanosPage"));
 const EmpresasPage = lazy(() => import("./pages/EmpresasPage"));
+const ContratosPage = lazy(() => import("./pages/ContratosPage"));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/planos" element={<PlanosPage />} />
             <Route path="/empresas" element={<EmpresasPage />} />
+            <Route path="/contratos" element={<ContratosPage />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

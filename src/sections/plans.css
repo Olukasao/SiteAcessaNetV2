@@ -16,15 +16,17 @@
 .plans-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr 0.82fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   align-items: stretch;
 }
 
 .plans-addons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto 1fr 1fr auto;
+  align-items: center;
+  gap: 12px 16px;
   padding: 28px 24px;
   border-radius: var(--r-xl);
   border: 1px dashed rgba(143, 178, 255, 0.24);
@@ -32,7 +34,7 @@
 }
 
 .plans-addons h3 {
-  margin-bottom: 6px;
+  margin: 0 8px 0 0;
   font-size: 1.15rem;
   letter-spacing: -0.01em;
 }
@@ -95,8 +97,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: auto;
-  padding-top: 12px;
+  padding-left: 8px;
   font-weight: 700;
   color: var(--cyan-300);
 }
@@ -111,14 +112,13 @@
   }
 
   .plans-addons {
-    grid-column: 1 / -1;
-    display: grid;
     grid-template-columns: 1fr 1fr;
   }
 
   .plans-addons h3,
   .plans-compare {
     grid-column: 1 / -1;
+    padding-left: 0;
   }
 }
 
@@ -176,6 +176,15 @@
   font-size: 1.5rem;
   letter-spacing: -0.03em;
   color: var(--ink);
+}
+
+.compare-variant {
+  display: block;
+  margin: 2px 0 4px;
+  font-style: normal;
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  color: var(--blue-500);
 }
 
 .compare thead th small {
