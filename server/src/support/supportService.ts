@@ -73,14 +73,14 @@ export class SupportService {
       return fastQuestion;
     }
 
-    const connection = await this.networkProvider.getConnectionStatus(input.contractId);
+    const [connection, billing] = await Promise.all([
+      this.networkProvider.getConnectionStatus(input.contractId),
+      input.categoryId === "slow_internet" ? this.billingProvider.getBillingSummary(contract) : Promise.resolve(undefined)
+    ]);
 
     if (!connection) {
       throw new AppError(404, "CONNECTION_NOT_FOUND", "Nao encontramos dados de conexao para este contrato.");
     }
-
-    const billing =
-      input.categoryId === "slow_internet" ? await this.billingProvider.getBillingSummary(contract) : undefined;
 
     const preliminaryResult = evaluateDiagnosis({
       categoryId: input.categoryId,

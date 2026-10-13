@@ -1,7 +1,7 @@
 import type { AppConfig } from "../config.js";
 import { AppError } from "../errors.js";
 import { hashPassword, verifyPassword, hmacSha256, randomId, sha256 } from "../security/hash.js";
-import { isValidCpf, maskCpf, normalizeCpf } from "./cpf.js";
+import { isValidDocument, maskDocument, normalizeDocument } from "./cpf.js";
 import { validateNewPassword } from "./passwordPolicy.js";
 import { TokenService } from "./tokenService.js";
 import type { InMemoryRateLimiter } from "./rateLimiter.js";
@@ -15,7 +15,9 @@ const CHECK_RULE: LoginAttemptRule = { maxAttempts: 15, windowMs: 10 * 60 * 1000
 const LOGIN_RULE: LoginAttemptRule = { maxAttempts: 5, windowMs: 10 * 60 * 1000, softDelayStartAt: 3 };
 const SETUP_RULE: LoginAttemptRule = { maxAttempts: 5, windowMs: 15 * 60 * 1000, softDelayStartAt: 3 };
 
-const GENERIC_INVALID_CREDENTIALS_MESSAGE = "CPF ou senha incorretos.";
+const DOCUMENT_EMPTY_MESSAGE = "Informe seu CPF ou CNPJ.";
+const DOCUMENT_INVALID_MESSAGE = "CPF ou CNPJ inválido.";
+const GENERIC_INVALID_CREDENTIALS_MESSAGE = "CPF/CNPJ ou senha incorretos.";
 const GENERIC_UNAVAILABLE_MESSAGE = "Não foi possível acessar sua conta agora. Tente novamente em alguns instantes.";
 const GENERIC_RATE_LIMIT_MESSAGE = "Muitas tentativas foram realizadas. Aguarde alguns minutos e tente novamente.";
 
@@ -42,11 +44,11 @@ export interface LocalAuthResult {
 }
 
 /**
- * Autenticacao por CPF + senha PROPRIA deste backend (nao existe endpoint
+ * Autenticacao por CPF/CNPJ + senha PROPRIA deste backend (nao existe endpoint
  * SGP de login por senha confirmado -- ver docs/SGP_INTEGRATION.md no repo
  * AcessaNet app). A senha nunca e persistida em texto puro (scrypt via
- * security/hash.ts) e o CPF nunca e persistido em texto puro (so o hash
- * HMAC). "checkAccess"/"setupPassword" sempre revalidam o CPF contra o SGP,
+ * security/hash.ts) e o documento nunca e persistido em texto puro (so o hash
+ * HMAC). "checkAccess"/"setupPassword" sempre revalidam o CPF/CNPJ contra o SGP,
  * entao so quem realmente e cliente Acessanet consegue criar uma senha.
  */
 export class LocalPasswordAuthService {
@@ -72,14 +74,18 @@ export class LocalPasswordAuthService {
     return sha256(ip || "unknown");
   }
 
-  /** Passo 1 do login: informa se este CPF ja tem senha criada, sem devolver nenhuma sessao. */
+  /** Passo 1 do login: informa se este CPF/CNPJ ja tem senha criada, sem devolver nenhuma sessao. */
   async checkAccess(input: { cpf: string; ip: string }): Promise<{ hasPassword: boolean }> {
-    const digits = normalizeCpf(input.cpf);
+    const digits = normalizeDocument(input.cpf);
 
     this.rateLimiter.consume(`local_check:ip:${input.ip}`, { limit: 30, windowMs: 60_000, cooldownMs: 60_000 });
 
-    if (!isValidCpf(digits)) {
-      throw new AppError(400, "CPF_INVALID", "Informe um CPF válido.");
+    if (!digits) {
+      throw new AppError(400, "DOCUMENT_REQUIRED", DOCUMENT_EMPTY_MESSAGE);
+    }
+
+    if (!isValidDocument(digits)) {
+      throw new AppError(400, "DOCUMENT_INVALID", DOCUMENT_INVALID_MESSAGE);
     }
 
     const cpfHash = this.cpfHash(digits);
@@ -115,10 +121,10 @@ export class LocalPasswordAuthService {
     ip: string;
     userAgent?: string | undefined;
   }): Promise<LocalAuthResult> {
-    const digits = normalizeCpf(input.cpf);
+    const digits = normalizeDocument(input.cpf);
     const cpfHash = this.cpfHash(digits);
     const ipHash = this.ipHash(input.ip);
-    const maskedCpf = digits.length === 11 ? maskCpf(digits) : "***.***.***-**";
+    const maskedCpf = digits ? maskDocument(digits) : "";
 
     this.rateLimiter.consume(`local_setup:ip:${input.ip}`, { limit: 10, windowMs: 60_000, cooldownMs: 60_000 });
 
@@ -127,9 +133,14 @@ export class LocalPasswordAuthService {
       throw new AppError(429, "RATE_LIMITED", GENERIC_RATE_LIMIT_MESSAGE, { retryAfterSeconds: blocked.retryAfterSeconds });
     }
 
-    if (!isValidCpf(digits)) {
-      await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, SETUP_RULE, "CPF_INVALID");
-      throw new AppError(400, "CPF_INVALID", "Informe um CPF válido.");
+    if (!digits) {
+      await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, SETUP_RULE, "DOCUMENT_INVALID");
+      throw new AppError(400, "DOCUMENT_REQUIRED", DOCUMENT_EMPTY_MESSAGE);
+    }
+
+    if (!isValidDocument(digits)) {
+      await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, SETUP_RULE, "DOCUMENT_INVALID");
+      throw new AppError(400, "DOCUMENT_INVALID", DOCUMENT_INVALID_MESSAGE);
     }
 
     if (input.confirmPassword !== undefined && input.confirmPassword !== input.newPassword) {
@@ -164,7 +175,7 @@ export class LocalPasswordAuthService {
 
     if (profile.passwordHash) {
       await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, SETUP_RULE, "INVALID_CREDENTIALS");
-      throw new AppError(409, "PASSWORD_ALREADY_SET", "Este CPF já tem senha cadastrada. Faça login normalmente.");
+      throw new AppError(409, "PASSWORD_ALREADY_SET", "Este CPF ou CNPJ já tem senha cadastrada. Faça login normalmente.");
     }
 
     const passwordHash = await hashPassword(input.newPassword);
@@ -186,12 +197,12 @@ export class LocalPasswordAuthService {
     return this.createSession(resolved, cpfHash, ipHash, input.userAgent);
   }
 
-  /** Login normal: CPF + senha propria ja criada. */
+  /** Login normal: CPF/CNPJ + senha propria ja criada. */
   async login(input: { cpf: string; password: string; ip: string; userAgent?: string | undefined }): Promise<LocalAuthResult> {
-    const digits = normalizeCpf(input.cpf);
+    const digits = normalizeDocument(input.cpf);
     const cpfHash = this.cpfHash(digits);
     const ipHash = this.ipHash(input.ip);
-    const maskedCpf = digits.length === 11 ? maskCpf(digits) : "***.***.***-**";
+    const maskedCpf = digits ? maskDocument(digits) : "";
 
     this.rateLimiter.consume(`local_login:ip:${input.ip}`, { limit: 30, windowMs: 60_000, cooldownMs: 60_000 });
 
@@ -209,8 +220,8 @@ export class LocalPasswordAuthService {
       throw new AppError(429, "RATE_LIMITED", GENERIC_RATE_LIMIT_MESSAGE, { retryAfterSeconds: blocked.retryAfterSeconds });
     }
 
-    if (!isValidCpf(digits)) {
-      await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, LOGIN_RULE, "CPF_INVALID");
+    if (!isValidDocument(digits)) {
+      await this.registerFailure(cpfHash, ipHash, maskedCpf, input.userAgent, LOGIN_RULE, "DOCUMENT_INVALID");
       throw new AppError(401, "INVALID_CREDENTIALS", GENERIC_INVALID_CREDENTIALS_MESSAGE);
     }
 

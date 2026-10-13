@@ -4,6 +4,7 @@ import type { ContractSummary } from "../types.js";
 import type { SgpUraClient } from "../integrations/sgp/sgpClient.js";
 import { mapSgpContract, pickString } from "../integrations/sgp/sgpMapper.js";
 import { sha256 } from "./hash.js";
+import { getDocumentType, normalizeDocument } from "../auth/cpf.js";
 
 /** Logger minimo (nao importa tipos do Fastify aqui pra nao acoplar essa classe ao framework). */
 interface OwnershipLogger {
@@ -13,7 +14,7 @@ interface OwnershipLogger {
 interface OwnershipAuditContext {
   log?: OwnershipLogger;
   endpoint?: string;
-  /** Hash do CPF, nunca o CPF em texto puro (ver security/hash.ts -- essa regra vale pra log tambem). */
+  /** Hash do documento, nunca CPF/CNPJ em texto puro (ver security/hash.ts -- essa regra vale pra log tambem). */
   cpfHash?: string;
 }
 
@@ -46,7 +47,7 @@ export class OwnershipService {
    * nenhum erro visivel, so dado sumindo silenciosamente.
    *
    * Fix: numa cache miss, reverifica direto no SGP (consultCustomerByContract,
-   * que so precisa do contractId, nunca do CPF em texto puro que nao
+   * que so precisa do contractId, nunca do CPF/CNPJ em texto puro que nao
    * guardamos) antes de bloquear. So aceita o contrato se o cpfCnpj que o
    * PROPRIO SGP devolve pra esse contrato, hasheado do mesmo jeito que
    * CpfResolver/mapSgpCustomer fazem, bater com o customerId autenticado --
@@ -100,12 +101,12 @@ export class OwnershipService {
         return null;
       }
 
-      const cpf = pickString(raw, ["cpfCnpj", "cpf_cnpj", "cpf"]).replace(/\D/g, "");
-      if (cpf.length < 11) {
+      const document = normalizeDocument(pickString(raw, ["cpfCnpj", "cpfcnpj", "cpf_cnpj", "documento", "cpf", "cnpj"]));
+      if (!getDocumentType(document)) {
         return null;
       }
 
-      const derivedCustomerId = `customer_sgp_${sha256(cpf).slice(0, 16)}`;
+      const derivedCustomerId = `customer_sgp_${sha256(document).slice(0, 16)}`;
       if (derivedCustomerId !== customerId) {
         return null;
       }

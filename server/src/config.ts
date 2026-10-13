@@ -62,7 +62,11 @@ export interface AppConfig {
     /** Somente leitura -- ver server/src/integrations/oltcloud. Nunca usar este client para POST/PUT/PATCH/DELETE. */
     enabled: boolean;
     baseUrl: string;
+    /** Token estatico opcional (atalho manual/debug, ver scripts/test-oltcloud.js) -- quando ausente, login automatico via username/password abaixo (ver oltCloudAuth.ts). */
     token: string | undefined;
+    /** Usuario/senha com permissao de API na OLT Cloud (POST /api/token) -- preferido sobre token estatico: renova sozinho (access ~3h, refresh ~24h), nunca expira em produção. */
+    username: string | undefined;
+    password: string | undefined;
     timeoutMs: number;
     /** TTL do cache de status de incidente por cliente (evita 1 chamada a OLT Cloud por render da Central). */
     cacheTtlMs: number;
@@ -71,6 +75,18 @@ export interface AppConfig {
       enabled: boolean;
       token: string | undefined;
     };
+  };
+  /**
+   * Integracao com o AcessaNet Connect (captive portal Wi-Fi, repo separado em
+   * /home/noc/roteador-publico/apps/api) -- so para a tela "Marketing" do admin,
+   * le os leads que deram opt-in de marketing no Wi-Fi publico. Mesmo padrao do
+   * bloco oltCloud acima: opcional, enabled = Boolean(baseUrl && token).
+   */
+  acessanetConnect: {
+    enabled: boolean;
+    baseUrl: string;
+    token: string | undefined;
+    timeoutMs: number;
   };
   /**
    * Sincronizacao periodica de queda massiva de PON (alert/list -> pon_loss
@@ -157,6 +173,7 @@ export type AppConfigOverrides = Partial<Omit<AppConfig, "sgp" | "oltCloud" | "r
     sign?: Partial<AppConfig["sgp"]["sign"]>;
   };
   oltCloud?: Partial<Omit<AppConfig["oltCloud"], "debug">> & { debug?: Partial<AppConfig["oltCloud"]["debug"]> };
+  acessanetConnect?: Partial<AppConfig["acessanetConnect"]>;
   regionalIncident?: Partial<AppConfig["regionalIncident"]>;
   sgpSignMock?: Partial<AppConfig["sgpSignMock"]>;
 };
@@ -229,9 +246,14 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
       enabled: env !== "production" && process.env.SGP_SIGN_MOCK_ENABLED === "true"
     },
     oltCloud: {
-      enabled: Boolean(process.env.OLTCLOUD_BASE_URL && process.env.OLTCLOUD_TOKEN),
+      enabled: Boolean(
+        process.env.OLTCLOUD_BASE_URL &&
+          (process.env.OLTCLOUD_TOKEN || (process.env.OLTCLOUD_USERNAME && process.env.OLTCLOUD_PASSWORD))
+      ),
       baseUrl: process.env.OLTCLOUD_BASE_URL ?? "",
       token: unwrapEnv(process.env.OLTCLOUD_TOKEN),
+      username: unwrapEnv(process.env.OLTCLOUD_USERNAME),
+      password: unwrapEnv(process.env.OLTCLOUD_PASSWORD),
       timeoutMs: Number(process.env.OLTCLOUD_TIMEOUT_MS ?? 8000),
       cacheTtlMs: Number(process.env.OLTCLOUD_CACHE_TTL_MS ?? 45000),
       debug: {
@@ -241,6 +263,12 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
             : env !== "production",
         token: unwrapEnv(process.env.OLTCLOUD_DEBUG_TOKEN)
       }
+    },
+    acessanetConnect: {
+      enabled: Boolean(process.env.ACESSANET_CONNECT_URL && process.env.ACESSANET_CONNECT_TOKEN),
+      baseUrl: process.env.ACESSANET_CONNECT_URL ?? "",
+      token: unwrapEnv(process.env.ACESSANET_CONNECT_TOKEN),
+      timeoutMs: Number(process.env.ACESSANET_CONNECT_TIMEOUT_MS ?? 8000)
     },
     ponOutageSync: {
       intervalSeconds: Number(process.env.OLT_PON_OUTAGE_SYNC_INTERVAL_SECONDS ?? 60)
@@ -285,6 +313,10 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
       ...overrides.sgp,
       chamado: { ...base.sgp.chamado, ...overrides.sgp?.chamado },
       sign: { ...base.sgp.sign, ...overrides.sgp?.sign }
+    },
+    acessanetConnect: {
+      ...base.acessanetConnect,
+      ...overrides.acessanetConnect
     },
     oltCloud: {
       ...base.oltCloud,

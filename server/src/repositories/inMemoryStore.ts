@@ -8,7 +8,7 @@ import type {
   TicketSummary,
   TicketTimelineEvent
 } from "../types.js";
-import { maskCpf, maskEmail, maskPhone, normalizeCpf } from "../auth/cpf.js";
+import { maskDocument, maskEmail, maskPhone, normalizeDocument } from "../auth/cpf.js";
 import { randomId, sha256 } from "../security/hash.js";
 
 export interface CustomerRecord {
@@ -73,7 +73,7 @@ export class InMemoryStore {
   readonly auditEvents: AuditEventRecord[] = [];
 
   findCustomerByCpf(cpf: string) {
-    const cpfHash = sha256(normalizeCpf(cpf));
+    const cpfHash = sha256(normalizeDocument(cpf));
     return [...this.customers.values()].find((customer) => customer.cpfHash === cpfHash);
   }
 
@@ -82,8 +82,8 @@ export class InMemoryStore {
     const customer: CustomerRecord = {
       id: input.id,
       name: input.name,
-      cpfHash: sha256(normalizeCpf(input.cpf)),
-      maskedCpf: maskCpf(input.cpf),
+      cpfHash: sha256(normalizeDocument(input.cpf)),
+      maskedCpf: maskDocument(input.cpf),
       phone: input.phone,
       maskedPhone: maskPhone(input.phone),
       email,

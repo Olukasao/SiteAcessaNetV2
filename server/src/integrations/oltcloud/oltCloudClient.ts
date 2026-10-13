@@ -1,8 +1,19 @@
 import { AppError } from "../../errors.js";
 
+/**
+ * Fonte de token dinamica (login/refresh JWT via OltCloudAuthClient, ver
+ * oltCloudAuth.ts) -- alternativa a um token estatico de string. invalidate()
+ * e chamado quando um 401 chega, forcando login completo na proxima chamada
+ * (nunca so um refresh, que pode estar igualmente invalido).
+ */
+export interface OltCloudTokenSource {
+  getToken(): Promise<string>;
+  invalidate(): void;
+}
+
 export interface OltCloudClientConfig {
   baseUrl: string;
-  token: string;
+  token: string | OltCloudTokenSource;
   timeoutMs: number;
 }
 
@@ -77,7 +88,7 @@ export class OltCloudClient {
     last_status_update?: string | undefined;
     last_disconnection?: string | undefined;
   }): Promise<Record<string, unknown>[]> {
-    return this.getAllPages("/api/v2/ftth/equipment/list", filters, ["data", "equipment", "items", "results"]);
+    return this.getAllPages("/api/v2/ftth/equipment/list", filters, ["data", "equipment", "items", "results"], EQUIPMENT_PAGE_SIZE);
   }
 
   async getEquipmentRealtime(filters: {
@@ -87,6 +98,29 @@ export class OltCloudClient {
   }): Promise<unknown> {
     const params = buildParams(filters);
     return this.get<unknown>(`/api/v2/ftth/equipment/realtime${params ? `?${params}` : ""}`);
+  }
+
+  /**
+   * client/list -- busca/listagem de clientes cadastrados na OLT Cloud
+   * (nome, documento, pppoe, plano, endereco, contato). Paginado como
+   * equipment/list, mas SEM "page_size" -- confirmado ao vivo em 2026-10-07
+   * que este endpoint rejeita esse parametro com 400 ("fields are not
+   * available for searching: ['page_size']"), diferente de equipment/list.
+   * Pagina com o tamanho fixo da API (100 por pagina, observado ao vivo) e
+   * segue "next" normalmente. NUNCA devolver o campo "pppoe_password" (vem
+   * em texto puro nesta API) daqui pra fora do backend -- quem consome isto
+   * precisa filtrar antes de responder a qualquer rota HTTP (ver
+   * integrations/oltcloud/oltClientNormalizer.ts).
+   */
+  async listClients(filters: {
+    document?: string | undefined;
+    client_name?: string | undefined;
+    pppoe?: string | undefined;
+    external_id?: string | undefined;
+    external_contract_id?: string | undefined;
+    status?: string | undefined;
+  }): Promise<Record<string, unknown>[]> {
+    return this.getAllPages("/api/v2/client/list", filters, ["data", "clients", "items", "results"], undefined);
   }
 
   /**
@@ -101,7 +135,8 @@ export class OltCloudClient {
   private async getAllPages(
     basePath: string,
     filters: Record<string, string | undefined>,
-    listKeys: string[]
+    listKeys: string[],
+    pageSize: number | undefined
   ): Promise<Record<string, unknown>[]> {
     const results: Record<string, unknown>[] = [];
     let nextUrl: string | undefined;
@@ -111,7 +146,11 @@ export class OltCloudClient {
       const response = nextUrl
         ? await this.getByUrlOrPath(nextUrl)
         : await this.get<unknown>(
-            `${basePath}?${buildParams({ ...filters, page_size: String(EQUIPMENT_PAGE_SIZE), page: page > 1 ? String(page) : undefined })}`
+            `${basePath}?${buildParams({
+              ...filters,
+              page_size: pageSize !== undefined ? String(pageSize) : undefined,
+              page: page > 1 ? String(page) : undefined
+            })}`
           );
 
       results.push(...normalizeList(response, listKeys));
@@ -148,7 +187,24 @@ export class OltCloudClient {
     return this.request<T>(`${this.config.baseUrl}${path}`, path);
   }
 
-  private async request<T>(url: string, path: string): Promise<T> {
+  private async resolveToken(forceFresh: boolean): Promise<string> {
+    if (typeof this.config.token === "string") {
+      return this.config.token;
+    }
+    if (forceFresh) {
+      this.config.token.invalidate();
+    }
+    return this.config.token.getToken();
+  }
+
+  /**
+   * Token dinamico (OltCloudTokenSource) pode ter expirado entre a emissao
+   * e o uso, mesmo com a margem de seguranca do proprio provider -- nunca
+   * confia so no cache local. Num 401, forca login completo (nao so
+   * refresh, que pode estar igualmente expirado) e tenta UMA vez de novo;
+   * token estatico (string) nunca tenta de novo, 401 e sempre definitivo.
+   */
+  private async request<T>(url: string, path: string, attempt = 0): Promise<T> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.config.timeoutMs);
     const startedAt = Date.now();
@@ -156,10 +212,11 @@ export class OltCloudClient {
 
     let response: Response;
     try {
+      const token = await this.resolveToken(attempt > 0);
       response = await fetch(url, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${this.config.token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         },
         signal: controller.signal
@@ -181,6 +238,9 @@ export class OltCloudClient {
     this.logger({ timestamp, endpoint: path, durationMs, status: response.status, ok: response.ok });
 
     if (response.status === 401) {
+      if (attempt === 0 && typeof this.config.token !== "string") {
+        return this.request<T>(url, path, attempt + 1);
+      }
       throw new AppError(502, "OLTCLOUD_UNAUTHORIZED", "Token OLT Cloud invalido ou expirado.", { path });
     }
     if (response.status === 403) {

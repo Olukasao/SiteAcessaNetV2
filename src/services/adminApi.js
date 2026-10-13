@@ -247,6 +247,16 @@ export async function getChamadoDetail(protocol) {
   return adminRequest(`/admin/api/chamados/${encodeURIComponent(protocol)}`);
 }
 
+/** Busca clientes direto na OLT Cloud (nome, documento, pppoe ou contrato) -- ver server/src/routes/adminOltCloudRoutes.ts. Documento sempre mascarado na resposta, nunca pppoe_password. */
+export async function searchOltClients(params) {
+  return adminRequest(`/admin/api/oltcloud/clients${buildQuery(params)}`);
+}
+
+/** Leads do Wi-Fi publico (AcessaNet Connect) que deram opt-in de marketing. */
+export async function listMarketingLeads() {
+  return adminRequest("/admin/api/marketing/leads");
+}
+
 /** Baixa o CSV direto (precisa do header Authorization, por isso nao e um simples <a href>). */
 export async function exportChamadosCsv(params) {
   const { accessToken } = readAdminTokens();

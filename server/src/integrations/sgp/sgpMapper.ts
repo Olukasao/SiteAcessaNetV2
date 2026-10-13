@@ -6,14 +6,14 @@ import { mapSgpStatus, normalizeChamadoStatus } from "./statusMapper.js";
 /** Alguns campos de ocorrencia trazem ordens de servico aninhadas -- nao e uma chamada SGP separada. */
 type SgpServiceOrderRaw = Record<string, unknown>;
 
-export function mapSgpCustomer(cpf: string, contracts: SgpContractRaw[]) {
+export function mapSgpCustomer(documento: string, contracts: SgpContractRaw[]) {
   const firstContract = contracts[0];
   if (!firstContract) {
     return null;
   }
 
-  const normalizedCpf = cpf.replace(/\D/g, "");
-  const customerId = `customer_sgp_${sha256(normalizedCpf).slice(0, 16)}`;
+  const normalizedDocument = documento.replace(/\D/g, "");
+  const customerId = `customer_sgp_${sha256(normalizedDocument).slice(0, 16)}`;
   const customerName = pickString(firstContract, [
     "cliente",
     "cliente_nome",
@@ -28,7 +28,7 @@ export function mapSgpCustomer(cpf: string, contracts: SgpContractRaw[]) {
   const customer = {
     id: customerId,
     name: customerName,
-    cpf: normalizedCpf,
+    cpf: normalizedDocument,
     phone: findPhone(contracts),
     email: findEmail(contracts)
   };
@@ -53,8 +53,8 @@ export function mapSgpCustomer(cpf: string, contracts: SgpContractRaw[]) {
    * tambem por consultCustomerByContract) -- esses SIM sao contratos
    * "chatos" (sem wrapper de cliente), com cpfCnpj/clienteId proprios.
    * Mesmo nesse caso, nunca aceitar sem checar: o cpf/cnpj do PROPRIO
-   * registro precisa bater com o CPF pesquisado, nunca confiar so no fato
-   * de ter vindo de uma busca por esse CPF (SGP pode, em tese, devolver
+   * registro precisa bater com o documento pesquisado, nunca confiar so no fato
+   * de ter vindo de uma busca por esse documento (SGP pode, em tese, devolver
    * casamento incorreto/parcial).
    */
   const mappedContracts = contracts.flatMap((contract) => {
@@ -65,7 +65,7 @@ export function mapSgpCustomer(cpf: string, contracts: SgpContractRaw[]) {
       return nestedContracts.map((nested) => mapSgpContract(nested, customerId)).filter(Boolean);
     }
 
-    if (!contractCpfMatches(contract, normalizedCpf)) {
+    if (!contractDocumentMatches(contract, normalizedDocument)) {
       return [];
     }
 
@@ -81,20 +81,20 @@ export function mapSgpCustomer(cpf: string, contracts: SgpContractRaw[]) {
 
 /**
  * Defesa extra (nunca confiar so no fato de um registro ter vindo de uma
- * busca por este CPF): se o registro tiver seu proprio campo de cpf/cnpj
+ * busca por este CPF/CNPJ): se o registro tiver seu proprio campo de cpf/cnpj
  * (acontece no formato "contrato chato" de /api/ura/consultacliente/,
- * ver SgpUraClient#consultCustomerByContract), ele precisa bater com o CPF
+ * ver SgpUraClient#consultCustomerByContract), ele precisa bater com o documento
  * pesquisado. Sem campo proprio pra checar, deixa passar (nao e o caso
  * que causou o vazamento -- esse ja fica bloqueado antes, pelo wrapper de
  * cliente).
  */
-function contractCpfMatches(contract: SgpContractRaw, normalizedCpf: string): boolean {
-  const rawCpf = pickString(contract, ["cpfCnpj", "cpfcnpj", "cpf_cnpj", "cpf"]);
-  if (!rawCpf) {
+function contractDocumentMatches(contract: SgpContractRaw, normalizedDocument: string): boolean {
+  const rawDocument = pickString(contract, ["cpfCnpj", "cpfcnpj", "cpf_cnpj", "documento", "cpf", "cnpj"]);
+  if (!rawDocument) {
     return true;
   }
 
-  return rawCpf.replace(/\D/g, "") === normalizedCpf;
+  return rawDocument.replace(/\D/g, "") === normalizedDocument;
 }
 
 export function mapSgpContract(contract: SgpContractRaw, customerId: string): ContractSummary | null {
@@ -173,7 +173,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *    que findPhone ja trata para "contatos.celulares".
  *  - Nomes de campo plano abaixo sao so um fallback defensivo, nunca
  *    confirmados nesta instancia do SGP.
- * consultCustomerByCpf tenta /api/ura/clientes/ primeiro e so cai pra
+ * consultCustomerByDocument tenta /api/ura/clientes/ primeiro e so cai pra
  * /api/ura/consultacliente/ se o primeiro nao achar nada -- entao os dois
  * formatos precisam ser tratados aqui.
  */

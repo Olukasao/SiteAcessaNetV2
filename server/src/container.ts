@@ -27,7 +27,9 @@ import {
   UnavailableSignatureProvider
 } from "./integrations/sgp/providers.js";
 import { SgpUraClient } from "./integrations/sgp/sgpClient.js";
-import { OltCloudClient } from "./integrations/oltcloud/oltCloudClient.js";
+import { OltCloudClient, type OltCloudTokenSource } from "./integrations/oltcloud/oltCloudClient.js";
+import { AcessanetConnectClient } from "./integrations/acessanetConnect/acessanetConnectClient.js";
+import { OltCloudAuthClient } from "./integrations/oltcloud/oltCloudAuth.js";
 import { OltCloudIncidentService } from "./integrations/oltcloud/oltCloudIncidentService.js";
 import { RegionalIncidentService } from "./services/networkIncidentDetection/regionalIncidentService.js";
 import { ClientRegionResolver } from "./services/networkIncidentDetection/clientRegionResolver.js";
@@ -156,6 +158,8 @@ export interface AppContainer {
         regionalIncidents: RegionalIncidentService;
       }
     | undefined;
+  /** Integracao com o AcessaNet Connect (ver integrations/acessanetConnect) -- undefined quando ACESSANET_CONNECT_URL/ACESSANET_CONNECT_TOKEN nao estao configurados. Usado so pela tela "Marketing" do admin. */
+  acessanetConnect: AcessanetConnectClient | undefined;
   /** Bairro/cidade de um contrato ja conhecido (SGP) -- so pra enriquecer o painel interno de incidentes, nunca pra correlacionar clientes em massa (ver clientRegionResolver.ts). */
   clientRegionResolver: ClientRegionResolver;
   /**
@@ -194,13 +198,50 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
 
   const sgpClient = config.sgp.enabled ? new SgpUraClient(config.sgp) : undefined;
 
+  /**
+   * Construido ANTES de "providers" porque SgpBackedNetworkProvider (abaixo)
+   * precisa dele -- equipment/list da OLT Cloud e a fonte mais confiavel de
+   * online/offline que existe (ver OLT_EQUIPMENT em types.ts), sempre
+   * priorizada sobre o texto de chamado do SGP quando habilitada.
+   */
+  const oltCloud = config.oltCloud.enabled
+    ? (() => {
+        /** Token estatico (debug/manual) tem prioridade se preenchido; senao login automatico por usuario/senha (ver oltCloudAuth.ts). */
+        const token: string | OltCloudTokenSource = config.oltCloud.token
+          ? config.oltCloud.token
+          : new OltCloudAuthClient({
+              baseUrl: config.oltCloud.baseUrl,
+              username: config.oltCloud.username ?? "",
+              password: config.oltCloud.password ?? "",
+              timeoutMs: config.oltCloud.timeoutMs
+            });
+
+        const client = new OltCloudClient(
+          { baseUrl: config.oltCloud.baseUrl, token, timeoutMs: config.oltCloud.timeoutMs },
+          (entry) => console.log(`[oltcloud] ${entry.timestamp} ${entry.endpoint} status=${entry.status ?? "n/a"} ok=${entry.ok} durationMs=${entry.durationMs}`)
+        );
+        const regionalIncidents = new RegionalIncidentService(client, config.regionalIncident, (entry) =>
+          console.log(`[regional-incident] ${JSON.stringify(entry)}`)
+        );
+        return { client, service: new OltCloudIncidentService(client, config.oltCloud.cacheTtlMs), regionalIncidents };
+      })()
+    : undefined;
+
+  const acessanetConnect = config.acessanetConnect.enabled
+    ? new AcessanetConnectClient({
+        baseUrl: config.acessanetConnect.baseUrl,
+        token: config.acessanetConnect.token ?? "",
+        timeoutMs: config.acessanetConnect.timeoutMs
+      })
+    : undefined;
+
   const mockContracts = new MockSgpContractProvider(store);
   const mockTickets = new MockSgpTicketProvider(store);
 
   const providers: AppContainer["providers"] = {
     contracts: sgpClient ? new SgpBackedContractProvider(mockContracts, sgpClient) : mockContracts,
     network: sgpClient
-      ? new SgpBackedNetworkProvider(new MockSgpNetworkProvider(store), sgpClient)
+      ? new SgpBackedNetworkProvider(new MockSgpNetworkProvider(store), sgpClient, oltCloud, config.oltCloud.cacheTtlMs)
       : new MockSgpNetworkProvider(store),
     tickets: sgpClient ? new SgpBackedTicketProvider(mockTickets, sgpClient, config.sgp.chamado) : mockTickets,
     appointments: new LocalAppointmentProvider(store),
@@ -339,19 +380,6 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
   const bugReportService = new BugReportService(bugReports, store, authProfiles, rateLimiter, sgpClient);
   const paymentPromiseService = new PaymentPromiseService(providers.billing, centralActivityService, rateLimiter);
 
-  const oltCloud = config.oltCloud.enabled
-    ? (() => {
-        const client = new OltCloudClient(
-          { baseUrl: config.oltCloud.baseUrl, token: config.oltCloud.token ?? "", timeoutMs: config.oltCloud.timeoutMs },
-          (entry) => console.log(`[oltcloud] ${entry.timestamp} ${entry.endpoint} status=${entry.status ?? "n/a"} ok=${entry.ok} durationMs=${entry.durationMs}`)
-        );
-        const regionalIncidents = new RegionalIncidentService(client, config.regionalIncident, (entry) =>
-          console.log(`[regional-incident] ${JSON.stringify(entry)}`)
-        );
-        return { client, service: new OltCloudIncidentService(client, config.oltCloud.cacheTtlMs), regionalIncidents };
-      })()
-    : undefined;
-
   return {
     config,
     store,
@@ -383,6 +411,7 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
     bugReportService,
     networkIncidents,
     oltCloud,
+    acessanetConnect,
     clientRegionResolver,
     sgpClient,
     dbHealthCheck,

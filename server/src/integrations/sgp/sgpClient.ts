@@ -91,9 +91,9 @@ export class SgpUraClient {
     }
   }
 
-  async consultCustomerByCpf(cpf: string) {
-    const normalizedCpf = cpf.replace(/\D/g, "");
-    const variants = buildCpfVariants(normalizedCpf);
+  async consultCustomerByDocument(documento: string) {
+    const normalizedDocument = documento.replace(/\D/g, "");
+    const variants = buildDocumentVariants(normalizedDocument);
 
     const endpoints = [
       { path: "/api/ura/clientes/", listKey: "clientes" as const },
@@ -121,6 +121,10 @@ export class SgpUraClient {
     }
 
     return [];
+  }
+
+  async consultCustomerByCpf(cpf: string) {
+    return this.consultCustomerByDocument(cpf);
   }
 
   async listInvoicesByContract(contractId: string) {
@@ -428,11 +432,16 @@ function pickString(record: Record<string, unknown>, fields: string[]) {
   return "";
 }
 
-function buildCpfVariants(digits: string): string[] {
-  if (digits.length !== 11) {
-    return [digits];
+function buildDocumentVariants(digits: string): string[] {
+  if (digits.length === 11) {
+    const formatted = `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+    return [formatted, digits];
   }
 
-  const formatted = `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
-  return [formatted, digits];
+  if (digits.length === 14) {
+    const formatted = `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12, 14)}`;
+    return [formatted, digits];
+  }
+
+  return [digits];
 }

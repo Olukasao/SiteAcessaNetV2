@@ -18,6 +18,7 @@ export type AuthAuditEventType =
 export type AuthFailureReason =
   | "INVALID_CREDENTIALS"
   | "CPF_INVALID"
+  | "DOCUMENT_INVALID"
   | "CUSTOMER_NOT_FOUND"
   | "SGP_UNAVAILABLE"
   | "PASSWORD_POLICY_REJECTED"

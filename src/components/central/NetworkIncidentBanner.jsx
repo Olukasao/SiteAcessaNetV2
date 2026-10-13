@@ -9,9 +9,9 @@ import "./networkIncidentBanner.css";
  * RegionalIncidentService ja confirmou o incidente (nunca por suspeita/
  * baixa confianca, ver server/src/services/networkIncidentDetection).
  *
- * AINDA NAO MONTADO em nenhuma pagina de producao (ver relatorio) -- pra
- * usar, importar e renderizar dentro da home da Central
- * (ex.: pages/ClienteArea.jsx), passando o contractId selecionado.
+ * Montado em pages/ClienteArea.jsx (fora do switch de abas -- aparece em
+ * qualquer pagina da Central, nao so "Internet"), recebendo o contractId
+ * selecionado.
  */
 export default function NetworkIncidentBanner({ contractId }) {
   const [status, setStatus] = useState(null);

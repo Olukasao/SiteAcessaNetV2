@@ -20,6 +20,7 @@ import {
   Plus,
   Power,
   RefreshCw,
+  Router,
   Search,
   ShieldCheck,
   Smartphone,
@@ -50,8 +51,10 @@ import {
 	  listAnalyticsEvents,
 	  listBugReports,
 	  listChamados,
+	  listMarketingLeads,
 	  listNotices,
 	  readAdminTokens,
+	  searchOltClients,
 	  setNoticeActive,
 	  updateBugReport,
 	  updateNotice
@@ -92,10 +95,12 @@ const AUDIENCE_TYPE_LABELS = {
 const ADMIN_SECTIONS = [
   { key: "overview", path: "/admin", label: "Visão Geral", icon: LayoutDashboard },
   { key: "notices", path: "/admin/avisos", label: "Avisos", icon: Bell },
+  { key: "marketing", path: "/admin/marketing", label: "Marketing", icon: Megaphone },
   { key: "bugs", path: "/admin/bugs", label: "Bugs relatados", icon: Bug },
   { key: "chamados", path: "/admin/chamados", label: "Chamados", icon: Headset },
   { key: "central", path: "/admin/central", label: "Central", icon: BarChart3 },
   { key: "clients", path: "/admin/clientes", label: "Clientes", icon: Users },
+  { key: "oltcloud", path: "/admin/rede", label: "Rede (OLT)", icon: Router },
   { key: "activity", path: "/admin/historico", label: "Histórico", icon: Activity }
 ];
 
@@ -198,12 +203,14 @@ function pageTitle(pageKey) {
   const labels = {
     overview: "Visão Geral",
 	    notices: "Avisos",
+	    marketing: "Marketing",
 	    new: "Novo aviso",
 	    edit: "Editar aviso",
 	    bugs: "Bugs relatados",
 	    chamados: "Chamados",
 	    central: "Central do Assinante",
     clients: "Clientes",
+    oltcloud: "Rede (OLT)",
     activity: "Histórico de Atividades"
   };
   return labels[pageKey] || "Admin AcessaNet";
@@ -214,10 +221,12 @@ function getPageKey(pathname) {
   if (pathname === "/admin" || pathname === "/admin/") return "overview";
 	  if (pathname === "/admin/central") return "central";
 	  if (pathname === "/admin/clientes") return "clients";
+	  if (pathname === "/admin/rede") return "oltcloud";
 	  if (pathname === "/admin/historico") return "activity";
 	  if (pathname === "/admin/bugs") return "bugs";
 	  if (pathname === "/admin/chamados") return "chamados";
 	  if (pathname === "/admin/avisos") return "notices";
+	  if (pathname === "/admin/marketing") return "marketing";
   if (pathname === "/admin/avisos/novo") return "new";
   const editMatch = /^\/admin\/avisos\/([^/]+)$/.exec(pathname);
   if (editMatch) return { key: "edit", id: editMatch[1] };
@@ -338,6 +347,8 @@ export default function AdminArea() {
             <OverviewPage />
           ) : pageKey === "notices" ? (
             <NoticesListPage admin={admin} onNavigate={navigate} />
+          ) : pageKey === "marketing" ? (
+            <MarketingPage />
           ) : pageKey === "new" ? (
             <NoticeFormPage admin={admin} mode="create" onNavigate={navigate} />
           ) : pageKey === "edit" ? (
@@ -350,6 +361,8 @@ export default function AdminArea() {
 	            <ChamadosPage />
 	          ) : pageKey === "clients" ? (
             <ClientsPage />
+          ) : pageKey === "oltcloud" ? (
+            <OltClientsPage />
           ) : pageKey === "activity" ? (
             <ActivityHistoryPage />
           ) : (
@@ -486,6 +499,77 @@ function bugStatusLabel(value) {
 
 function BugStatusPill({ status }) {
   return <span className={`admin-status-pill tone-${status || "novo"}`}>{bugStatusLabel(status)}</span>;
+}
+
+function MarketingPage() {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadLeads = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await listMarketingLeads();
+      setLeads(Array.isArray(result) ? result : []);
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof AdminApiError
+          ? caughtError.message
+          : "Não foi possível carregar os leads de marketing."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadLeads();
+  }, [loadLeads]);
+
+  return (
+    <div className="admin-page-stack">
+      <div className="admin-page-head">
+        <h2>Marketing</h2>
+        <p className="admin-muted">
+          Visitantes do Wi-Fi público (AcessaNet Connect) que autorizaram receber
+          ofertas e novidades.
+        </p>
+      </div>
+      <InlineState loading={loading} error={error} />
+      {!loading && !error && leads.length === 0 ? (
+        <p className="admin-muted">Nenhum visitante com opt-in de marketing ainda.</p>
+      ) : null}
+      {!loading && !error && leads.length > 0 ? (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Celular</th>
+                <th>Estabelecimento</th>
+                <th>Cadastrado em</th>
+                <th>Consentimento em</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map((lead) => (
+                <tr key={lead.visitorId}>
+                  <td>{lead.fullName}</td>
+                  <td>{lead.email}</td>
+                  <td>{lead.phone}</td>
+                  <td>{lead.establishment || "—"}</td>
+                  <td>{formatDateTime(lead.registeredAt)}</td>
+                  <td>{formatDateTime(lead.marketingConsentAt)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function BugReportsPage({ onChanged }) {
@@ -753,6 +837,141 @@ function ClientsPage() {
       </div>
       <TablePager data={data} page={page} setPage={setPage} />
       {selected ? <ClientDetailModal state={selected} onClose={() => setSelected(null)} /> : null}
+    </div>
+  );
+}
+
+const CONNECTION_STATUS_LABELS = {
+  ONLINE: "Online",
+  OFFLINE: "Offline",
+  UNKNOWN: "Sem dados"
+};
+
+function ConnectionStatusPill({ status }) {
+  const tone = (status || "UNKNOWN").toLowerCase();
+  return <span className={`admin-status-pill tone-conexao-${tone}`}>{CONNECTION_STATUS_LABELS[status] || "Sem dados"}</span>;
+}
+
+/**
+ * Busca clientes direto na OLT Cloud (nome, documento, pppoe ou contrato) --
+ * consulta ao vivo num sistema de terceiros, nunca uma tabela local, por
+ * isso dispara so no submit (nao a cada tecla, como ClientsPage faz com a
+ * analytics local). Documento sempre mascarado pelo backend antes de chegar
+ * aqui (ver adminOltCloudRoutes.ts); nunca existe pppoe_password na resposta.
+ */
+function OltClientsPage() {
+  const [documentValue, setDocumentValue] = useState("");
+  const [name, setName] = useState("");
+  const [pppoe, setPppoe] = useState("");
+  const [contractId, setContractId] = useState("");
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [searched, setSearched] = useState(false);
+
+  async function handleSearch(event) {
+    event.preventDefault();
+
+    if (!documentValue.trim() && !name.trim() && !pppoe.trim() && !contractId.trim()) {
+      setError("Informe ao menos um filtro: documento, nome, PPPoE ou contrato.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSearched(true);
+    try {
+      const result = await searchOltClients({
+        document: documentValue.trim() || undefined,
+        name: name.trim() || undefined,
+        pppoe: pppoe.trim() || undefined,
+        contractId: contractId.trim() || undefined
+      });
+      setData(result);
+    } catch (caughtError) {
+      setData(null);
+      setError(caughtError instanceof AdminApiError ? caughtError.message : "Não foi possível buscar na OLT Cloud agora.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="admin-page-stack">
+      <div className="admin-page-head">
+        <h2>Rede (OLT)</h2>
+      </div>
+      <p className="admin-muted">Busca ao vivo direto na OLT Cloud -- não é a base de clientes da Central.</p>
+
+      <form onSubmit={handleSearch}>
+        <FilterBar>
+          <label className="admin-field admin-field-inline">
+            <span>Documento</span>
+            <input value={documentValue} onChange={(event) => setDocumentValue(event.target.value)} placeholder="CPF ou CNPJ" />
+          </label>
+          <label className="admin-field admin-field-inline">
+            <span>Nome</span>
+            <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Nome do cliente" />
+          </label>
+          <label className="admin-field admin-field-inline">
+            <span>PPPoE</span>
+            <input value={pppoe} onChange={(event) => setPppoe(event.target.value)} placeholder="usuario@provedor" />
+          </label>
+          <label className="admin-field admin-field-inline">
+            <span>Contrato</span>
+            <input value={contractId} onChange={(event) => setContractId(event.target.value)} />
+          </label>
+          <button type="submit" className="admin-btn admin-btn-primary" disabled={loading}>
+            {loading ? <RefreshCw size={16} className="cliente-spin" /> : <Search size={16} />}
+            Buscar
+          </button>
+        </FilterBar>
+      </form>
+
+      <InlineState loading={loading} error={error} />
+
+      {!loading && !error && searched ? (
+        <>
+          {data?.truncated ? (
+            <p className="admin-inline-notice tone-warning">
+              Mostrando {data.clients.length} de {formatNumber(data.total)} resultados -- refine a busca para ver todos.
+            </p>
+          ) : null}
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Documento</th>
+                  <th>PPPoE</th>
+                  <th>Conexão</th>
+                  <th>Status</th>
+                  <th>Plano</th>
+                  <th>Contrato</th>
+                  <th>Cidade/UF</th>
+                  <th>Contato</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data?.clients || []).map((client) => (
+                  <tr key={`${client.id}-${client.externalContractId}`} title={client.addressLine || ""}>
+                    <td>{client.name || "—"}</td>
+                    <td>{client.maskedDocument || "—"}</td>
+                    <td>{client.pppoe || "—"}</td>
+                    <td><ConnectionStatusPill status={client.connectionStatus} /></td>
+                    <td>{client.status || "—"}</td>
+                    <td>{client.plan || "—"}</td>
+                    <td>{client.externalContractId || "—"}</td>
+                    <td>{client.city ? `${client.city}/${client.state}` : "—"}</td>
+                    <td>{client.contact || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {data && data.clients.length === 0 ? <p className="admin-muted">Nenhum cliente encontrado.</p> : null}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

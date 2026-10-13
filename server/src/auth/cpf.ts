@@ -1,41 +1,95 @@
+export type BrazilianDocumentType = "cpf" | "cnpj";
+
+export function normalizeDocument(value: string) {
+  return String(value || "").replace(/\D/g, "");
+}
+
 export function normalizeCpf(value: string) {
-  return value.replace(/\D/g, "");
+  return normalizeDocument(value);
+}
+
+export function getDocumentType(value: string): BrazilianDocumentType | null {
+  const digits = normalizeDocument(value);
+
+  if (digits.length === 11) return "cpf";
+  if (digits.length === 14) return "cnpj";
+
+  return null;
 }
 
 export function normalizeIdentifier(value: string) {
-  const raw = value.trim();
-  const digits = raw.replace(/\D/g, "");
+  const digits = normalizeDocument(value);
+  const documentType = getDocumentType(digits);
 
-  if (isValidCpf(digits)) {
-    return { type: "cpf" as const, value: digits };
+  if (documentType && isValidDocument(digits)) {
+    return { type: documentType, value: digits };
   }
 
   return { type: "contrato" as const, value: digits };
 }
 
+export function isValidDocument(value: string) {
+  const type = getDocumentType(value);
+
+  if (type === "cpf") return isValidCpf(value);
+  if (type === "cnpj") return isValidCnpj(value);
+
+  return false;
+}
+
 export function isValidCpf(value: string) {
-  const cpf = normalizeCpf(value);
+  const cpf = normalizeDocument(value);
 
   if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
     return false;
   }
 
   const digits = cpf.split("").map(Number);
-  const first = calculateDigit(digits.slice(0, 9));
-  const second = calculateDigit([...digits.slice(0, 9), first]);
+  const first = calculateCpfDigit(digits.slice(0, 9));
+  const second = calculateCpfDigit([...digits.slice(0, 9), first]);
 
   return first === digits[9] && second === digits[10];
 }
 
-function calculateDigit(numbers: number[]) {
+export function isValidCnpj(value: string) {
+  const cnpj = normalizeDocument(value);
+
+  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) {
+    return false;
+  }
+
+  const digits = cnpj.split("").map(Number);
+  const first = calculateCnpjDigit(digits.slice(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  const second = calculateCnpjDigit([...digits.slice(0, 12), first], [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+
+  return first === digits[12] && second === digits[13];
+}
+
+function calculateCpfDigit(numbers: number[]) {
   const sum = numbers.reduce((acc, digit, index) => acc + digit * (numbers.length + 1 - index), 0);
   const result = (sum * 10) % 11;
   return result === 10 ? 0 : result;
 }
 
+function calculateCnpjDigit(numbers: number[], weights: number[]) {
+  const sum = numbers.reduce((acc, digit, index) => acc + digit * (weights[index] ?? 0), 0);
+  const remainder = sum % 11;
+  return remainder < 2 ? 0 : 11 - remainder;
+}
+
 export function maskCpf(value: string) {
-  const cpf = normalizeCpf(value);
+  const cpf = normalizeDocument(value);
   return `***.***.***-${cpf.slice(-2)}`;
+}
+
+export function maskCnpj(value: string) {
+  const cnpj = normalizeDocument(value);
+  return `**.***.***/****-${cnpj.slice(-2)}`;
+}
+
+export function maskDocument(value: string) {
+  const digits = normalizeDocument(value);
+  return getDocumentType(digits) === "cnpj" ? maskCnpj(digits) : maskCpf(digits);
 }
 
 /** "joao.silva@empresa.com" -> "jo***@empresa.com". Nunca expor o e-mail completo em resposta de API. */

@@ -18,7 +18,8 @@ export type AdminAuditAction =
   | "UPDATE_BUG_REPORT"
   | "VIEW_CHAMADOS"
   | "VIEW_CHAMADO"
-  | "EXPORT_CHAMADOS";
+  | "EXPORT_CHAMADOS"
+  | "VIEW_MARKETING_LEADS";
 
 export interface AdminAuditLogInput {
   adminUserId?: string | null | undefined;

@@ -21,6 +21,27 @@ export interface DiagnosisInput {
 /** A partir de quantos dias de atraso a lentidao reportada e atribuida a pendencia financeira em vez de investigacao tecnica. */
 const SLOW_INTERNET_OVERDUE_THRESHOLD_DAYS = 5;
 
+/** Planos com velocidade abaixo deste limite, ao reportar lentidao, sao orientados a atualizar o plano em vez de investigacao tecnica. */
+const SLOW_INTERNET_PLAN_UPGRADE_THRESHOLD_MBPS = 500;
+
+/** Extrai a velocidade (em Mbps) do nome livre do plano vindo do SGP, ex: "800 Mega" -> 800, "1 Giga" -> 1000. */
+function parsePlanSpeedMbps(planName: string | undefined): number | undefined {
+  const match = String(planName ?? "").match(/(\d+)\s*(mega|giga|mb|gb)/i);
+  const numberPart = match?.[1];
+  const unitPart = match?.[2];
+  if (!numberPart || !unitPart) {
+    return undefined;
+  }
+
+  const value = Number(numberPart);
+  if (!Number.isFinite(value)) {
+    return undefined;
+  }
+
+  const isGiga = unitPart.toLowerCase().startsWith("g");
+  return isGiga ? value * 1000 : value;
+}
+
 export function getFastDiagnosisQuestion(input: {
   categoryId: DiagnosisCategoryId;
   answers: Record<string, string>;
@@ -721,7 +742,22 @@ function getTechnicalAdvisory(classification: string, input?: DiagnosisInput): T
           "Revisar roteador, canal e reinicio do equipamento."
         ]
       };
-    case "LENTIDAO":
+    case "LENTIDAO": {
+      const planSpeedMbps = parsePlanSpeedMbps(input?.contract.planName);
+      if (typeof planSpeedMbps === "number" && planSpeedMbps < SLOW_INTERNET_PLAN_UPGRADE_THRESHOLD_MBPS) {
+        return {
+          hypothesis: `Lentidao reportada em plano de ${planSpeedMbps} Mega, abaixo de ${SLOW_INTERNET_PLAN_UPGRADE_THRESHOLD_MBPS} Mega.`,
+          priority: "Media",
+          action: "Orientar atualizacao do plano para uma velocidade maior, pois o plano atual nao comporta o uso relatado.",
+          checklist: [
+            "Confirmar a velocidade do plano atual do cliente.",
+            "Explicar que planos abaixo de 500 Mega tendem a apresentar lentidao com uso simultaneo.",
+            "Oferecer upgrade de plano compativel com a necessidade do cliente.",
+            "Registrar a recusa ou aceite do upgrade no chamado."
+          ]
+        };
+      }
+
       return {
         hypothesis: criticalConnection
           ? "Lentidao com indicio tecnico de degradacao no acesso."
@@ -735,6 +771,7 @@ function getTechnicalAdvisory(classification: string, input?: DiagnosisInput): T
           "Conferir graficos de trafego e historico no horario informado."
         ]
       };
+    }
     case "QUEDAS":
       return {
         hypothesis: severeDrops || criticalConnection

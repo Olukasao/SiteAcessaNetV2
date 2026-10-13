@@ -237,8 +237,6 @@ export default function HeroSection() {
           )}
         </div>
       )}
-
-      {isOutubroRosa && <TemSaudeCard />}
     </section>
   );
 }

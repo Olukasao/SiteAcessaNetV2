@@ -8,7 +8,6 @@ import {
 	  ArrowUpRight,
 	  BadgeCheck,
 	  Bell,
-	  Bug,
 	  CalendarClock,
   CheckCircle2,
   Check,
@@ -62,19 +61,19 @@ import {
 	  checkLocalAccess,
 	  clearTokens,
 	  clienteRequest,
-	  createBugReport,
 	  createClientMessageId,
   forgotPassword,
   getChatToken,
   getMaskedEmailForReset,
   getPaymentPromiseStatus,
+  isValidDocument,
   listActiveNotices,
   listContractSignatures,
   logSignatureEvent,
   loginLocal,
   logoutCustomer,
-  maskCpf,
-  normalizeCpf,
+  maskDocument,
+  normalizeDocument,
   readSelectedContractId,
   readTokens,
   recordCentralActivity,
@@ -143,19 +142,6 @@ const mobileNavItems = [
   navItems[4],
   navItems[5],
   navItems[7]
-];
-
-const bugReportCategories = [
-  "Dados incorretos",
-  "Status da conexão",
-  "Faturas / boletos",
-  "Contratos",
-  "Chamados",
-  "Login",
-  "Interface / visual",
-  "Lentidão",
-  "Erro ao carregar página",
-  "Outro"
 ];
 
 const attendanceCategoryOrder = [
@@ -787,7 +773,6 @@ export default function ClienteArea() {
         />
       )}
 	      <ClienteShell
-	        connection={connection}
 	        customer={customer}
 	        contracts={contracts}
         pageKey={pageKey}
@@ -931,8 +916,13 @@ function ClienteLogin({ onAuthenticated }) {
     event.preventDefault();
     setError("");
 
-    if (normalizeCpf(cpf).length !== 11) {
-      setError("Digite um CPF válido.");
+    if (!normalizeDocument(cpf)) {
+      setError("Informe seu CPF ou CNPJ.");
+      return;
+    }
+
+    if (!isValidDocument(cpf)) {
+      setError("CPF ou CNPJ inválido.");
       return;
     }
 
@@ -1030,8 +1020,13 @@ function ClienteLogin({ onAuthenticated }) {
     event.preventDefault();
     setError("");
 
-    if (normalizeCpf(resetCpf).length !== 11) {
-      setError("Digite um CPF válido.");
+    if (!normalizeDocument(resetCpf)) {
+      setError("Informe seu CPF ou CNPJ.");
+      return;
+    }
+
+    if (!isValidDocument(resetCpf)) {
+      setError("CPF ou CNPJ inválido.");
       return;
     }
 
@@ -1126,7 +1121,7 @@ function ClienteLogin({ onAuthenticated }) {
         : step === "password"
           ? "Digite sua senha para continuar."
           : step === "forgot-cpf"
-            ? "Informe seu CPF para recuperar o acesso."
+            ? "Informe seu CPF ou CNPJ para recuperar o acesso."
             : step === "forgot-otp"
               ? "Digite o código de verificação enviado por e-mail."
               : step === "forgot-new-password"
@@ -1159,16 +1154,16 @@ function ClienteLogin({ onAuthenticated }) {
 
         {step === "cpf" ? (
           <form className="login-form" onSubmit={handleCpfSubmit}>
-            <label htmlFor="cliente-cpf">CPF do assinante</label>
+            <label htmlFor="cliente-cpf">CPF ou CNPJ</label>
             <input
               id="cliente-cpf"
               inputMode="numeric"
               autoComplete="username"
-              placeholder="000.000.000-00"
+              placeholder="Digite seu CPF ou CNPJ"
               value={cpf}
               onChange={(event) => {
                 setError("");
-                setCpf(maskCpf(event.target.value));
+                setCpf(maskDocument(event.target.value));
               }}
             />
 
@@ -1182,7 +1177,7 @@ function ClienteLogin({ onAuthenticated }) {
         ) : step === "setup" ? (
           <form className="login-form" onSubmit={handleSetupSubmit}>
             <div className="login-cpf-chip">
-              <span>{maskCpf(cpf)}</span>
+              <span>{maskDocument(cpf)}</span>
               <button type="button" onClick={handleBackToCpf}>
                 Trocar
               </button>
@@ -1221,7 +1216,7 @@ function ClienteLogin({ onAuthenticated }) {
         ) : step === "password" ? (
           <form className="login-form" onSubmit={handlePasswordSubmit}>
             <div className="login-cpf-chip">
-              <span>{maskCpf(cpf)}</span>
+              <span>{maskDocument(cpf)}</span>
               <button type="button" onClick={handleBackToCpf}>
                 Trocar
               </button>
@@ -1251,16 +1246,16 @@ function ClienteLogin({ onAuthenticated }) {
           </form>
         ) : step === "forgot-cpf" ? (
           <form className="login-form" onSubmit={handleForgotCpfSubmit}>
-            <label htmlFor="cliente-forgot-cpf">CPF do assinante</label>
+            <label htmlFor="cliente-forgot-cpf">CPF ou CNPJ</label>
             <input
               id="cliente-forgot-cpf"
               inputMode="numeric"
               autoComplete="username"
-              placeholder="000.000.000-00"
+              placeholder="Digite seu CPF ou CNPJ"
               value={resetCpf}
               onChange={(event) => {
                 setError("");
-                setResetCpf(maskCpf(event.target.value));
+                setResetCpf(maskDocument(event.target.value));
               }}
             />
 
@@ -1278,7 +1273,7 @@ function ClienteLogin({ onAuthenticated }) {
         ) : step === "forgot-otp" ? (
           <form className="login-form" onSubmit={handleVerifyCodeSubmit}>
             <div className="login-cpf-chip">
-              <span>{maskCpf(resetCpf)}</span>
+              <span>{maskDocument(resetCpf)}</span>
               <button type="button" onClick={() => setStep("forgot-cpf")}>
                 Trocar
               </button>
@@ -1580,7 +1575,6 @@ function ContractSwitcher({ contracts, onSelectContract, selectedContractId }) {
 
 function ClienteShell({
   children,
-  connection,
   contracts,
   customer,
   menuOpen,
@@ -1592,9 +1586,6 @@ function ClienteShell({
   selectedContract,
   selectedContractId
 }) {
-  const location = useLocation();
-  const [bugModalOpen, setBugModalOpen] = useState(false);
-
   return (
     <main className="cliente-app">
       <aside className={`cliente-sidebar ${menuOpen ? "is-open" : ""}`}>
@@ -1663,143 +1654,9 @@ function ClienteShell({
 	          <NavItem compact key={item.to} item={item} />
 	        ))}
 	      </nav>
-
-	      <button className="cliente-bug-fab" type="button" onClick={() => setBugModalOpen(true)}>
-	        <Bug size={16} />
-	        <span>Relatar bug</span>
-	      </button>
-
-	      {bugModalOpen ? (
-	        <ReportBugModal
-	          connection={connection}
-	          contracts={contracts}
-	          location={location}
-	          onClose={() => setBugModalOpen(false)}
-	          pageKey={pageKey}
-	          selectedContract={selectedContract}
-	        />
-	      ) : null}
 	    </main>
 	  );
 	}
-
-function getFrontendVersion() {
-  return typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "unknown";
-}
-
-function buildBugClientContext({ connection, contracts, location, pageKey, selectedContract }) {
-  const screenValue = typeof window === "undefined" ? null : `${window.screen?.width || 0}x${window.screen?.height || 0}`;
-  return {
-    rotaAtual: location.pathname,
-    paginaAtual: pageKey,
-    urlAtual: typeof window === "undefined" ? "" : window.location.href,
-    resolucaoTela: screenValue,
-    ambiente: import.meta.env.MODE,
-    versaoFrontend: getFrontendVersion(),
-    contratoSelecionado: selectedContract?.id || null,
-    contratosDoCliente: contracts.map((contract) => ({
-      id: contract.id,
-      status: contract.status,
-      planName: contract.planName,
-      city: contract.city,
-      state: contract.state
-    })),
-    statusConexaoExibido: connection?.health || null,
-    statusContratoExibido: selectedContract?.status || null,
-    planoExibido: selectedContract?.planName || null
-  };
-}
-
-function ReportBugModal({ connection, contracts, location, onClose, pageKey, selectedContract }) {
-  const [category, setCategory] = useState(bugReportCategories[0]);
-  const [description, setDescription] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    setError("");
-    if (description.trim().length < 10) {
-      setError("Descreva o problema com pelo menos 10 caracteres.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await createBugReport({
-        category,
-        description,
-        contractId: selectedContract?.id || undefined,
-        page: location.pathname,
-        url: typeof window === "undefined" ? "" : window.location.href,
-        frontendVersion: getFrontendVersion(),
-        clientContext: buildBugClientContext({ connection, contracts, location, pageKey, selectedContract })
-      });
-      setSuccess(true);
-    } catch (caughtError) {
-      setError(resolveErrorMessage(caughtError, "Não foi possível enviar o relatório agora."));
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <div className="cliente-bug-modal-backdrop" role="presentation" onClick={success ? onClose : undefined}>
-      <div className="cliente-bug-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
-        <button className="cliente-bug-modal-close" type="button" onClick={onClose} aria-label="Fechar">
-          <X size={18} />
-        </button>
-        <div className="cliente-bug-modal-head">
-          <span><Bug size={18} /></span>
-          <div>
-            <h2>Relatar um problema</h2>
-            <p>Encontrou algum problema na Central do Assinante? Conte para nós o que aconteceu.</p>
-          </div>
-        </div>
-
-        {success ? (
-          <div className="cliente-bug-success">
-            <CheckCircle2 size={30} />
-            <strong>Relatório enviado!</strong>
-            <p>Obrigado por nos avisar. Nossa equipe irá analisar o problema.</p>
-            <button className="cliente-bug-submit" type="button" onClick={onClose}>Fechar</button>
-          </div>
-        ) : (
-          <form className="cliente-bug-form" onSubmit={handleSubmit}>
-            {error ? <InlineNotice tone="danger" title="Não foi possível enviar" message={error} /> : null}
-            <label>
-              <span>Categoria</span>
-              <select required value={category} onChange={(event) => setCategory(event.target.value)}>
-                {bugReportCategories.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span>Descrição</span>
-              <textarea
-                required
-                minLength={10}
-                maxLength={3000}
-                rows={7}
-                placeholder="Descreva o problema encontrado. Se possível, informe o que você estava tentando fazer quando o erro aconteceu."
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-              />
-              <small>{description.length}/3000</small>
-            </label>
-            <div className="cliente-bug-actions">
-              <button className="cliente-bug-cancel" type="button" onClick={onClose}>Cancelar</button>
-              <button className="cliente-bug-submit" type="submit" disabled={submitting}>
-                {submitting ? "Enviando..." : "Enviar relatório"}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function NavItem({ compact = false, item, onClick }) {
   const Icon = item.icon;
@@ -2461,6 +2318,7 @@ function FaturasPage({ billing, contract, error, invoiceData, loading, onPromise
         open={Boolean(promiseInvoice)}
         onClose={() => setPromiseInvoice(null)}
         onSuccess={onPromiseSuccess}
+        promisesUsedThisMonth={billing?.paymentPromisesUsedThisMonth}
       />
     </div>
   );
@@ -2773,7 +2631,7 @@ function PlanoPage({ contract, customer }) {
         <InfoList
           items={[
             ["Assinante", customer?.name],
-            ["CPF", customer?.maskedCpf],
+            ["CPF/CNPJ", customer?.maskedCpf],
             ["Telefone", customer?.maskedPhone],
             ["Contrato", contract?.id],
             ["Status", contractStatusLabel(contract?.status)],
@@ -2797,6 +2655,8 @@ function PlanoPage({ contract, customer }) {
   );
 }
 
+const DIAGNOSIS_REQUEST_TIMEOUT_MS = 15000;
+
 function AtendimentoPage({ categories, connection, currentTicket, loading: dataLoading, onRefresh, selectedContract, tickets }) {
   const activeTicket = getActiveTicket(currentTicket, tickets, selectedContract?.id);
   const [createdTicket, setCreatedTicket] = useState(null);
@@ -2810,6 +2670,7 @@ function AtendimentoPage({ categories, connection, currentTicket, loading: dataL
   const [error, setError] = useState("");
   const [connectionChecked, setConnectionChecked] = useState(false);
   const [contactPhone, setContactPhone] = useState("");
+  const activeDiagnosisRequestRef = useRef(null);
 
   const chatTicket = createdTicket || activeTicket;
   const orderedCategories = useMemo(() => orderAttendanceCategories(categories), [categories]);
@@ -2845,6 +2706,14 @@ function AtendimentoPage({ categories, connection, currentTicket, loading: dataL
       return;
     }
 
+    // Cancela a requisição anterior ainda pendente (ex: cliente respondeu a
+    // próxima pergunta antes da anterior retornar) para evitar que ela
+    // sobrescreva o estado depois desta.
+    activeDiagnosisRequestRef.current?.abort();
+    const controller = new AbortController();
+    activeDiagnosisRequestRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), DIAGNOSIS_REQUEST_TIMEOUT_MS);
+
     setLoading(true);
     setError("");
     setSelectedCategoryId(categoryId);
@@ -2856,12 +2725,27 @@ function AtendimentoPage({ categories, connection, currentTicket, loading: dataL
           contractId: selectedContract.id,
           categoryId,
           answers: nextAnswers
-        }
+        },
+        signal: controller.signal
       });
+
+      if (activeDiagnosisRequestRef.current !== controller) {
+        return;
+      }
+
       setDiagnosis(result);
       setAnswers(nextAnswers);
       setTextAnswer("");
     } catch (caughtError) {
+      if (activeDiagnosisRequestRef.current !== controller) {
+        return;
+      }
+
+      if (caughtError?.name === "AbortError") {
+        setError("A triagem demorou mais que o esperado. Tente novamente.");
+        return;
+      }
+
       const financialFallback = createFinancialFallbackDiagnosis(categoryId);
 
       if (financialFallback) {
@@ -2873,7 +2757,10 @@ function AtendimentoPage({ categories, connection, currentTicket, loading: dataL
 
       setError(resolveErrorMessage(caughtError, "Não foi possível iniciar a triagem."));
     } finally {
-      setLoading(false);
+      clearTimeout(timeoutId);
+      if (activeDiagnosisRequestRef.current === controller) {
+        setLoading(false);
+      }
     }
   }
 
@@ -3828,7 +3715,7 @@ function PerfilPage({ contracts, customer, onLogout, onSelectContract, selectedC
         <InfoList
           items={[
             ["Nome", customer?.name],
-            ["CPF", customer?.maskedCpf],
+            ["CPF/CNPJ", customer?.maskedCpf],
             ["Telefone", customer?.maskedPhone]
           ]}
         />
@@ -4536,12 +4423,14 @@ function opticalLabel(status) {
 }
 
 /**
- * Transparência sobre de onde ONU/PON/PPPoE vieram -- o SGP não expõe status
- * de conexão em tempo real (só texto de chamado), então "fonte" aqui nunca é
- * telemetria ao vivo. Ver ConnectionStatusSource no backend (types.ts).
+ * Transparência sobre de onde ONU/PON/PPPoE vieram. OLT_EQUIPMENT é leitura
+ * em tempo real do equipamento; as demais fontes nunca são telemetria ao
+ * vivo (o SGP não expõe isso, só texto de chamado). Ver ConnectionStatusSource
+ * no backend (types.ts).
  */
 function statusSourceLabel(source) {
   const labels = {
+    OLT_EQUIPMENT: "Leitura em tempo real do equipamento",
     SGP_TICKET_DIAGNOSIS: "Último chamado técnico com diagnóstico",
     CONTRACT_STATUS: "Situação administrativa do contrato",
     NO_EVIDENCE: "Sem diagnóstico técnico recente disponível"

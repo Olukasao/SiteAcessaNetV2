@@ -17,6 +17,8 @@ import type { SgpContractRaw, SgpInvoiceRaw, SgpOccurrenceRaw, SgpUraClient } fr
 import { mapSgpStatus } from "./statusMapper.js";
 import { mapSgpOccurrence, extractConnectionStatus } from "./sgpMapper.js";
 import { mapSgpSignatureStatus, getSignatureStatusLabel, type SignatureStatus } from "./signatureStatusMapper.js";
+import type { OltCloudClient } from "../oltcloud/oltCloudClient.js";
+import { getClientConnectionStatus } from "../oltcloud/oltClientConnectionStatus.js";
 
 export interface TicketSummaryWithRaw extends TicketSummary {
   raw: SgpOccurrenceRaw;
@@ -206,14 +208,16 @@ export class SgpBackedBillingProvider implements BillingProvider {
     }
 
     try {
-      const contracts = await this.client.consultCustomerByContract(contract.id);
+      const [contracts, invoices] = await Promise.all([
+        this.client.consultCustomerByContract(contract.id),
+        this.listInvoices(contract)
+      ]);
       const raw = findContract(contracts, contract.id);
       if (!raw) {
         return unavailableBillingSummary(contract.id);
       }
 
       const summary = buildBillingSummaryFromSgp(contract.id, raw);
-      const invoices = await this.listInvoices(contract);
       const maxDaysLate = getMaxDaysLate(invoices.invoices);
 
       return {
@@ -552,9 +556,21 @@ export class SgpBackedContractProvider implements ContractProvider {
 }
 
 export class SgpBackedNetworkProvider implements NetworkProvider {
+  /**
+   * Cache em memoria do status do equipamento na OLT Cloud, por contrato
+   * (mesmo padrao do OltCloudIncidentService) -- sem isso, a triagem guiada
+   * do app (uma pergunta por vez, varios segundos entre respostas) repete a
+   * mesma chamada a OLT Cloud em toda pergunta da mesma sessao.
+   */
+  private readonly oltEquipmentCache = new Map<string, { expiresAt: number; value: ConnectionStatus | null }>();
+  private readonly oltEquipmentRequests = new Map<string, Promise<ConnectionStatus | null>>();
+
   constructor(
     private readonly fallback: NetworkProvider,
-    private readonly client: SgpUraClient
+    private readonly client: SgpUraClient,
+    /** Opcional -- undefined quando OLTCLOUD_BASE_URL/USERNAME/PASSWORD nao estao configurados (ver container.ts). Quando presente, sempre consultado primeiro (ver getConnectionStatus). */
+    private readonly oltCloud?: { client: OltCloudClient },
+    private readonly oltEquipmentCacheTtlMs: number = 45000
   ) {}
 
   /**
@@ -582,17 +598,21 @@ export class SgpBackedNetworkProvider implements NetworkProvider {
    *   3. NO_EVIDENCE -- nenhuma das duas acima: UNKNOWN, nunca ONLINE nem
    *      OFFLINE inventado.
    *
-   * onu/pon/pppoe continuam sincronizados entre si (nao independentes):
-   * nenhuma fonte disponivel hoje informa cada um separadamente -- seria
-   * fabricar precisao que a integracao atual nao tem. Telemetria realmente
-   * independente por equipamento exigiria habilitar a integracao OLT Cloud
-   * (ja existe em src/integrations/oltcloud/, mas so usada hoje pro painel
-   * interno de incidentes regionais -- OLTCLOUD_BASE_URL vazio em producao)
-   * e usa-la aqui, nunca o SGP.
+   * onu/pon/pppoe continuam sincronizados entre si nas fontes abaixo
+   * (SGP_TICKET_DIAGNOSIS/CONTRACT_STATUS) -- nenhuma delas informa cada um
+   * separadamente, seria fabricar precisao que nao tem. A fonte OLT_EQUIPMENT
+   * (ver tryOltEquipmentStatus abaixo, sempre tentada primeiro quando a
+   * integracao OLT Cloud esta habilitada) e diferente: e leitura real do
+   * equipamento, por isso agora tem prioridade sobre o texto de chamado.
    */
   async getConnectionStatus(contractId: string): Promise<ConnectionStatus | null> {
     if (!isLikelySgpContractId(contractId)) {
       return this.fallback.getConnectionStatus(contractId);
+    }
+
+    const oltStatus = await this.tryOltEquipmentStatus(contractId);
+    if (oltStatus) {
+      return oltStatus;
     }
 
     let occurrences: SgpOccurrenceRaw[];
@@ -685,6 +705,99 @@ export class SgpBackedNetworkProvider implements NetworkProvider {
       updatedAt: now
     };
   }
+
+  /**
+   * Tenta a leitura real do equipamento na OLT Cloud antes de qualquer
+   * heuristica baseada em texto de chamado. externalContractId na OLT Cloud
+   * e o MESMO numero de contrato do SGP (confirmado ao vivo em 2026-10-07,
+   * contratos 5932/5594) -- por isso usa contractId direto, sem mapeamento.
+   *
+   * null quando: integracao desligada, equipamento nao encontrado pra este
+   * contrato (getClientConnectionStatus ja filtra por igualdade EXATA contra
+   * falso-positivo de substring do filtro da API, ver oltClientConnectionStatus.ts),
+   * ou a chamada falhar (SGP/texto de chamado assume de qualquer forma,
+   * nunca derruba a rota por a OLT Cloud estar fora do ar).
+   *
+   * onu/pon sincronizados com o status real do equipamento. pppoe fica
+   * sincronizado tambem quando OFFLINE (ONU offline garante que nao ha
+   * sessao PPPoE) -- mas quando ONLINE, equipment/list so confirma o link
+   * fisico (ONU<->OLT), nunca a sessao PPPoE/Radius em si (esse dado nao
+   * existe nesta API, mesma limitacao documentada acima pro SGP). Mesmo
+   * assim mantido sincronizado como ONLINE pra nao reintroduzir a
+   * inconsistencia que o cliente quer resolver (saber se o problema e dele
+   * ou da rede) -- na pratica, ONU com link fisico ativo e autenticacao
+   * PPPoE sao bem correlacionados (falha de credencial e evento raro, nao o
+   * padrao de queixa "sem internet" do dia a dia).
+   */
+  private async tryOltEquipmentStatus(contractId: string): Promise<ConnectionStatus | null> {
+    if (!this.oltCloud) {
+      return null;
+    }
+
+    const cached = this.oltEquipmentCache.get(contractId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value;
+    }
+
+    const inFlight = this.oltEquipmentRequests.get(contractId);
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const request = this.fetchOltEquipmentStatus(contractId).then((value) => {
+      this.oltEquipmentCache.set(contractId, { expiresAt: Date.now() + this.oltEquipmentCacheTtlMs, value });
+      return value;
+    });
+
+    this.oltEquipmentRequests.set(contractId, request);
+    try {
+      return await request;
+    } finally {
+      this.oltEquipmentRequests.delete(contractId);
+    }
+  }
+
+  private async fetchOltEquipmentStatus(contractId: string): Promise<ConnectionStatus | null> {
+    if (!this.oltCloud) {
+      return null;
+    }
+
+    let connection: Awaited<ReturnType<typeof getClientConnectionStatus>>;
+    try {
+      connection = await getClientConnectionStatus(this.oltCloud.client, contractId);
+    } catch {
+      return null;
+    }
+
+    if (connection.status === "UNKNOWN") {
+      return null;
+    }
+
+    const offline = connection.status === "OFFLINE";
+
+    return {
+      contractId,
+      health: offline ? "CRITICAL" : "NORMAL",
+      contractStatus: "ACTIVE",
+      onu: offline ? "OFFLINE" : "ONLINE",
+      pon: offline ? "OFFLINE" : "ONLINE",
+      pppoe: offline ? "OFFLINE" : "ONLINE",
+      opticalSignal: offline ? "LOS" : "NORMAL",
+      knownIncident: false,
+      statusSource: "OLT_EQUIPMENT",
+      updatedAt: normalizeOltTimestamp(connection.lastStatusUpdate) || new Date().toISOString()
+    };
+  }
+}
+
+/** OLT Cloud devolve "YYYY-MM-DD HH:MM:SS" (espaco, confirmado ao vivo) -- normaliza pro formato ISO que o resto do backend/frontend usa. */
+function normalizeOltTimestamp(value: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+  const isoLike = value.includes("T") ? value : value.replace(" ", "T");
+  const parsed = new Date(isoLike);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
 }
 
 /** Chamado encerrado ha mais que isso nunca mais conta como diagnostico atual -- so como historico. */
@@ -794,6 +907,13 @@ const billingDueDateFields = [
 
 const billingDueDayFields = ["dia_vencimento", "diaVencimento", "vencimento_dia", "vencimentoDia", "vencimento"];
 
+const billingPromisesUsedFields = [
+  "promessasPagamentoMes",
+  "promessas_pagamento_mes",
+  "promessasDePagamentoMes",
+  "promessas_de_pagamento_mes"
+];
+
 function belongsToContract(invoice: SgpInvoiceRaw, contractId: string) {
   return String(invoice.clienteContrato ?? "").trim() === contractId;
 }
@@ -873,6 +993,7 @@ function buildBillingSummaryFromSgp(contractId: string, raw: SgpContractRaw): Bi
   const amountOpen = pickNumberDeep(raw, billingAmountFields);
   const nextDueDate = pickDateDeep(raw, billingDueDateFields);
   const dueDay = pickDueDayDeep(raw, billingDueDayFields);
+  const promisesUsedThisMonth = pickNumberDeep(raw, billingPromisesUsedFields);
   const status = deriveBillingStatus(amountOpen, nextDueDate);
 
   return {
@@ -882,7 +1003,8 @@ function buildBillingSummaryFromSgp(contractId: string, raw: SgpContractRaw): Bi
     source: "sgp",
     ...(amountOpen !== undefined ? { amountOpen } : {}),
     ...(nextDueDate ? { nextDueDate } : {}),
-    ...(dueDay !== undefined ? { dueDay } : {})
+    ...(dueDay !== undefined ? { dueDay } : {}),
+    ...(promisesUsedThisMonth !== undefined ? { paymentPromisesUsedThisMonth: promisesUsedThisMonth } : {})
   };
 }
 

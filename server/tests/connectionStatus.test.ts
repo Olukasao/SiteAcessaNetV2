@@ -2,7 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { extractConnectionStatus } from "../src/integrations/sgp/sgpMapper.js";
 import { SgpBackedNetworkProvider, MockSgpNetworkProvider } from "../src/integrations/sgp/providers.js";
 import type { SgpUraClient } from "../src/integrations/sgp/sgpClient.js";
+import type { OltCloudClient } from "../src/integrations/oltcloud/oltCloudClient.js";
 import { InMemoryStore } from "../src/repositories/inMemoryStore.js";
+
+function fakeOltClient(equipment: Record<string, unknown>[]): OltCloudClient {
+  return { listEquipment: async () => equipment } as unknown as OltCloudClient;
+}
 
 describe("extractConnectionStatus", () => {
   it("reconhece o formato real de diagnostico 'DIAGNOSTICO: Cliente ONLINE' (com sinal optico junto)", () => {
@@ -338,5 +343,73 @@ describe("SgpBackedNetworkProvider.getConnectionStatus", () => {
 
     expect(status?.health).toBe("NORMAL");
     expect(status?.onu).toBe("ONLINE");
+  });
+
+  describe("prioridade da OLT Cloud (OLT_EQUIPMENT) sobre o texto de chamado do SGP", () => {
+    it("OLT Cloud ONLINE tem prioridade e nunca chega a consultar ocorrencias do SGP", async () => {
+      const sgpOccurrences = vi.fn();
+      const client = { listOccurrencesByContract: sgpOccurrences } as unknown as SgpUraClient;
+      const fallback = new MockSgpNetworkProvider(new InMemoryStore());
+      const oltClient = fakeOltClient([{ external_client_contract_id: "5594", status: "Online" }]);
+      const provider = new SgpBackedNetworkProvider(fallback, client, { client: oltClient });
+
+      const status = await provider.getConnectionStatus("5594");
+
+      expect(status?.health).toBe("NORMAL");
+      expect(status?.onu).toBe("ONLINE");
+      expect(status?.pppoe).toBe("ONLINE");
+      expect(status?.statusSource).toBe("OLT_EQUIPMENT");
+      expect(sgpOccurrences).not.toHaveBeenCalled();
+    });
+
+    it("OLT Cloud OFFLINE -> CRITICAL/OFFLINE com statusSource OLT_EQUIPMENT, mesmo com contrato ATIVO no SGP", async () => {
+      const client = { listOccurrencesByContract: vi.fn() } as unknown as SgpUraClient;
+      const fallback = new MockSgpNetworkProvider(new InMemoryStore());
+      const oltClient = fakeOltClient([{ external_client_contract_id: "5594", status: "Offline" }]);
+      const provider = new SgpBackedNetworkProvider(fallback, client, { client: oltClient });
+
+      const status = await provider.getConnectionStatus("5594");
+
+      expect(status?.health).toBe("CRITICAL");
+      expect(status?.onu).toBe("OFFLINE");
+      expect(status?.pppoe).toBe("OFFLINE");
+      expect(status?.statusSource).toBe("OLT_EQUIPMENT");
+    });
+
+    it("ignora equipamento de OUTRO contrato (substring do filtro da OLT) e cai pro diagnostico do SGP", async () => {
+      // equipment/list?external_client_contract_id=5932 tambem devolve "35932" (confirmado ao
+      // vivo) -- sem nenhum equipamento batendo EXATAMENTE, nunca deve virar OLT_EQUIPMENT.
+      const client = {
+        listOccurrencesByContract: vi.fn().mockResolvedValue([
+          { conteudo: "DIAGNOSTICO: Cliente ONLINE", contrato_status: "Ativo" }
+        ])
+      } as unknown as SgpUraClient;
+      const fallback = new MockSgpNetworkProvider(new InMemoryStore());
+      const oltClient = fakeOltClient([{ external_client_contract_id: "35932", status: "Offline" }]);
+      const provider = new SgpBackedNetworkProvider(fallback, client, { client: oltClient });
+
+      const status = await provider.getConnectionStatus("5932");
+
+      expect(status?.statusSource).toBe("SGP_TICKET_DIAGNOSIS");
+      expect(status?.onu).toBe("ONLINE");
+    });
+
+    it("OLT Cloud configurada mas chamada falha -- cai pro diagnostico do SGP, nunca quebra a rota", async () => {
+      const client = {
+        listOccurrencesByContract: vi.fn().mockResolvedValue([{ conteudo: "DIAGNOSTICO: Cliente OFFLINE", contrato_status: "Ativo" }])
+      } as unknown as SgpUraClient;
+      const fallback = new MockSgpNetworkProvider(new InMemoryStore());
+      const oltClient = {
+        listEquipment: async () => {
+          throw new Error("OLT Cloud fora do ar");
+        }
+      } as unknown as OltCloudClient;
+      const provider = new SgpBackedNetworkProvider(fallback, client, { client: oltClient });
+
+      const status = await provider.getConnectionStatus("5594");
+
+      expect(status?.statusSource).toBe("SGP_TICKET_DIAGNOSIS");
+      expect(status?.onu).toBe("OFFLINE");
+    });
   });
 });

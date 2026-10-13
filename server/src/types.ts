@@ -31,16 +31,19 @@ export type ConnectionHealth = "NORMAL" | "WARNING" | "CRITICAL" | "UNKNOWN";
 export type TechnicalState = "ONLINE" | "OFFLINE" | "DEGRADED" | "UNKNOWN";
 
 /**
- * De onde veio onu/pon/pppoe/health em ConnectionStatus -- nenhuma dessas
- * fontes e uma leitura tecnica EM TEMPO REAL (o SGP nao expoe, pras
- * credenciais /api/ura/* disponiveis hoje, nenhum campo explicito de
- * online/offline do servico nem sessao PPPoE/Radius; ver investigacao em
- * SgpBackedNetworkProvider.getConnectionStatus). Existe pra deixar
- * explicito pro frontend (e pra quem le o JSON) o quao forte e cada sinal,
- * em vez de apresentar tudo como se fosse igualmente confiavel.
+ * De onde veio onu/pon/pppoe/health em ConnectionStatus. O SGP nao expoe,
+ * pras credenciais /api/ura/* disponiveis hoje, nenhum campo explicito de
+ * online/offline do servico nem sessao PPPoE/Radius (ver investigacao em
+ * SgpBackedNetworkProvider.getConnectionStatus) -- so OLT_EQUIPMENT abaixo e
+ * leitura tecnica EM TEMPO REAL de verdade (equipment/list da OLT Cloud,
+ * habilitada em 2026-10-07). Existe pra deixar explicito pro frontend (e pra
+ * quem le o JSON) o quao forte e cada sinal, em vez de apresentar tudo como
+ * se fosse igualmente confiavel.
  */
 export type ConnectionStatusSource =
-  /** Texto de diagnostico reconhecivel num chamado (aberto, ou encerrado ha pouco tempo). Unico sinal ligado a um relato tecnico real disponivel hoje. */
+  /** Leitura em tempo real do equipamento (ONU) na OLT Cloud -- sinal mais confiavel disponivel, sempre priorizado quando a integracao esta habilitada e encontra o equipamento do contrato. */
+  | "OLT_EQUIPMENT"
+  /** Texto de diagnostico reconhecivel num chamado (aberto, ou encerrado ha pouco tempo). Unico sinal ligado a um relato tecnico real disponivel no SGP. */
   | "SGP_TICKET_DIAGNOSIS"
   /** Inferido do status administrativo do contrato (suspenso/cancelado) -- nao e leitura tecnica direta, so uma consequencia operacional conhecida. */
   | "CONTRACT_STATUS"
@@ -74,6 +77,7 @@ export interface BillingSummary {
   nextDueDate?: string;
   dueDay?: number;
   maxDaysLate?: number;
+  paymentPromisesUsedThisMonth?: number;
   updatedAt: string;
   source: BillingSource;
 }

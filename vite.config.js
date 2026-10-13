@@ -32,4 +32,9 @@ export default defineConfig({
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
   },
+  // 5173 fica reservada para o front do chat-interno.
+  server: {
+    port: 5174,
+    strictPort: true,
+  },
 })

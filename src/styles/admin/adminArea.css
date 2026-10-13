@@ -591,6 +591,21 @@
   background: rgba(100, 116, 139, 0.14);
 }
 
+.admin-status-pill.tone-conexao-online {
+  color: #087a34;
+  background: rgba(0, 156, 59, 0.16);
+}
+
+.admin-status-pill.tone-conexao-offline {
+  color: #a3123f;
+  background: rgba(220, 38, 76, 0.14);
+}
+
+.admin-status-pill.tone-conexao-unknown {
+  color: #64748b;
+  background: rgba(100, 116, 139, 0.14);
+}
+
 .admin-chamado-description {
   margin: 0;
   padding: 12px 14px;

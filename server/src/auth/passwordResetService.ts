@@ -1,7 +1,7 @@
 import type { AppConfig } from "../config.js";
 import { AppError } from "../errors.js";
 import { hashPassword, hmacSha256, randomId, randomOtp, randomToken, safeEqual, sha256 } from "../security/hash.js";
-import { isValidCpf, maskCpf, normalizeCpf } from "./cpf.js";
+import { isValidDocument, maskDocument, normalizeDocument } from "./cpf.js";
 import { validateNewPassword } from "./passwordPolicy.js";
 import type { InMemoryRateLimiter } from "./rateLimiter.js";
 import type { CpfResolverResult } from "./cpfResolver.js";
@@ -31,10 +31,10 @@ export interface MaskedEmailResult {
 }
 
 /**
- * Fluxo "esqueci minha senha": CPF -> OTP por e-mail -> reset_token -> nova
- * senha. Nunca revela se um CPF existe (mensagem generica sempre igual) e
+ * Fluxo "esqueci minha senha": CPF/CNPJ -> OTP por e-mail -> reset_token -> nova
+ * senha. Nunca revela se um documento existe (mensagem generica sempre igual) e
  * nunca usa um e-mail vindo do frontend -- o e-mail e sempre resolvido no
- * backend a partir do CPF, via SGP (ver auth/cpfResolver.ts).
+ * backend a partir do CPF/CNPJ, via SGP (ver auth/cpfResolver.ts).
  */
 export class PasswordResetService {
   constructor(
@@ -61,22 +61,22 @@ export class PasswordResetService {
   }
 
   /**
-   * Passo 1: sempre devolve a mesma mensagem generica, exista ou nao o CPF,
+   * Passo 1: sempre devolve a mesma mensagem generica, exista ou nao o CPF/CNPJ,
    * tenha ou nao e-mail cadastrado, esteja ou nao em cooldown -- so isso
-   * evita enumeracao de clientes. So dispara e-mail de verdade quando o CPF
+   * evita enumeracao de clientes. So dispara e-mail de verdade quando o documento
    * resolve no SGP, tem e-mail cadastrado e o cooldown de 60s ja passou.
    */
   async requestReset(input: { cpf: string; ip: string }): Promise<{ message: string }> {
-    const digits = normalizeCpf(input.cpf);
+    const digits = normalizeDocument(input.cpf);
     this.rateLimiter.consume(`password_reset_request:ip:${input.ip}`, REQUEST_RULE);
 
-    if (!isValidCpf(digits)) {
+    if (!isValidDocument(digits)) {
       return { message: GENERIC_SENT_MESSAGE };
     }
 
     const cpfHash = this.cpfHash(digits);
     const ipHash = this.ipHash(input.ip);
-    const maskedCpf = maskCpf(digits);
+    const maskedCpf = maskDocument(digits);
 
     let resolved: CpfResolverResult | null;
     try {
@@ -131,10 +131,10 @@ export class PasswordResetService {
     return { message: GENERIC_SENT_MESSAGE };
   }
 
-  /** Devolve o e-mail mascarado pro passo 2 da tela, sem nunca expor o endereco completo. Mesma mensagem generica se o CPF nao resolver. */
+  /** Devolve o e-mail mascarado pro passo 2 da tela, sem nunca expor o endereco completo. Mesma mensagem generica se o CPF/CNPJ nao resolver. */
   async getMaskedEmail(input: { cpf: string }): Promise<MaskedEmailResult> {
-    const digits = normalizeCpf(input.cpf);
-    if (!isValidCpf(digits)) {
+    const digits = normalizeDocument(input.cpf);
+    if (!isValidDocument(digits)) {
       throw new AppError(404, "CUSTOMER_NOT_FOUND", "Não encontramos um cliente com os dados informados.");
     }
 
@@ -154,16 +154,16 @@ export class PasswordResetService {
 
   /** Passo 2: valida o codigo e devolve um reset_token de uso unico (10 min) para o passo 3. */
   async verifyCode(input: { cpf: string; code: string; ip: string }): Promise<{ resetToken: string }> {
-    const digits = normalizeCpf(input.cpf);
+    const digits = normalizeDocument(input.cpf);
     this.rateLimiter.consume(`password_reset_verify:ip:${input.ip}`, VERIFY_RULE);
 
-    if (!isValidCpf(digits)) {
+    if (!isValidDocument(digits)) {
       throw new AppError(400, "CODE_INVALID", GENERIC_CODE_INVALID_MESSAGE);
     }
 
     const cpfHash = this.cpfHash(digits);
     const ipHash = this.ipHash(input.ip);
-    const maskedCpf = maskCpf(digits);
+    const maskedCpf = maskDocument(digits);
 
     const request = await this.passwordResets.findActiveByCpfHash(cpfHash);
     if (!request) {

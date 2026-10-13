@@ -13,6 +13,223 @@ export class ClienteApiError extends Error {
   }
 }
 
+/**
+ * Modo demonstração: roda inteiro no navegador, sem nenhuma chamada de rede
+ * nem dado de cliente real -- pra gravar vídeo/print da Central sem expor
+ * informação de assinante de verdade. Disparado só ao digitar este CPF fixo
+ * na tela de login (nunca resolve/valida nada no SGP real: a interceptação
+ * acontece ANTES de qualquer fetch, tanto no login quanto em clienteRequest).
+ */
+export const DEMO_DOCUMENT = "12345678909";
+const DEMO_ACCESS_TOKEN = "demo-access-token";
+const DEMO_REFRESH_TOKEN = "demo-refresh-token";
+const demoPasswordFlagKey = "acessanet.demo.passwordSet";
+
+function isDemoDocument(value) {
+  return normalizeDocument(value) === DEMO_DOCUMENT;
+}
+
+function isDemoSession() {
+  return typeof window !== "undefined" && window.localStorage.getItem(accessTokenKey) === DEMO_ACCESS_TOKEN;
+}
+
+const DEMO_CUSTOMER = {
+  id: "demo-customer",
+  name: "Cliente Demonstração",
+  maskedCpf: "***.***.***-09",
+  maskedPhone: "(11) *****-0000"
+};
+
+const DEMO_CONTRACT = {
+  id: "demo-contrato-800",
+  customerId: DEMO_CUSTOMER.id,
+  addressLine: "Rua Demonstração, 123 - Centro",
+  city: "Cidade Demonstração",
+  state: "SP",
+  planName: "800 Mega",
+  status: "ACTIVE"
+};
+
+const DEMO_CATEGORIES = [
+  { id: "no_internet", title: "Sem internet", description: "Não consigo acessar a internet pelo Wi-Fi ou cabo." },
+  { id: "slow_internet", title: "Internet lenta", description: "A conexão está abaixo do esperado." },
+  { id: "intermittent", title: "Internet caindo", description: "A conexão cai e volta durante o dia." },
+  {
+    id: "wifi_problem",
+    title: "Problema no Wi-Fi",
+    description: "Sinal fraco, rede não aparece ou alguns aparelhos não conectam."
+  },
+  { id: "router_password", title: "Troca de senha do roteador", description: "Solicitar alteração da senha do Wi-Fi." },
+  { id: "websites", title: "Alguns sites não funcionam", description: "Um site ou serviço específico não abre." },
+  { id: "equipment", title: "Equipamento/modem", description: "Luzes, cabos, energia ou equipamento." },
+  { id: "phone", title: "Telefone", description: "Problemas relacionados ao telefone fixo." },
+  { id: "other", title: "Outro problema", description: "Não encontrei meu problema nas opções." }
+];
+
+function demoAuthResult() {
+  return {
+    accessToken: DEMO_ACCESS_TOKEN,
+    refreshToken: DEMO_REFRESH_TOKEN,
+    customer: DEMO_CUSTOMER,
+    contracts: [DEMO_CONTRACT]
+  };
+}
+
+function markDemoPasswordSet() {
+  if (typeof window !== "undefined") {
+    window.sessionStorage.setItem(demoPasswordFlagKey, "1");
+  }
+}
+
+function hasDemoPassword() {
+  return typeof window !== "undefined" && window.sessionStorage.getItem(demoPasswordFlagKey) === "1";
+}
+
+function demoIsoDate(daysFromNow) {
+  const date = new Date();
+  date.setDate(date.getDate() + daysFromNow);
+  return date.toISOString();
+}
+
+/** Casa "/v1/contracts/:id/connection" com "/v1/contracts/demo-contrato-800/connection", devolvendo { id: "demo-contrato-800" }. */
+function matchDemoPath(pattern, path) {
+  const patternParts = pattern.split("/");
+  const pathParts = path.split("/");
+  if (patternParts.length !== pathParts.length) {
+    return null;
+  }
+
+  const params = {};
+  for (let i = 0; i < patternParts.length; i += 1) {
+    const part = patternParts[i];
+    if (part.startsWith(":")) {
+      params[part.slice(1)] = decodeURIComponent(pathParts[i]);
+    } else if (part !== pathParts[i]) {
+      return null;
+    }
+  }
+  return params;
+}
+
+/** Respostas fabricadas pra toda chamada autenticada durante o modo demonstração -- nunca toca a rede. */
+function resolveDemoRequest(method, fullPath, body) {
+  const path = fullPath.split("?")[0];
+
+  if (method === "GET" && path === "/api/me") {
+    return DEMO_CUSTOMER;
+  }
+
+  if (method === "GET" && path === "/v1/contracts") {
+    return [DEMO_CONTRACT];
+  }
+
+  let params = matchDemoPath("/v1/contracts/:id/connection", path);
+  if (method === "GET" && params) {
+    return {
+      contractId: params.id,
+      health: "NORMAL",
+      contractStatus: "ACTIVE",
+      onu: "ONLINE",
+      pon: "ONLINE",
+      pppoe: "ONLINE",
+      opticalSignal: "NORMAL",
+      knownIncident: false,
+      statusSource: "NO_EVIDENCE",
+      updatedAt: demoIsoDate(0)
+    };
+  }
+
+  params = matchDemoPath("/v1/contracts/:id/billing", path);
+  if (method === "GET" && params) {
+    return {
+      contractId: params.id,
+      status: "PAID",
+      nextDueDate: demoIsoDate(18),
+      dueDay: 10,
+      maxDaysLate: 0,
+      updatedAt: demoIsoDate(0),
+      source: "mock"
+    };
+  }
+
+  params = matchDemoPath("/v1/contracts/:id/invoices", path);
+  if (method === "GET" && params) {
+    return {
+      contractId: params.id,
+      invoices: [
+        { id: "demo-fatura-2", number: "000002", status: "OPEN", amount: 99.9, dueDate: demoIsoDate(18) },
+        { id: "demo-fatura-1", number: "000001", status: "PAID", amount: 99.9, dueDate: demoIsoDate(-12), paidAt: demoIsoDate(-13) }
+      ],
+      updatedAt: demoIsoDate(0),
+      source: "mock"
+    };
+  }
+
+  params = matchDemoPath("/v1/contracts/:id/ticket", path);
+  if (method === "GET" && params) {
+    return null;
+  }
+
+  params = matchDemoPath("/v1/contracts/:id/promise", path);
+  if (params) {
+    if (method === "GET") return null;
+    return { released: false, protocol: "", releasedDays: undefined, message: "Indisponível no modo demonstração." };
+  }
+
+  if (path === "/v1/support/tickets") {
+    if (method === "GET") return [];
+    throw new ClienteApiError(409, "DEMO_MODE", "Abertura de chamado não está disponível no modo demonstração.");
+  }
+
+  if (method === "GET" && path === "/v1/support/categories") {
+    return DEMO_CATEGORIES;
+  }
+
+  if (method === "POST" && path === "/v1/support/diagnosis") {
+    return {
+      state: "BLOCKED",
+      categoryId: body?.categoryId ?? "other",
+      canOpenTicket: false,
+      customerMessage: "Diagnóstico não está disponível no modo demonstração."
+    };
+  }
+
+  if (path === "/v1/notices/active" || /^\/v1\/notices\/.+\/view$/.test(path)) {
+    return method === "GET" ? [] : { ok: true };
+  }
+
+  if (/^\/v1\/contracts\/.+\/signatures$/.test(path)) {
+    return { signatures: [], source: "mock" };
+  }
+
+  if (/^\/v1\/contracts\/.+\/signatures\/.+\/events$/.test(path)) {
+    return { ok: true };
+  }
+
+  if (path === "/v1/central/activity") {
+    return { ok: true };
+  }
+
+  if (path === "/api/bug-reports") {
+    return { ok: true };
+  }
+
+  if (path === "/api/auth/change-password") {
+    throw new ClienteApiError(409, "DEMO_MODE", "Alteração de senha não está disponível no modo demonstração.");
+  }
+
+  if (path.startsWith("/api/central/network-status")) {
+    return { affected: false, status: "unknown" };
+  }
+
+  if (path === "/api/auth/chat-token") {
+    throw new ClienteApiError(409, "DEMO_MODE", "Atendimento por chat não está disponível no modo demonstração.");
+  }
+
+  // Qualquer outra rota nao mapeada: nunca derruba a tela, so devolve vazio.
+  return null;
+}
+
 export function getApiBaseUrl() {
   const configured =
     import.meta.env.VITE_ACESSANET_API_URL ||
@@ -214,6 +431,11 @@ export async function clienteRequest(path, options = {}) {
     retryOnUnauthorized = true,
     signal
   } = options;
+
+  if (auth && isDemoSession()) {
+    return resolveDemoRequest(method, path, body);
+  }
+
   const headers = {
     Accept: "application/json"
   };
@@ -301,19 +523,38 @@ export async function clienteRequest(path, options = {}) {
  * (login normal).
  */
 export async function checkLocalAccess(cpf) {
+  if (isDemoDocument(cpf)) {
+    return { hasPassword: hasDemoPassword() };
+  }
+
   return clienteRequest("/api/auth/local/check", {
     method: "POST",
     auth: false,
-    body: { cpf }
+    body: { cpf: normalizeDocument(cpf) }
   });
 }
 
 /** Primeiro acesso: cria a senha própria do app e já retorna uma sessão completa. */
 export async function setupLocalPassword(cpf, newPassword, confirmPassword) {
+  if (isDemoDocument(cpf)) {
+    if (newPassword !== confirmPassword) {
+      throw new ClienteApiError(400, "VALIDATION_ERROR", "As senhas não coincidem.");
+    }
+    if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      throw new ClienteApiError(400, "PASSWORD_POLICY_REJECTED", "A nova senha deve ter pelo menos 8 caracteres, com letra e número.");
+    }
+
+    markDemoPasswordSet();
+    const response = demoAuthResult();
+    saveTokens(response.accessToken, response.refreshToken);
+    clearChatTokenCache();
+    return response;
+  }
+
   const response = await clienteRequest("/api/auth/local/setup", {
     method: "POST",
     auth: false,
-    body: { cpf, newPassword, confirmPassword }
+    body: { cpf: normalizeDocument(cpf), newPassword, confirmPassword }
   });
 
   if (!response?.accessToken || !response?.refreshToken) {
@@ -332,10 +573,14 @@ export async function setupLocalPassword(cpf, newPassword, confirmPassword) {
  * "achou"/"não achou".
  */
 export async function forgotPassword(cpf) {
+  if (isDemoDocument(cpf)) {
+    return { message: "Enviamos um código de verificação, caso os dados informados estejam cadastrados." };
+  }
+
   return clienteRequest("/api/auth/local/forgot-password", {
     method: "POST",
     auth: false,
-    body: { cpf }
+    body: { cpf: normalizeDocument(cpf) }
   });
 }
 
@@ -346,24 +591,48 @@ export async function forgotPassword(cpf) {
  * mostrando uma mensagem genérica, nunca "CPF não encontrado" de forma crua.
  */
 export async function getMaskedEmailForReset(cpf) {
+  if (isDemoDocument(cpf)) {
+    return { maskedEmail: "de***@exemplo.com" };
+  }
+
   return clienteRequest("/api/auth/local/forgot-password/masked-email", {
     method: "POST",
     auth: false,
-    body: { cpf }
+    body: { cpf: normalizeDocument(cpf) }
   });
 }
 
+const DEMO_RESET_TOKEN = "demo-reset-token";
+
 /** Etapa 2: valida o código OTP e devolve um resetToken de uso único (10 min) para a Etapa 3. */
 export async function verifyResetCode(cpf, code) {
+  if (isDemoDocument(cpf)) {
+    if (!/^\d{6}$/.test(code || "")) {
+      throw new ClienteApiError(400, "CODE_INVALID", "Código inválido.");
+    }
+    return { resetToken: DEMO_RESET_TOKEN };
+  }
+
   return clienteRequest("/api/auth/local/verify-reset-code", {
     method: "POST",
     auth: false,
-    body: { cpf, code }
+    body: { cpf: normalizeDocument(cpf), code }
   });
 }
 
 /** Etapa 3: redefine a senha usando o resetToken devolvido por verifyResetCode. */
 export async function resetPasswordWithToken(resetToken, newPassword, confirmPassword) {
+  if (resetToken === DEMO_RESET_TOKEN) {
+    if (newPassword !== confirmPassword) {
+      throw new ClienteApiError(400, "VALIDATION_ERROR", "As senhas não coincidem.");
+    }
+    if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      throw new ClienteApiError(400, "PASSWORD_POLICY_REJECTED", "A nova senha deve ter pelo menos 8 caracteres, com letra e número.");
+    }
+    markDemoPasswordSet();
+    return { ok: true };
+  }
+
   return clienteRequest("/api/auth/local/reset-password", {
     method: "POST",
     auth: false,
@@ -381,10 +650,21 @@ export async function changePassword(currentPassword, newPassword, confirmPasswo
 
 /** Login normal: CPF + senha própria do app já criada. */
 export async function loginLocal(cpf, password) {
+  if (isDemoDocument(cpf)) {
+    if (!password) {
+      throw new ClienteApiError(401, "INVALID_CREDENTIALS", "CPF/CNPJ ou senha incorretos.");
+    }
+
+    const response = demoAuthResult();
+    saveTokens(response.accessToken, response.refreshToken);
+    clearChatTokenCache();
+    return response;
+  }
+
   const response = await clienteRequest("/api/auth/local/login", {
     method: "POST",
     auth: false,
-    body: { cpf, password }
+    body: { cpf: normalizeDocument(cpf), password }
   });
 
   if (!response?.accessToken || !response?.refreshToken) {
@@ -396,94 +676,12 @@ export async function loginLocal(cpf, password) {
   return response;
 }
 
-/**
- * Login por CPF + senha (fluxo integrado ao SGP). Diferente de loginWithCpf,
- * a resposta pode trazer requirePasswordChange=true (senha inicial do SGP,
- * "primeiro acesso"): nesse caso o accessToken retornado só autoriza a troca
- * de senha (ver firstAccessChangePassword) e NÃO deve ser salvo com
- * saveTokens, porque não é uma sessão completa.
- */
-export async function loginWithPassword(cpf, password) {
-  const response = await clienteRequest("/api/auth/login", {
-    method: "POST",
-    auth: false,
-    body: { cpf: normalizeCpf(cpf), password }
-  });
-
-  if (!response?.accessToken) {
-    throw new ClienteApiError(500, "INVALID_LOGIN_RESPONSE", "A API retornou uma sessão inválida.");
-  }
-
-  if (response.requirePasswordChange) {
-    return response;
-  }
-
-  if (!response.refreshToken) {
-    throw new ClienteApiError(500, "INVALID_LOGIN_RESPONSE", "A API retornou uma sessão inválida.");
-  }
-
-  saveTokens(response.accessToken, response.refreshToken);
-  clearChatTokenCache();
-  return response;
-}
-
-/**
- * Conclui o primeiro acesso trocando a senha inicial do SGP por uma nova.
- * Usa o accessToken restrito devolvido por loginWithPassword quando
- * requirePasswordChange=true -- esse token nunca passa por saveTokens/
- * readTokens porque não é uma sessão completa (só autoriza esta chamada e
- * o logout).
- */
-export async function firstAccessChangePassword(accessToken, newPassword, confirmPassword) {
-  const response = await fetch(buildUrl("/api/auth/first-access/change-password"), {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`
-    },
-    body: JSON.stringify({ newPassword, confirmPassword })
-  }).catch((error) => {
-    throw new ClienteApiError(0, "NETWORK_ERROR", "Não foi possível conectar à API AcessaNet. Tente novamente.", {
-      cause: error instanceof Error ? error.message : String(error)
-    });
-  });
-
-  const payload = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const error = getErrorPayload(payload);
-    throw new ClienteApiError(
-      response.status,
-      error.code || "REQUEST_FAILED",
-      error.message || "Não foi possível concluir a alteração de senha.",
-      error.details
-    );
-  }
-
-  return payload;
-}
-
-/**
- * Alteração de senha "normal" (o cliente já sabe a senha atual). Não requer
- * estar autenticado no navegador: o backend valida CPF + senha atual
- * diretamente no SGP antes de aplicar a troca.
- */
-export async function changePasswordWithCurrent({ cpf, currentPassword, newPassword, confirmPassword }) {
-  return clienteRequest("/api/auth/change-password", {
-    method: "POST",
-    auth: false,
-    body: {
-      cpf: normalizeCpf(cpf),
-      currentPassword,
-      newPassword,
-      confirmPassword
-    }
-  });
-}
-
 /** Encerra a sessão no backend (revoga o token). Funciona tanto para sessão completa quanto para a sessão restrita de primeiro acesso. */
 export async function logoutCustomer(accessToken) {
+  if (accessToken === DEMO_ACCESS_TOKEN) {
+    return;
+  }
+
   try {
     await fetch(buildUrl("/api/auth/logout"), {
       method: "POST",
@@ -515,6 +713,63 @@ export function isValidCpf(value) {
   };
 
   return calc(9) === digits[9] && calc(10) === digits[10];
+}
+
+/** Validação de CNPJ no cliente, mesmo papel de isValidCpf acima: só feedback imediato, backend é a fonte de verdade. */
+export function isValidCnpj(value) {
+  const cnpj = normalizeDocument(value);
+  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) {
+    return false;
+  }
+
+  const digits = cnpj.split("").map(Number);
+  const calcDigit = (length, weights) => {
+    let sum = 0;
+    for (let i = 0; i < length; i += 1) {
+      sum += digits[i] * weights[i];
+    }
+    const remainder = sum % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+
+  const first = calcDigit(12, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  const second = calcDigit(13, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  return first === digits[12] && second === digits[13];
+}
+
+/** "11 dígitos" -> cpf, "14 dígitos" -> cnpj, qualquer outro tamanho -> null. Mesma regra do backend (ver server/src/auth/cpf.ts). */
+export function getDocumentType(value) {
+  const digits = normalizeDocument(value);
+  if (digits.length === 11) return "cpf";
+  if (digits.length === 14) return "cnpj";
+  return null;
+}
+
+/** Só dígitos, até 14 (CNPJ) -- diferente de normalizeCpf, nunca trunca um CNPJ pra 11 dígitos. */
+export function normalizeDocument(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 14);
+}
+
+/** Validação de CPF OU CNPJ no cliente, só para feedback imediato do formulário. O backend é sempre a fonte de verdade. */
+export function isValidDocument(value) {
+  const type = getDocumentType(value);
+  if (type === "cpf") return isValidCpf(value);
+  if (type === "cnpj") return isValidCnpj(value);
+  return false;
+}
+
+/** Máscara dinâmica: 000.000.000-00 enquanto parecer CPF, 00.000.000/0000-00 quando passar de 11 dígitos. */
+export function maskDocument(value) {
+  const digits = normalizeDocument(value);
+  if (digits.length <= 11) {
+    return maskCpf(digits);
+  }
+
+  return digits
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
 }
 
 const chatTokenCache = new Map();

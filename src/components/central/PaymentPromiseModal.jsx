@@ -33,7 +33,7 @@ function transportErrorMessage(error) {
  * Sempre chama o SGP de verdade via requestPaymentPromise -- nunca simula sucesso/loading
  * falso. Três estados: confirm -> loading -> result (sucesso ou recusa/erro).
  */
-export default function PaymentPromiseModal({ contractId, invoice, onClose, onSuccess, open }) {
+export default function PaymentPromiseModal({ contractId, invoice, onClose, onSuccess, open, promisesUsedThisMonth }) {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
   const [state, setState] = useState("confirm");
@@ -145,6 +145,14 @@ export default function PaymentPromiseModal({ contractId, invoice, onClose, onSu
               Essa opção <strong>não cancela</strong> a fatura nem altera o valor devido. A
               disponibilidade depende da situação financeira e das regras do seu contrato.
             </p>
+
+            {typeof promisesUsedThisMonth === "number" && promisesUsedThisMonth > 0 ? (
+              <p className="promise-modal-disclaimer">
+                Você já utilizou {promisesUsedThisMonth}{" "}
+                {promisesUsedThisMonth === 1 ? "promessa de pagamento" : "promessas de pagamento"} neste mês. Se o
+                limite do seu contrato já tiver sido atingido, esta solicitação pode ser recusada pelo sistema.
+              </p>
+            ) : null}
 
             <dl className="promise-modal-details">
               <div>

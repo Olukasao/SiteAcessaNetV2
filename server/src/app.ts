@@ -21,9 +21,11 @@ import { registerDebugOltCloudRoutes } from "./routes/debugOltCloudRoutes.js";
 import { registerCentralNetworkStatusRoutes } from "./routes/centralNetworkStatusRoutes.js";
 import { registerCentralActivityRoutes } from "./routes/centralActivityRoutes.js";
 import { registerAdminNetworkIncidentRoutes } from "./routes/adminNetworkIncidentRoutes.js";
+import { registerAdminOltCloudRoutes } from "./routes/adminOltCloudRoutes.js";
 import { registerAdminAnalyticsRoutes } from "./routes/adminAnalyticsRoutes.js";
 import { registerAdminTicketRoutes } from "./routes/adminTicketRoutes.js";
 import { registerBugReportRoutes } from "./routes/bugReportRoutes.js";
+import { registerAdminMarketingRoutes } from "./routes/adminMarketingRoutes.js";
 
 export async function buildApp(container: AppContainer = createContainer()) {
   const app = Fastify({
@@ -275,6 +277,8 @@ export async function buildApp(container: AppContainer = createContainer()) {
   await registerDebugOltCloudRoutes(app, container);
   await registerCentralNetworkStatusRoutes(app, container);
   await registerAdminNetworkIncidentRoutes(app, container);
+  await registerAdminOltCloudRoutes(app, container);
+  await registerAdminMarketingRoutes(app, container);
 
   return app;
 }
