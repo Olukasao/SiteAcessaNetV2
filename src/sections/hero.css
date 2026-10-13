@@ -1,0 +1,567 @@
+.hero {
+  position: relative;
+  min-height: max(680px, 100svh);
+  display: flex;
+  align-items: center;
+  padding: 120px 0 96px;
+  overflow: hidden;
+  color: var(--on-dark);
+  background: var(--navy-900);
+  isolation: isolate;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--grad-deep);
+}
+
+/* Luz "cinematográfica": dois focos difusos, um azul elétrico atrás do globo
+   e um ciano rasante -- dão volume sem competir com o texto. */
+.hero-aurora {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(40% 50% at 72% 46%, rgba(47, 107, 255, 0.34), transparent 70%),
+    radial-gradient(30% 30% at 88% 80%, rgba(58, 214, 255, 0.16), transparent 70%),
+    radial-gradient(40% 40% at 10% 10%, rgba(26, 50, 102, 0.6), transparent 70%);
+  filter: blur(10px);
+}
+
+.hero-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 32% 72%, #cfe0ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 52% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 8% 82%, #cfe0ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 44% 44%, #8ae8ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 52%, #fff 50%, transparent 51%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: 160px;
+  background: linear-gradient(180deg, transparent, var(--navy-900));
+  pointer-events: none;
+}
+
+.hero-visual {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: -17vw;
+  width: min(66vw, 980px);
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+}
+
+.hero-copy {
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 12px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(143, 178, 255, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan-400);
+  box-shadow: 0 0 0 4px rgba(58, 214, 255, 0.18), 0 0 14px var(--cyan-400);
+}
+
+.hero-title {
+  margin-top: 28px;
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.hero-line > span {
+  display: block;
+}
+
+.hero-line--accent > span {
+  background: linear-gradient(92deg, #ffffff 0%, #8ae8ff 45%, #4f86ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-sub {
+  margin-top: 24px;
+  max-width: 36ch;
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+  color: var(--on-dark-2);
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-small);
+  color: var(--on-dark-3);
+}
+
+.hero-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-trust svg {
+  color: var(--cyan-400);
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  width: 24px;
+  height: 38px;
+  margin-left: -12px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(143, 178, 255, 0.35);
+}
+
+.hero-scroll span {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--cyan-400);
+  animation: hero-scroll 1.8s var(--ease-out) infinite;
+}
+
+@keyframes hero-scroll {
+  0% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(12px); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Tablet/celular: texto em cima, globo grande "nascendo" do rodapé do hero
+   (recortado de propósito) -- nunca atrás do texto, pra não prejudicar leitura. */
+@media (max-width: 900px) {
+  .hero {
+    align-items: flex-start;
+    min-height: max(720px, 100svh);
+    padding-top: 116px;
+  }
+
+  .hero-visual {
+    top: auto;
+    bottom: calc(-38vw - 60px);
+    right: 50%;
+    width: 130vw;
+    max-width: 900px;
+    transform: translateX(50%);
+  }
+
+  .hero-scroll {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-visual {
+    bottom: calc(-52vw - 96px);
+    width: 150vw;
+  }
+
+  .hero-ctas .btn {
+    flex: 1 1 100%;
+  }
+
+  .hero-trust {
+    margin-top: 32px;
+    gap: 8px;
+    flex-direction: column;
+  }
+}
+
+.hero-visual-inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- Rotação do hero (marca <-> planos) ---------- */
+.hs-stage {
+  display: grid;
+}
+
+/* Todos os slides ocupam a mesma célula: a altura é a do maior, então a
+   troca nunca empurra o layout. */
+.hs-slide {
+  grid-area: 1 / 1;
+  align-self: start;
+  min-width: 0;
+}
+
+.hs-slide[data-state="idle"],
+.hs-slide[data-state="leaving"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hs-slide[data-state="leaving"] {
+  transition: visibility 0s linear 0.4s;
+}
+
+/* Itens: entram de baixo (com cascata via --i) depois que o anterior começou a sair */
+.hs-item,
+.hs-slide .hero-line > span {
+  transition:
+    transform 0.55s var(--ease-out) calc(var(--i, 0) * 35ms + 140ms),
+    opacity 0.4s var(--ease-out) calc(var(--i, 0) * 35ms + 140ms);
+}
+
+.hs-slide[data-state="idle"] .hs-item {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: none;
+}
+
+.hs-slide[data-state="idle"] .hero-line > span {
+  transform: translateY(110%);
+  transition: none;
+}
+
+.hs-slide[data-state="leaving"] .hs-item {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition:
+    transform 0.3s var(--ease-out) calc(var(--i, 0) * 15ms),
+    opacity 0.22s ease calc(var(--i, 0) * 15ms);
+}
+
+.hs-slide[data-state="leaving"] .hero-line > span {
+  transform: translateY(-110%);
+  transition: transform 0.32s cubic-bezier(0.7, 0, 0.84, 0) calc(var(--i, 0) * 20ms);
+}
+
+.hero.is-intro .hs-item,
+.hero.is-intro .hero-line > span,
+.hero.is-intro .hero-rotator,
+.hero.is-intro .hero-trust li {
+  transition: none !important;
+}
+
+/* Slide de plano */
+.hs-plan-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.22em;
+}
+
+.hs-plan-title .hero-line:first-child > span {
+  font-size: 1.32em;
+  letter-spacing: -0.06em;
+}
+
+.hs-plan-unit > span {
+  font-size: 0.72em;
+}
+
+.hs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hs-chips li {
+  padding: 7px 12px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(143, 178, 255, 0.22);
+  backdrop-filter: blur(8px);
+}
+
+.hs-chips li.is-more {
+  color: var(--cyan-300);
+}
+
+.hs-buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+  margin-top: 30px;
+}
+
+.hs-buy .hero-ctas {
+  margin-top: 0;
+}
+
+.hs-price {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.hs-cur {
+  margin-top: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--on-dark-2);
+}
+
+.hs-price strong {
+  font-size: clamp(2.8rem, 2.2rem + 1.6vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+.hs-cents {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.hs-cents small {
+  font-family: var(--font-body);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--on-dark-3);
+}
+
+.hs-note {
+  margin-top: 12px;
+  font-size: var(--fs-micro);
+  color: var(--on-dark-3);
+}
+
+/* Indicadores com progresso */
+.hero-rotator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  margin-top: 40px;
+}
+
+.hr-dot {
+  display: grid;
+  gap: 8px;
+  min-height: 44px;
+  align-content: center;
+  text-align: left;
+}
+
+.hr-label {
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-dark-3);
+  transition: color var(--dur-fast);
+}
+
+.hr-dot:hover .hr-label,
+.hr-dot.is-active .hr-label {
+  color: var(--on-dark);
+}
+
+.hr-bar {
+  --p: 0;
+  position: relative;
+  display: block;
+  width: 64px;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(143, 178, 255, 0.2);
+}
+
+.hr-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(var(--p));
+  background: linear-gradient(90deg, var(--blue-400), var(--cyan-400));
+  box-shadow: 0 0 8px var(--cyan-400);
+}
+
+.hr-dot.is-active .hr-bar {
+  background: rgba(143, 178, 255, 0.32);
+}
+
+.hr-toggle {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--on-dark-2);
+  border: 1px solid rgba(143, 178, 255, 0.24);
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+
+.hr-toggle:hover {
+  color: var(--white);
+  border-color: rgba(138, 232, 255, 0.6);
+}
+
+.hero-rotator + .hero-trust {
+  margin-top: 26px;
+}
+
+@media (max-width: 520px) {
+  .hs-buy {
+    gap: 16px;
+  }
+
+  .hs-buy .hero-ctas {
+    width: 100%;
+  }
+
+  .hero-rotator {
+    gap: 4px 14px;
+    margin-top: 28px;
+  }
+
+  .hr-bar {
+    width: 52px;
+  }
+}
+
+@media (max-width: 520px) {
+  /* No celular o globo ocupa o rodapé do hero: a lista de diferenciais
+     ficaria por cima dele. As mesmas infos estão no rodapé e na cobertura. */
+  .hero-rotator + .hero-trust {
+    display: none;
+  }
+
+  .hs-buy .hero-ctas {
+    flex-wrap: nowrap;
+  }
+
+  .hs-buy .hero-ctas .btn {
+    flex: 1 1 auto;
+    padding: 0 18px;
+  }
+
+  .hs-buy .hero-ctas .btn--ghost-dark {
+    flex: 0 0 auto;
+  }
+
+  .hs-chips li {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .hs-buy {
+    margin-top: 22px;
+  }
+}
+
+/* Setas anterior/próximo */
+.hr-arrows {
+  display: flex;
+  gap: 8px;
+  margin-right: 6px;
+}
+
+.hr-arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(143, 178, 255, 0.28);
+  backdrop-filter: blur(8px);
+  transition: background-color var(--dur-fast), border-color var(--dur-fast), transform var(--dur-med) var(--ease-out);
+}
+
+.hr-arrow:hover {
+  background: rgba(47, 107, 255, 0.35);
+  border-color: rgba(138, 232, 255, 0.7);
+}
+
+.hr-arrow:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 520px) {
+  /* Celular: uma linha só -- setas, barrinhas (sem texto) e pausa */
+  .hero-rotator {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .hr-arrows {
+    margin-right: 2px;
+  }
+
+  .hr-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hr-label {
+    display: none;
+  }
+
+  .hr-bar {
+    width: 34px;
+  }
+
+  .hr-toggle {
+    margin-left: auto;
+    flex: none;
+  }
+}

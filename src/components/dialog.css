@@ -1,0 +1,78 @@
+.dialog-root {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 22, 0.66);
+  backdrop-filter: blur(10px);
+}
+
+.dialog-panel {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: var(--r-xl);
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 40px 120px -30px rgba(3, 7, 22, 0.8), 0 0 0 1px rgba(143, 178, 255, 0.2);
+}
+
+.dialog-panel--md {
+  max-width: 560px;
+}
+
+.dialog-panel--lg {
+  max-width: 760px;
+}
+
+.dialog-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  transition: background var(--dur-fast), transform var(--dur-med) var(--ease-out);
+}
+
+.dialog-close:hover {
+  background: var(--surface-3);
+  transform: rotate(90deg);
+}
+
+.dialog-title {
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  padding-right: 48px;
+}
+
+.dialog-desc {
+  margin-top: 10px;
+  color: var(--ink-3);
+}
+
+@media (max-width: 640px) {
+  .dialog-root {
+    place-items: end stretch;
+    padding: 0;
+  }
+
+  .dialog-panel {
+    max-height: 92dvh;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+}

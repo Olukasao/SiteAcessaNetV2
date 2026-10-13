@@ -1,21 +1,16 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-import { applySiteTheme } from "./theme/siteTheme.js";
-import { unregisterStaleServiceWorker } from "./unregisterStaleServiceWorker.js";
-import "./styles/theme.css";
+import "@fontsource-variable/sora";
+import "@fontsource-variable/manrope";
+import "./styles/tokens.css";
+import "./styles/base.css";
+import App from "./App.jsx";
 
-applySiteTheme();
-unregisterStaleServiceWorker();
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
     <BrowserRouter>
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
+      <App />
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>
 );

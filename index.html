@@ -1,117 +1,16 @@
 <!doctype html>
 <html lang="pt-BR">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="shortcut icon" href="./src/assets/favicon.ico" type="image/x-icon">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acessanet</title>
-  <style>
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 96px;
-    }
-
-    html,
-    body {
-      overflow-x: hidden;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0%;
-      padding: 0%;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400;
-      font-size: 16px;
-      color: #1c1c1c;
-      zoom: 0.9;
-    }
-
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    /* zoom: 0.9 encolhe o site inteiro 10% -- inclusive área de toque dos
-       botões/links e o tamanho efetivo de inputs. Em celular isso piora
-       usabilidade sem ganho nenhum (o motivo original era caber mais
-       conteúdo em telas grandes); por isso fica neutralizado abaixo de
-       768px, igual já era feito só pra Central do Assinante (clienteArea.css). */
-    @media (max-width: 768px) {
-      body {
-        zoom: 1;
-      }
-    }
-
-    /* SCROLLBAR */
-
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #ffffff;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #020617;
-      border-radius: 10px;
-    }
-
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #111827;
-    }
-
-    ::selection {
-      background: #7dd3fc;
-      color: #081833;
-    }
-
-    @supports (content-visibility: auto) {
-      .planos,
-      .linha-fixa-section,
-      .watchtv,
-      .temsaude-info,
-      .temsaude-plans-section,
-      .graviola-hero,
-      .app-provedor,
-      .tema-section,
-      .corp {
-        content-visibility: auto;
-        contain-intrinsic-size: 820px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-</head>
-
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050b1f" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Internet fibra óptica AcessaNet em Caieiras, Francisco Morato e Franco da Rocha." />
+    <title>AcessaNet — Internet Fibra (lab)</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

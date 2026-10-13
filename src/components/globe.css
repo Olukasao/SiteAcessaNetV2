@@ -1,0 +1,77 @@
+.globe {
+  position: absolute;
+  inset: 0;
+}
+
+.globe-static,
+.globe-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.globe-static {
+  display: grid;
+  place-items: center;
+  transition: opacity 1.2s var(--ease-out);
+}
+
+.globe-canvas {
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+
+.globe.is-ready .globe-canvas {
+  opacity: 1;
+}
+
+.globe.is-ready .globe-static {
+  opacity: 0;
+}
+
+/* Terra em CSS (fallback): textura equiretangular rolando dentro de um
+   círculo + sombreamento esférico. Mesmo tamanho aparente do globo WebGL
+   (~75% da caixa), pra o crossfade não "pular". */
+.earth-css {
+  position: relative;
+  width: 75%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  transform: rotate(14deg);
+  box-shadow:
+    0 0 0 1px rgba(120, 180, 255, 0.25),
+    0 0 60px 8px rgba(59, 140, 255, 0.45),
+    0 0 140px 30px rgba(47, 107, 255, 0.25);
+}
+
+.earth-css-map {
+  position: absolute;
+  inset: 0;
+  background: url("/earth/day-1k.webp") 0 50% / auto 100% repeat-x;
+  animation: earth-spin 90s linear infinite;
+}
+
+.earth-css-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 32%, rgba(255, 255, 255, 0.16) 0%, transparent 38%),
+    radial-gradient(circle at 30% 35%, transparent 42%, rgba(2, 6, 20, 0.55) 72%, rgba(2, 6, 20, 0.92) 100%),
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(90, 168, 255, 0.35) 100%);
+  box-shadow: inset -30px -10px 60px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes earth-spin {
+  from { background-position-x: 0; }
+  to { background-position-x: -200%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .earth-css-map {
+    animation: none;
+    background-position-x: -62%;
+  }
+}
