@@ -1,8 +1,7 @@
-# AcessaNet — Site novo (lab)
+# AcessaNet — Site novo
 
-Front-end experimental do redesign do site da AcessaNet. **Não substitui a
-`main`**: lá fica o site de produção completo (Central do Assinante, admin e
-backend). Esta branch contém só o front-end novo, para validação.
+Front-end do redesign do site da AcessaNet. O site anterior completo (Central do
+Assinante, admin e backend) está preservado na branch `site-antigo`.
 
 ## Stack
 
@@ -40,3 +39,24 @@ não é viabilidade por endereço.
 `src/guia-wifi/guiaWifi.lab.css`).
 
 Texturas da Terra: NASA Blue Marble / Black Marble (domínio público).
+
+## Publicar
+
+### Vercel
+
+A Vercel publica a branch `main` (configuração em `vercel.json`). Cada push na `main` gera um deploy novo;
+outras branches geram links de prévia.
+
+### Hostinger
+
+```bash
+npm ci
+npm run build
+```
+
+Envie **o conteúdo** da pasta `dist/` (não a pasta em si) para `public_html/` pelo Gerenciador de Arquivos
+ou FTP. O `dist/.htaccess` (vem de `public/.htaccess`) já faz as rotas `/planos`, `/contratos` etc.
+funcionarem, força HTTPS e configura cache. Arquivos ocultos precisam estar visíveis no gerenciador para
+o `.htaccess` ir junto.
+
+> O site antigo completo (Central do Assinante, admin e backend) fica na branch `site-antigo`.
