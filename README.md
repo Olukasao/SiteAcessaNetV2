@@ -1,5 +1,7 @@
 # AcessaNet — Site novo
 
+**🌐 Acesse o site: [site-acessa-net-v2-rebranding.vercel.app](https://site-acessa-net-v2-rebranding.vercel.app)**
+
 Front-end do redesign do site da AcessaNet. O site anterior completo (Central do
 Assinante, admin e backend) está preservado na branch `site-antigo`.
 
