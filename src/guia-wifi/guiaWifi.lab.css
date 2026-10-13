@@ -1,0 +1,187 @@
+/* Camada visual do lab sobre o guiaWifi.css original da produção.
+   Não altera conteúdo nem estrutura: só remapeia variáveis, tipografia,
+   hero, menu do guia, cards, botões e CTA para o design system novo. */
+
+.guia-wifi-page--lab {
+  --guide-bg: var(--white);
+  --guide-bg-2: var(--surface-2);
+  --guide-bg-3: var(--surface-3);
+  --guide-panel: rgba(10, 22, 51, 0.92);
+  --guide-panel-strong: rgba(16, 34, 74, 0.96);
+  --guide-panel-soft: rgba(26, 50, 102, 0.6);
+  --guide-border: var(--line-dark);
+  --guide-border-strong: rgba(58, 214, 255, 0.4);
+  --guide-cyan: var(--cyan-400);
+  --guide-cyan-soft: var(--cyan-300);
+  --guide-blue: var(--blue-500);
+  --guide-white: var(--white);
+  --guide-text: var(--on-dark);
+  --guide-muted: var(--on-dark-2);
+  --guide-ink: var(--ink);
+  --guide-body: var(--ink-3);
+  --guide-heading: var(--ink);
+  --guide-surface: var(--white);
+  --guide-surface-blue: var(--surface-3);
+  font-family: var(--font-body);
+  background: var(--surface-2);
+  /* "clip" em vez de "hidden": esconde o overflow lateral sem virar
+     container de rolagem -- com "hidden" o menu sticky do guia não gruda. */
+  overflow-x: clip;
+}
+
+.guia-wifi-page--lab::before {
+  display: none;
+}
+
+.guia-wifi-page--lab :is(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.guia-wifi-page--lab .guide-section,
+.guia-wifi-page--lab .guide-anchor-point {
+  scroll-margin-top: 150px;
+}
+
+.guia-wifi-page--lab .guide-section-heading h2 {
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.guia-wifi-page--lab .guide-section-heading p {
+  font-size: var(--fs-lead);
+  color: var(--ink-3);
+}
+
+/* ---------- Hero: escuro, como as outras páginas do site ---------- */
+.guia-wifi-page--lab .guide-hero {
+  min-height: 0;
+  padding: 150px 0 96px;
+  color: var(--on-dark);
+  background:
+    radial-gradient(40% 60% at 80% 40%, rgba(47, 107, 255, 0.35), transparent 70%),
+    radial-gradient(30% 40% at 95% 90%, rgba(58, 214, 255, 0.14), transparent 70%),
+    var(--grad-deep);
+}
+
+.guia-wifi-page--lab .guide-hero::after {
+  display: none;
+}
+
+.guia-wifi-page--lab .guide-hero h1 {
+  font-size: clamp(2.2rem, 1.4rem + 2.6vw, 3.6rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  background: linear-gradient(180deg, #ffffff 35%, #a9c4ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.guia-wifi-page--lab .guide-hero-lead {
+  color: var(--on-dark);
+  font-weight: 600;
+}
+
+.guia-wifi-page--lab .guide-hero-note {
+  color: var(--on-dark-2);
+}
+
+.guia-wifi-page--lab .guide-eyebrow {
+  color: var(--cyan-300);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(143, 178, 255, 0.24);
+  backdrop-filter: blur(8px);
+}
+
+.guia-wifi-page--lab .guide-hero-visual > * {
+  box-shadow: var(--glow-blue);
+  border-radius: var(--r-xl);
+}
+
+/* ---------- Botões no padrão do site ---------- */
+.guia-wifi-page--lab .guide-primary-button {
+  color: var(--white);
+  background: var(--blue-500);
+  box-shadow: 0 10px 30px -10px rgba(47, 107, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  font-weight: 700;
+  transition: background var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out), transform var(--dur-fast);
+}
+
+.guia-wifi-page--lab .guide-primary-button:hover {
+  background: var(--grad-electric);
+  box-shadow: 0 16px 40px -12px rgba(58, 214, 255, 0.75);
+}
+
+.guia-wifi-page--lab .guide-secondary-button {
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(143, 178, 255, 0.32);
+  font-weight: 700;
+}
+
+/* ---------- Menu do guia (gruda abaixo do header do site) ---------- */
+.guia-wifi-page--lab .guide-nav {
+  top: 76px;
+  background: rgba(255, 255, 255, 0.86);
+  border-color: var(--line);
+  transition: top 0.5s var(--ease-out);
+}
+
+html[data-hdr="hidden"] .guia-wifi-page--lab .guide-nav {
+  top: 0;
+}
+
+.guia-wifi-page--lab .guide-nav a {
+  color: var(--ink-2);
+  background: var(--white);
+  border-color: var(--line);
+  font-weight: 700;
+}
+
+.guia-wifi-page--lab .guide-nav a:hover {
+  color: var(--blue-500);
+  border-color: var(--blue-300);
+}
+
+/* ---------- Cards escuros: navy do site, raio e brilho do design system ---------- */
+.guia-wifi-page--lab .guide-card {
+  border-radius: var(--r-xl);
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgba(47, 107, 255, 0.18), transparent 60%),
+    linear-gradient(180deg, #12275a 0%, #0a1633 100%);
+  border-color: var(--line-dark);
+  box-shadow: 0 30px 70px -36px rgba(5, 11, 31, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- FAQ ---------- */
+.guia-wifi-page--lab .faq-item {
+  border-radius: var(--r-lg);
+  border-color: var(--line);
+  box-shadow: var(--shadow-1);
+}
+
+.guia-wifi-page--lab .faq-item button {
+  font-family: var(--font-body);
+}
+
+/* ---------- CTA final ---------- */
+.guia-wifi-page--lab .guide-final-cta {
+  background:
+    radial-gradient(70% 90% at 100% 100%, rgba(58, 214, 255, 0.22), transparent 60%),
+    radial-gradient(70% 70% at 0% 0%, rgba(47, 107, 255, 0.35), transparent 60%),
+    var(--navy-800);
+  border-top: 0;
+}
+
+@media (max-width: 760px) {
+  .guia-wifi-page--lab .guide-hero {
+    padding: 120px 0 64px;
+  }
+
+  .guia-wifi-page--lab .guide-section,
+  .guia-wifi-page--lab .guide-anchor-point {
+    scroll-margin-top: 130px;
+  }
+}

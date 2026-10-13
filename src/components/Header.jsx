@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, UserRound, X } from "lucide-react";
-import logo from "../assets/logo-acessanet.png";
+import logo from "../assets/logo-acessanet-3d.png";
 import { company, wifiGuideUrl } from "../data/site";
 import { useUI } from "../context/UIContext";
 import "./header.css";
@@ -12,7 +12,7 @@ import "./header.css";
 const links = [
   { to: "/planos", label: "Planos" },
   { to: "/empresas", label: "Empresas" },
-  { href: wifiGuideUrl, label: "Boas práticas Wi-Fi" },
+  { to: wifiGuideUrl, label: "Boas práticas Wi-Fi" },
   { to: "/contratos", label: "Contratos e Termos" },
 ];
 const mobileExtra = [
@@ -28,6 +28,10 @@ export default function Header() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => setOpen(false), [pathname, hash]);
+
+  useEffect(() => {
+    document.documentElement.dataset.hdr = hidden && !open ? "hidden" : "shown";
+  }, [hidden, open]);
 
   // Header "inteligente": vidro depois de rolar, esconde ao descer e volta ao subir.
   useEffect(() => {
@@ -61,7 +65,7 @@ export default function Header() {
     <header className={`hdr ${scrolled ? "is-scrolled" : ""} ${hidden && !open ? "is-hidden" : ""}`}>
       <div className="hdr-inner container">
         <Link to="/" className="hdr-logo" aria-label="AcessaNet — página inicial">
-          <img src={logo} alt="AcessaNet" width="560" height="315" />
+          <img src={logo} alt="AcessaNet" width="877" height="327" />
         </Link>
 
         <nav className="hdr-nav" aria-label="Principal">

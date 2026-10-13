@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { MapPin, Phone } from "lucide-react";
-import logo from "../assets/logo-acessanet.png";
+import logo from "../assets/logo-acessanet-3d.png";
 import { company, coveredCitiesLabel, whatsappLink, wifiGuideUrl } from "../data/site";
 import "./footer.css";
 
@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="container">
         <div className="ftr-top">
           <div className="ftr-brand">
-            <img src={logo} alt="AcessaNet" width="560" height="315" loading="lazy" />
+            <img src={logo} alt="AcessaNet" width="877" height="327" loading="lazy" />
             <p>
               Internet fibra óptica com atendimento humanizado, levando tecnologia para {coveredCitiesLabel} desde {company.since}.
             </p>
@@ -41,7 +41,7 @@ export default function Footer() {
             <Link to="/empresas">Para empresas</Link>
             <a href={company.centralUrl}>Central do Assinante</a>
             <Link to="/contratos">Contratos e termos</Link>
-            <a href={wifiGuideUrl}>Boas práticas Wi-Fi</a>
+            <Link to={wifiGuideUrl}>Boas práticas Wi-Fi</Link>
             <a href="https://acessanet.com.br/lgpd">LGPD</a>
             <a href="https://acessanet.com.br/trabalhe-conosco">Trabalhe conosco</a>
           </nav>

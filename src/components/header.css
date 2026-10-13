@@ -32,8 +32,8 @@
 
 .hdr-logo img {
   width: auto;
-  height: 52px;
-  margin-left: -6px;
+  height: 44px;
+  filter: drop-shadow(0 4px 14px rgba(47, 107, 255, 0.35));
 }
 
 .hdr-nav {
@@ -160,6 +160,6 @@
   }
 
   .hdr-logo img {
-    height: 46px;
+    height: 38px;
   }
 }

@@ -186,4 +186,4 @@ export const contracts = [
   },
 ];
 
-export const wifiGuideUrl = "https://acessanet.com.br/cliente/guia-wifi";
+export const wifiGuideUrl = "/boas-praticas-wifi";
