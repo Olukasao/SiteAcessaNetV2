@@ -1,36 +1,36 @@
-// Globo de dados da AcessaNet: esfera de pontos + atmosfera + rotas de luz
-// partindo de Franco da Rocha (sede) para cidades do mundo. Three.js puro
-// (sem R3F) pra manter o chunk pequeno e o loop sob controle total:
+// Terra realista da AcessaNet: texturas NASA (Blue Marble dia / Black Marble
+// noite -- domínio público), terminador dia/noite com luzes das cidades,
+// reflexo do sol nos oceanos, atmosfera e rotas de luz saindo de Franco da
+// Rocha (sede). Three.js puro (sem R3F) pra manter o loop sob controle:
 // pausa fora da tela, aba oculta e respeita o "tier" do aparelho.
 import {
   AdditiveBlending,
   BackSide,
-  BufferAttribute,
-  BufferGeometry,
   Clock,
   Color,
   CubicBezierCurve3,
+  DoubleSide,
   Group,
+  LinearMipmapLinearFilter,
   Mesh,
+  MeshBasicMaterial,
+  NoColorSpace,
   PerspectiveCamera,
-  Points,
   RingGeometry,
   Scene,
   ShaderMaterial,
   SphereGeometry,
+  SRGBColorSpace,
+  TextureLoader,
   TubeGeometry,
   Vector3,
   WebGLRenderer,
-  DoubleSide,
-  MeshBasicMaterial,
-  LineSegments,
-  LineBasicMaterial,
 } from "three";
 
 const R = 1;
 const DEG = Math.PI / 180;
 
-const HOME = { name: "Franco da Rocha", lat: -23.32, lon: -46.73 };
+const HOME = { lat: -23.32, lon: -46.73 }; // Franco da Rocha
 const DESTINATIONS = [
   { lat: 40.71, lon: -74.0 }, // Nova York
   { lat: 38.72, lon: -9.14 }, // Lisboa
@@ -47,11 +47,17 @@ const DESTINATIONS = [
   { lat: 19.43, lon: -99.13 }, // Cidade do México
   { lat: 48.85, lon: 2.35 }, // Paris
 ];
-// rotas secundárias (não passam pela sede) -- dão sensação de rede global
 const SECONDARY = [
-  [0, 2], [3, 6], [1, 8], [11, 12], [4, 5], [13, 9], [2, 0], [7, 8],
+  [0, 2], [3, 6], [1, 8], [11, 12], [4, 5], [13, 9], [7, 8],
 ];
 
+// Sol fixo no espaço do mundo (vem da esquerda/frente): o lado visível fica
+// iluminado e o terminador cai na borda direita, mostrando as luzes das
+// cidades conforme a Terra gira.
+const SUN = new Vector3(-0.75, 0.32, 0.58).normalize();
+
+// Mesma convenção de UV da SphereGeometry (u=0 em lon -180), então os pontos
+// das rotas caem exatamente sobre as cidades da textura.
 export function latLonToVec3(lat, lon, r = R) {
   const phi = (90 - lat) * DEG;
   const theta = (lon + 180) * DEG;
@@ -60,75 +66,82 @@ export function latLonToVec3(lat, lon, r = R) {
 
 function arcCurve(a, b) {
   const angle = a.angleTo(b);
-  const alt = 0.12 + 0.42 * (angle / Math.PI);
+  const alt = 0.1 + 0.38 * (angle / Math.PI);
   const c1 = a.clone().lerp(b, 0.25).normalize().multiplyScalar(R * (1 + alt));
   const c2 = a.clone().lerp(b, 0.75).normalize().multiplyScalar(R * (1 + alt));
   return new CubicBezierCurve3(a, c1, c2, b);
 }
 
-const dotsVertex = /* glsl */ `
-  attribute float aSize;
-  attribute float aSeed;
-  uniform float uTime;
-  uniform float uPixelRatio;
-  varying float vFacing;
-  varying float vTwinkle;
+const worldVertex = /* glsl */ `
+  varying vec2 vUv;
+  varying vec3 vNormalW;
+  varying vec3 vPosW;
   void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vec3 n = normalize(normalMatrix * normalize(position));
-    vFacing = dot(n, vec3(0.0, 0.0, 1.0));
-    vTwinkle = 0.65 + 0.35 * sin(uTime * 1.6 + aSeed * 40.0);
-    gl_PointSize = aSize * uPixelRatio * (3.2 / -mv.z);
-    gl_Position = projectionMatrix * mv;
+    vUv = uv;
+    vNormalW = normalize(mat3(modelMatrix) * normal);
+    vec4 w = modelMatrix * vec4(position, 1.0);
+    vPosW = w.xyz;
+    gl_Position = projectionMatrix * viewMatrix * w;
   }
 `;
-const dotsFragment = /* glsl */ `
-  uniform vec3 uColorA;
-  uniform vec3 uColorB;
-  varying float vFacing;
-  varying float vTwinkle;
+
+const earthFragment = /* glsl */ `
+  uniform sampler2D uDay;
+  uniform sampler2D uNight;
+  uniform sampler2D uWater;
+  uniform vec3 uSun;
+  uniform vec3 uAtmo;
+  varying vec2 vUv;
+  varying vec3 vNormalW;
+  varying vec3 vPosW;
   void main() {
-    vec2 c = gl_PointCoord - 0.5;
-    float d = length(c);
-    if (d > 0.5) discard;
-    float alpha = smoothstep(0.5, 0.1, d);
-    float front = smoothstep(-0.15, 0.6, vFacing);
-    vec3 col = mix(uColorA, uColorB, front);
-    gl_FragColor = vec4(col, alpha * mix(0.22, 1.0, front) * vTwinkle);
+    vec3 N = normalize(vNormalW);
+    vec3 V = normalize(cameraPosition - vPosW);
+    float sunDot = dot(N, uSun);
+    float dayMix = smoothstep(-0.18, 0.22, sunDot);
+
+    vec3 day = texture2D(uDay, vUv).rgb;
+    vec3 night = texture2D(uNight, vUv).rgb;
+    float water = texture2D(uWater, vUv).r;
+
+    // Dia: difuso com piso (nunca fica chapado preto)
+    vec3 dayCol = day * (0.16 + 1.08 * max(sunDot, 0.0));
+    // Noite: luzes das cidades em tom âmbar
+    vec3 nightCol = night * vec3(1.0, 0.82, 0.55) * 1.8 + vec3(0.004, 0.008, 0.02);
+    vec3 col = mix(nightCol, dayCol, dayMix);
+
+    // Reflexo do sol só nos oceanos
+    vec3 H = normalize(uSun + V);
+    float spec = pow(max(dot(N, H), 0.0), 900.0) * water * dayMix;
+    col += vec3(0.8, 0.9, 1.0) * spec * 0.35;
+
+    // Brilho atmosférico na borda (fresnel), mais forte no lado iluminado
+    float fres = pow(1.0 - max(dot(N, V), 0.0), 2.6);
+    col = mix(col, uAtmo, fres * (0.2 + 0.6 * dayMix));
+
+    // Terminador levemente alaranjado (pôr do sol)
+    float dusk = smoothstep(-0.05, 0.12, sunDot) * (1.0 - smoothstep(0.12, 0.35, sunDot));
+    col += vec3(0.35, 0.14, 0.04) * dusk * 0.07;
+
+    gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
   }
 `;
 
-const atmosphereVertex = /* glsl */ `
-  varying vec3 vNormal;
-  void main() {
-    vNormal = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-const atmosphereFragment = /* glsl */ `
+const atmoFragment = /* glsl */ `
   uniform vec3 uColor;
-  uniform float uPower;
-  uniform float uIntensity;
-  varying vec3 vNormal;
+  uniform vec3 uSun;
+  varying vec3 vNormalW;
+  varying vec3 vPosW;
   void main() {
-    float i = pow(max(0.0, 0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0))), uPower);
-    gl_FragColor = vec4(uColor, 1.0) * i * uIntensity;
-    #include <colorspace_fragment>
-  }
-`;
-const coreFragment = /* glsl */ `
-  uniform vec3 uDeep;
-  uniform vec3 uLit;
-  uniform vec3 uRim;
-  varying vec3 vNormal;
-  void main() {
-    vec3 L = normalize(vec3(-0.55, 0.55, 0.65));
-    float diff = smoothstep(-0.2, 1.0, dot(vNormal, L));
-    float f = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
-    vec3 col = mix(uDeep, uLit, diff * 0.85);
-    col += uRim * pow(f, 3.0) * 0.9;
-    gl_FragColor = vec4(col, 1.0);
+    vec3 N = normalize(vNormalW);
+    vec3 V = normalize(cameraPosition - vPosW);
+    // c = 0 na borda externa do halo, ~0.47 rente ao limbo da Terra
+    float c = clamp(-dot(N, V), 0.0, 1.0);
+    float rim = pow(smoothstep(0.0, 0.47, c), 1.6);
+    float lit = 0.25 + 0.75 * smoothstep(-0.35, 0.6, dot(N, uSun));
+    float a = rim * lit;
+    gl_FragColor = vec4(uColor * a * 1.4, a);
     #include <colorspace_fragment>
   }
 `;
@@ -150,8 +163,7 @@ const arcFragment = /* glsl */ `
   void main() {
     float behind = uHead - vProg;
     float trail = behind >= 0.0 ? 1.0 - behind / uTrail : 0.0;
-    trail = clamp(trail, 0.0, 1.0);
-    trail = pow(trail, 2.2);
+    trail = pow(clamp(trail, 0.0, 1.0), 2.2);
     float head = 1.0 - smoothstep(0.0, 0.02, abs(behind));
     vec3 col = mix(uColor, uHot, trail * trail + head);
     float a = max(uBase, trail * 0.95 + head);
@@ -160,139 +172,102 @@ const arcFragment = /* glsl */ `
   }
 `;
 
+function loadTexture(loader, url) {
+  return new Promise((resolve, reject) => loader.load(url, resolve, undefined, reject));
+}
+
 export class GlobeScene {
-  constructor(canvas, { tier = "full", onReady } = {}) {
+  // Use GlobeScene.create(): carrega as texturas antes de montar a cena,
+  // assim o crossfade do fallback só acontece com a Terra pronta.
+  static async create(canvas, opts = {}) {
+    const res = opts.tier === "lite" ? "1k" : "2k";
+    const loader = new TextureLoader();
+    const [day, night, water] = await Promise.all([
+      loadTexture(loader, `/earth/day-${res}.webp`),
+      loadTexture(loader, `/earth/night-${res}.webp`),
+      loadTexture(loader, "/earth/water-1k.webp"),
+    ]);
+    return new GlobeScene(canvas, { ...opts, textures: { day, night, water } });
+  }
+
+  constructor(canvas, { tier = "full", onReady, textures }) {
     this.canvas = canvas;
     this.tier = tier;
     this.running = false;
-    this.visible = true;
     this.pointer = { x: 0, y: 0, tx: 0, ty: 0 };
     this.clock = new Clock();
 
     const lite = tier === "lite";
     this.pixelRatio = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 1.75);
 
-    this.renderer = new WebGLRenderer({
-      canvas,
-      antialias: !lite,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    this.renderer = new WebGLRenderer({ canvas, antialias: !lite, alpha: true, powerPreference: "high-performance" });
     this.renderer.setPixelRatio(this.pixelRatio);
+    this.renderer.setClearColor(0x000000, 0);
     this.failed = false;
     this.renderer.debug.onShaderError = () => {
       this.failed = true;
     };
-    this.renderer.setClearColor(0x000000, 0);
+
+    const aniso = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+    textures.day.colorSpace = SRGBColorSpace;
+    textures.night.colorSpace = SRGBColorSpace;
+    textures.water.colorSpace = NoColorSpace;
+    for (const t of Object.values(textures)) {
+      t.anisotropy = aniso;
+      t.minFilter = LinearMipmapLinearFilter;
+    }
 
     this.scene = new Scene();
     this.camera = new PerspectiveCamera(32, 1, 0.1, 100);
-    this.camera.position.set(0, 0.35, 4.6);
+    this.camera.position.set(0, 0.2, 4.6);
 
     this.root = new Group();
     this.globe = new Group();
     this.root.add(this.globe);
     this.scene.add(this.root);
 
-    // Núcleo escuro com borda azulada (lê como "planeta" mesmo sem textura)
-    const core = new Mesh(
-      new SphereGeometry(R * 0.985, lite ? 48 : 72, lite ? 48 : 72),
-      new ShaderMaterial({
-        vertexShader: atmosphereVertex,
-        fragmentShader: coreFragment,
-        uniforms: {
-          uDeep: { value: new Color("#071338") },
-          uLit: { value: new Color("#1c4fd8") },
-          uRim: { value: new Color("#3ad6ff") },
-        },
-      })
-    );
-    this.globe.add(core);
-
-    // Pontos (distribuição Fibonacci -- uniforme, sem textura de continente
-    // proprietária). Densidade cai no "tier" lite.
-    const count = lite ? 2600 : 5200;
-    const pos = new Float32Array(count * 3);
-    const size = new Float32Array(count);
-    const seed = new Float32Array(count);
-    const golden = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < count; i++) {
-      const y = 1 - (i / (count - 1)) * 2;
-      const rad = Math.sqrt(1 - y * y);
-      const th = golden * i;
-      pos[i * 3] = Math.cos(th) * rad * R;
-      pos[i * 3 + 1] = y * R;
-      pos[i * 3 + 2] = Math.sin(th) * rad * R;
-      size[i] = 2.8 + Math.random() * 2.6;
-      seed[i] = Math.random();
-    }
-    const dotsGeo = new BufferGeometry();
-    dotsGeo.setAttribute("position", new BufferAttribute(pos, 3));
-    dotsGeo.setAttribute("aSize", new BufferAttribute(size, 1));
-    dotsGeo.setAttribute("aSeed", new BufferAttribute(seed, 1));
-    this.dotsMat = new ShaderMaterial({
-      vertexShader: dotsVertex,
-      fragmentShader: dotsFragment,
-      transparent: true,
-      depthWrite: false,
-      uniforms: {
-        uTime: { value: 0 },
-        uPixelRatio: { value: this.pixelRatio },
-        uColorA: { value: new Color("#3d6fe0") },
-        uColorB: { value: new Color("#e6faff") },
-      },
-    });
-    this.globe.add(new Points(dotsGeo, this.dotsMat));
-
-    const grat = [];
-    const seg = 96;
-    const pushCircle = (fn) => {
-      for (let k = 0; k < seg; k++) grat.push(...fn(k / seg), ...fn((k + 1) / seg));
-    };
-    for (let lat = -60; lat <= 60; lat += 30) {
-      pushCircle((t) => latLonToVec3(lat, t * 360 - 180, R * 1.002).toArray());
-    }
-    for (let lon = -180; lon < 180; lon += 30) {
-      pushCircle((t) => latLonToVec3(t * 180 - 90, lon, R * 1.002).toArray());
-    }
-    const gratGeo = new BufferGeometry();
-    gratGeo.setAttribute("position", new BufferAttribute(new Float32Array(grat), 3));
+    const seg = lite ? 64 : 128;
     this.globe.add(
-      new LineSegments(
-        gratGeo,
-        new LineBasicMaterial({ color: "#6f9cff", transparent: true, opacity: 0.16, blending: AdditiveBlending, depthWrite: false })
+      new Mesh(
+        new SphereGeometry(R, seg, seg),
+        new ShaderMaterial({
+          vertexShader: worldVertex,
+          fragmentShader: earthFragment,
+          uniforms: {
+            uDay: { value: textures.day },
+            uNight: { value: textures.night },
+            uWater: { value: textures.water },
+            uSun: { value: SUN },
+            uAtmo: { value: new Color("#5aa8ff") },
+          },
+        })
       )
     );
 
-    // Atmosfera (fresnel, face de trás, aditiva) -- a "iluminação cinematográfica"
-    const atmosphere = new Mesh(
-      new SphereGeometry(R * 1.14, 64, 64),
-      new ShaderMaterial({
-        vertexShader: atmosphereVertex,
-        fragmentShader: atmosphereFragment,
-        side: BackSide,
-        blending: AdditiveBlending,
-        transparent: true,
-        depthWrite: false,
-        uniforms: {
-          uColor: { value: new Color("#2f6bff") },
-          uPower: { value: 5.0 },
-          uIntensity: { value: 0.95 },
-        },
-      })
+    // Halo de atmosfera (face de trás, aditivo) -- não gira com a Terra
+    this.root.add(
+      new Mesh(
+        new SphereGeometry(R * 1.13, 64, 64),
+        new ShaderMaterial({
+          vertexShader: worldVertex,
+          fragmentShader: atmoFragment,
+          side: BackSide,
+          transparent: true,
+          depthWrite: false,
+          blending: AdditiveBlending,
+          uniforms: { uColor: { value: new Color("#3b8cff") }, uSun: { value: SUN } },
+        })
+      )
     );
-    this.root.add(atmosphere);
 
-    // Rotas de luz
+    // Rotas de luz (fibra) sobre a Terra
     this.arcs = [];
-    const home = latLonToVec3(HOME.lat, HOME.lon, R * 1.003);
-    const dests = DESTINATIONS.map((d) => latLonToVec3(d.lat, d.lon, R * 1.003));
+    const home = latLonToVec3(HOME.lat, HOME.lon, R * 1.002);
+    const dests = DESTINATIONS.map((d) => latLonToVec3(d.lat, d.lon, R * 1.002));
     const routes = dests.map((d) => [home, d]);
     if (!lite) SECONDARY.forEach(([a, b]) => routes.push([dests[a], dests[b]]));
-
     routes.forEach(([a, b], i) => {
-      const curve = arcCurve(a, b);
-      const geo = new TubeGeometry(curve, lite ? 48 : 96, i < dests.length ? 0.005 : 0.0032, lite ? 3 : 5, false);
+      const primary = i < dests.length;
       const mat = new ShaderMaterial({
         vertexShader: arcVertex,
         fragmentShader: arcFragment,
@@ -301,54 +276,55 @@ export class GlobeScene {
         blending: AdditiveBlending,
         uniforms: {
           uHead: { value: 0 },
-          uTrail: { value: 0.42 },
-          uColor: { value: new Color(i < dests.length ? "#2f6bff" : "#1d4fd6") },
-          uHot: { value: new Color("#bff3ff") },
-          uBase: { value: i < dests.length ? 0.12 : 0.05 },
+          uTrail: { value: 0.4 },
+          uColor: { value: new Color(primary ? "#4f9bff" : "#2f6bff") },
+          uHot: { value: new Color("#d8f6ff") },
+          uBase: { value: primary ? 0.1 : 0.04 },
         },
       });
+      const geo = new TubeGeometry(arcCurve(a, b), lite ? 48 : 96, primary ? 0.0042 : 0.0028, lite ? 3 : 5, false);
       this.globe.add(new Mesh(geo, mat));
-      this.arcs.push({ mat, speed: 0.16 + Math.random() * 0.12, offset: Math.random() * 1.6 });
+      this.arcs.push({ mat, speed: 0.15 + Math.random() * 0.1, offset: Math.random() * 1.6 });
     });
 
-    // Pulsos nos pontos de chegada + sede em destaque
+    // Pulsos: sede (maior) e chegadas
     this.pulses = [];
     const ringGeo = new RingGeometry(0.6, 1, 40);
     const addPulse = (v, scale, color, delay) => {
       const mat = new MeshBasicMaterial({ color, transparent: true, side: DoubleSide, depthWrite: false, blending: AdditiveBlending });
       const m = new Mesh(ringGeo, mat);
-      m.position.copy(v.clone().multiplyScalar(1.004));
+      m.position.copy(v.clone().multiplyScalar(1.003));
       m.lookAt(v.clone().multiplyScalar(2));
       this.globe.add(m);
       this.pulses.push({ m, mat, scale, delay });
     };
-    addPulse(home, 0.09, "#8ae8ff", 0);
-    addPulse(home, 0.09, "#8ae8ff", 0.5);
-    dests.forEach((d, i) => addPulse(d, 0.022, "#8ae8ff", (i * 0.37) % 1));
-
-    const homeDot = new Mesh(new SphereGeometry(0.014, 16, 16), new MeshBasicMaterial({ color: "#ffffff" }));
+    addPulse(home, 0.055, "#8ae8ff", 0);
+    addPulse(home, 0.055, "#8ae8ff", 0.5);
+    dests.forEach((d, i) => addPulse(d, 0.018, "#8ae8ff", (i * 0.37) % 1));
+    const homeDot = new Mesh(new SphereGeometry(0.011, 16, 16), new MeshBasicMaterial({ color: "#ffffff" }));
     homeDot.position.copy(home);
     this.globe.add(homeDot);
 
-    // Orientação inicial: Brasil virado para a câmera
-    this.baseRotY = -((HOME.lon + 180) * DEG) + Math.PI / 2 - 0.55;
-    this.globe.rotation.y = this.baseRotY;
-    this.root.rotation.x = -0.12;
-    this.root.rotation.z = -0.08;
+    // Eixo levemente inclinado + Brasil de frente no início
+    this.root.rotation.z = 23.4 * DEG * 0.6;
+    this.root.rotation.x = -0.22;
+    this.globe.rotation.y = -((HOME.lon + 180) * DEG) + Math.PI / 2 - 0.5;
 
     this.onResize = this.onResize.bind(this);
     this.tick = this.tick.bind(this);
     this.onPointer = this.onPointer.bind(this);
-
     this.ro = new ResizeObserver(this.onResize);
     this.ro.observe(canvas.parentElement);
     this.onResize();
     if (tier === "full") window.addEventListener("pointermove", this.onPointer, { passive: true });
 
-    this.intro = 0; // 0..1 entrada da câmera
+    this.intro = 0;
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
-    if (this.failed || this.renderer.getContext().isContextLost()) throw new Error("globe-shader");
+    if (this.failed || this.renderer.getContext().isContextLost()) {
+      this.dispose();
+      throw new Error("globe-shader");
+    }
     onReady?.();
   }
 
@@ -364,14 +340,12 @@ export class GlobeScene {
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    // Em telas estreitas afasta a câmera pra não cortar o globo de forma estranha
     this.camera.position.z = w / h < 0.9 ? 5.6 : 4.6;
     this.camera.updateProjectionMatrix();
     if (!this.running) this.renderer.render(this.scene, this.camera);
   }
 
   setVisible(v) {
-    this.visible = v;
     if (v) this.start();
     else this.stop();
   }
@@ -394,28 +368,27 @@ export class GlobeScene {
     const t = this.clock.elapsedTime;
 
     this.intro = Math.min(1, this.intro + dt / 2.4);
-    const e = 1 - Math.pow(1 - this.intro, 4); // easeOutQuart
+    const e = 1 - Math.pow(1 - this.intro, 4);
 
-    this.globe.rotation.y += dt * 0.045;
-    this.root.scale.setScalar(0.86 + 0.14 * e);
+    // Rotação oeste -> leste (sentido real da Terra)
+    this.globe.rotation.y += dt * 0.06;
+    this.root.scale.setScalar(0.9 + 0.1 * e);
 
-    // Câmera: deriva lenta + paralaxe suave do ponteiro (lerp)
     const p = this.pointer;
     p.x += (p.tx - p.x) * 0.04;
     p.y += (p.ty - p.y) * 0.04;
-    this.camera.position.x = Math.sin(t * 0.12) * 0.22 + p.x * 0.18;
-    this.camera.position.y = 0.35 + Math.cos(t * 0.09) * 0.12 - p.y * 0.12 + (1 - e) * 0.6;
+    this.camera.position.x = Math.sin(t * 0.1) * 0.18 + p.x * 0.16;
+    this.camera.position.y = 0.2 + Math.cos(t * 0.08) * 0.1 - p.y * 0.1 + (1 - e) * 0.5;
     this.camera.lookAt(0, 0, 0);
 
-    this.dotsMat.uniforms.uTime.value = t;
     for (const a of this.arcs) {
-      const cycle = ((t * a.speed + a.offset) % 1.8) / 1.8; // pausa natural entre disparos
+      const cycle = ((t * a.speed + a.offset) % 1.8) / 1.8;
       a.mat.uniforms.uHead.value = cycle * 1.8 - 0.2;
     }
-    for (const p2 of this.pulses) {
-      const k = (t * 0.55 + p2.delay) % 1;
-      p2.m.scale.setScalar(p2.scale * (0.4 + k * 1.6));
-      p2.mat.opacity = (1 - k) * (p2.scale > 0.05 ? 0.85 : 0.5);
+    for (const q of this.pulses) {
+      const k = (t * 0.55 + q.delay) % 1;
+      q.m.scale.setScalar(q.scale * (0.4 + k * 1.6));
+      q.mat.opacity = (1 - k) * (q.scale > 0.04 ? 0.85 : 0.6);
     }
 
     this.renderer.render(this.scene, this.camera);
@@ -424,11 +397,14 @@ export class GlobeScene {
 
   dispose() {
     this.stop();
-    this.ro.disconnect();
+    this.ro?.disconnect();
     window.removeEventListener("pointermove", this.onPointer);
-    this.scene.traverse((o) => {
+    this.scene?.traverse((o) => {
       o.geometry?.dispose?.();
-      o.material?.dispose?.();
+      if (o.material) {
+        for (const u of Object.values(o.material.uniforms || {})) u.value?.dispose?.();
+        o.material.dispose?.();
+      }
     });
     this.renderer.dispose();
   }

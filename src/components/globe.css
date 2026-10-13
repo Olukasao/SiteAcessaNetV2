@@ -12,7 +12,8 @@
 }
 
 .globe-static {
-  object-fit: contain;
+  display: grid;
+  place-items: center;
   transition: opacity 1.2s var(--ease-out);
 }
 
@@ -29,43 +30,48 @@
   opacity: 0;
 }
 
-.gs-arc {
-  stroke-dasharray: 260;
-  stroke-dashoffset: 260;
-  animation: gs-draw 3.6s var(--ease-out) infinite;
+/* Terra em CSS (fallback): textura equiretangular rolando dentro de um
+   círculo + sombreamento esférico. Mesmo tamanho aparente do globo WebGL
+   (~75% da caixa), pra o crossfade não "pular". */
+.earth-css {
+  position: relative;
+  width: 75%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  transform: rotate(14deg);
+  box-shadow:
+    0 0 0 1px rgba(120, 180, 255, 0.25),
+    0 0 60px 8px rgba(59, 140, 255, 0.45),
+    0 0 140px 30px rgba(47, 107, 255, 0.25);
 }
 
-.gs-arc--2 {
-  animation-delay: 1.1s;
+.earth-css-map {
+  position: absolute;
+  inset: 0;
+  background: url("/earth/day-1k.webp") 0 50% / auto 100% repeat-x;
+  animation: earth-spin 90s linear infinite;
 }
 
-.gs-arc--3 {
-  animation-delay: 2.2s;
+.earth-css-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 32%, rgba(255, 255, 255, 0.16) 0%, transparent 38%),
+    radial-gradient(circle at 30% 35%, transparent 42%, rgba(2, 6, 20, 0.55) 72%, rgba(2, 6, 20, 0.92) 100%),
+    radial-gradient(circle at 50% 50%, transparent 60%, rgba(90, 168, 255, 0.35) 100%);
+  box-shadow: inset -30px -10px 60px rgba(0, 0, 0, 0.6);
 }
 
-.gs-pulse {
-  transform-origin: 150px 250px;
-  animation: gs-pulse 2.4s var(--ease-out) infinite;
-}
-
-@keyframes gs-draw {
-  0% { stroke-dashoffset: 260; opacity: 1; }
-  60% { stroke-dashoffset: 0; opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 0; }
-}
-
-@keyframes gs-pulse {
-  from { transform: scale(0.4); opacity: 0.9; }
-  to { transform: scale(2.2); opacity: 0; }
+@keyframes earth-spin {
+  from { background-position-x: 0; }
+  to { background-position-x: -200%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gs-arc {
+  .earth-css-map {
     animation: none;
-    stroke-dashoffset: 0;
-  }
-
-  .gs-pulse {
-    animation: none;
+    background-position-x: -62%;
   }
 }
