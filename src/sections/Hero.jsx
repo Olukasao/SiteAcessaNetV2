@@ -11,10 +11,10 @@ import "./hero.css";
 // Rotação do hero: mensagem da marca -> planos -> marca... O globo fica
 // fixo; só a área de texto troca. Tempos em ms.
 const SLIDES = [
-  { id: "brand", label: "Início", duration: 5000 },
-  ...plans.map((p) => ({ id: p.id, label: `${p.speed} ${p.unit}`, duration: 6500, plan: p })),
+  { id: "brand", label: "Início", duration: 4000 },
+  ...plans.map((p) => ({ id: p.id, label: `${p.speed} ${p.unit}`, duration: 4500, plan: p })),
 ];
-const INTRO_MS = 1400; // a contagem só começa depois da entrada inicial
+const INTRO_MS = 1000; // a contagem só começa depois da entrada inicial
 
 export default function Hero() {
   const ref = useRef(null);

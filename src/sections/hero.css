@@ -245,15 +245,15 @@
 }
 
 .hs-slide[data-state="leaving"] {
-  transition: visibility 0s linear 0.6s;
+  transition: visibility 0s linear 0.4s;
 }
 
 /* Itens: entram de baixo (com cascata via --i) depois que o anterior começou a sair */
 .hs-item,
 .hs-slide .hero-line > span {
   transition:
-    transform 0.8s var(--ease-out) calc(var(--i, 0) * 70ms + 260ms),
-    opacity 0.6s var(--ease-out) calc(var(--i, 0) * 70ms + 260ms);
+    transform 0.55s var(--ease-out) calc(var(--i, 0) * 35ms + 140ms),
+    opacity 0.4s var(--ease-out) calc(var(--i, 0) * 35ms + 140ms);
 }
 
 .hs-slide[data-state="idle"] .hs-item {
@@ -271,13 +271,13 @@
   opacity: 0;
   transform: translateY(-20px);
   transition:
-    transform 0.45s var(--ease-out) calc(var(--i, 0) * 35ms),
-    opacity 0.35s ease calc(var(--i, 0) * 35ms);
+    transform 0.3s var(--ease-out) calc(var(--i, 0) * 15ms),
+    opacity 0.22s ease calc(var(--i, 0) * 15ms);
 }
 
 .hs-slide[data-state="leaving"] .hero-line > span {
   transform: translateY(-110%);
-  transition: transform 0.5s cubic-bezier(0.7, 0, 0.84, 0) calc(var(--i, 0) * 45ms);
+  transition: transform 0.32s cubic-bezier(0.7, 0, 0.84, 0) calc(var(--i, 0) * 20ms);
 }
 
 .hero.is-intro .hs-item,
