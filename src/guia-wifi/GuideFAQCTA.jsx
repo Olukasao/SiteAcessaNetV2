@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowDown, ChevronDown, House, PhoneCall, Wifi } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo-acessanet-3d.png";
+import { company } from "../data/site";
 
 const faqItems = [
   {
@@ -134,12 +135,14 @@ export function SupportCTA({ supportUrl, onSupportClick }) {
 }
 
 export function GuideFooter({ supportUrl, onSupportClick }) {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="guide-footer">
       <div className="guide-shell guide-footer-inner">
         <div>
           <img src={logo} alt="AcessaNet" className="guide-footer-logo" />
-          <p>ACESSANET TELECON LTDA</p>
+          <p>{company.legalName}</p>
         </div>
 
         <div className="guide-footer-support">
@@ -159,7 +162,10 @@ export function GuideFooter({ supportUrl, onSupportClick }) {
           Voltar para a home
         </Link>
 
-        <span>© {new Date().getFullYear()} AcessaNet - Todos os direitos reservados</span>
+        <div className="guide-footer-rights">
+          <strong>© {company.since}-{currentYear} {company.name}. Todos os direitos reservados.</strong>
+          <span>Desenvolvimento original por {company.originalDeveloper}.</span>
+        </div>
       </div>
     </footer>
   );

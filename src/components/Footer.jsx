@@ -6,6 +6,8 @@ import { company, coveredCitiesLabel, whatsappLink, wifiGuideUrl } from "../data
 import "./footer.css";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="ftr">
       <div className="container">
@@ -55,7 +57,15 @@ export default function Footer() {
         </div>
 
         <div className="ftr-bottom">
-          <span>© {new Date().getFullYear()} {company.legalName} · CNPJ {company.cnpj}</span>
+          <div className="ftr-copyright">
+            <strong>© {company.since}-{currentYear} {company.legalName}. Todos os direitos reservados.</strong>
+            <span>
+              Site, textos, imagens, marca, layout, animações e materiais protegidos por direitos autorais.
+              Reprodução ou uso sem autorização é proibido.
+            </span>
+            <span>Projeto, desenvolvimento e implementação original por {company.originalDeveloper} para {company.legalName}.</span>
+            <span>CNPJ {company.cnpj}</span>
+          </div>
           <span>Versão de testes (lab) — não indexada</span>
         </div>
       </div>

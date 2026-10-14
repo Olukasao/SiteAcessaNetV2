@@ -1,0 +1,25 @@
+{
+  "project": "AcessaNet site novo (lab)",
+  "declaredAt": "2026-10-14",
+  "timezone": "America/Sao_Paulo",
+  "company": {
+    "legalName": "ACESSANET TELECON LTDA",
+    "cnpj": "23.094.376/0001-08"
+  },
+  "originalDeveloper": {
+    "name": "Lucas Soares",
+    "role": "Projeto, desenvolvimento e implementação original"
+  },
+  "statement": "Projeto, desenvolvimento e implementação original por Lucas Soares para ACESSANET TELECON LTDA.",
+  "statementSha256": "59f1928d26d54a0c05bcedf75196e45dff3b6a5091c1fe536b05dd1b104b5aca",
+  "sourceFiles": [
+    "AUTHORS.md",
+    "NOTICE.md",
+    "CONTRIBUTING.md",
+    "index.html",
+    "src/data/site.js",
+    "src/components/Footer.jsx",
+    "src/guia-wifi/GuideFAQCTA.jsx"
+  ],
+  "note": "Metadado público de autoria e integridade. Não é segredo criptográfico; serve para auditoria e rastreabilidade."
+}

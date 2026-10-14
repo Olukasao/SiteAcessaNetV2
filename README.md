@@ -15,10 +15,24 @@ aparelhos sem GPU, economia de dados ou `prefers-reduced-motion`).
 npm install
 npm run dev       # desenvolvimento (porta 4181)
 npm run build
-npm run preview   # serve o build na porta 4180 (usado no pm2: ecosystem.config.cjs)
+npm run preview   # serve o build na porta 4180
 ```
 
+PM2 do lab: `ecosystem.config.cjs` serve o build em `0.0.0.0:4198`.
+
 `?gl=force` / `?gl=off` na URL forçam ou desligam o 3D (testes).
+
+## Autoria
+
+Projeto, desenvolvimento e implementação original por Lucas Soares para
+ACESSANET TELECON LTDA.
+
+Registros de autoria e proveniência:
+
+- `AUTHORS.md`
+- `NOTICE.md`
+- `CONTRIBUTING.md`
+- `public/.well-known/authorship.json`
 
 ## Dados
 

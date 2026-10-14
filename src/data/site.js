@@ -11,8 +11,9 @@ import logoGloboplay from "../assets/globoplay.png";
 export const company = {
   name: "AcessaNet",
   legalName: "ACESSANET TELECON LTDA",
-  cnpj: "23.094.376.0001-08",
+  cnpj: "23.094.376/0001-08",
   since: 2015,
+  originalDeveloper: "Lucas Soares",
   phone: "0800 444 5799",
   phoneHref: "tel:08004445799",
   whatsapp: "5508004445799",

@@ -84,12 +84,28 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
   margin-top: 56px;
   padding-top: 24px;
   border-top: 1px solid var(--line-dark);
   font-size: var(--fs-micro);
   color: var(--on-dark-3);
+}
+
+.ftr-copyright {
+  display: grid;
+  gap: 5px;
+  max-width: 760px;
+}
+
+.ftr-copyright strong {
+  color: var(--on-dark);
+  font-weight: 800;
+}
+
+.ftr-copyright span {
+  display: block;
 }
 
 @media (max-width: 900px) {

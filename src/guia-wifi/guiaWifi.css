@@ -5605,7 +5605,8 @@
 
 .guide-footer p,
 .guide-footer span,
-.guide-footer a {
+.guide-footer a,
+.guide-footer strong {
   color: var(--guide-body);
   font-size: 12px;
   font-weight: 700;
@@ -5646,8 +5647,15 @@
   color: var(--guide-heading);
 }
 
-.guide-footer-inner > span {
+.guide-footer-rights {
+  display: grid;
+  gap: 5px;
   text-align: right;
+}
+
+.guide-footer-rights strong,
+.guide-footer-rights span {
+  display: block;
 }
 
 @keyframes signalPulse {
@@ -5770,7 +5778,7 @@
     margin-right: auto;
   }
 
-  .guide-footer-inner > span {
+  .guide-footer-rights {
     text-align: center;
   }
 }
