@@ -58,8 +58,18 @@ Texturas da Terra: NASA Blue Marble / Black Marble (domínio público).
 
 ### Vercel
 
-A Vercel publica a branch `main` (configuração em `vercel.json`). Cada push na `main` gera um deploy novo;
-outras branches geram links de prévia.
+A branch de produção é definida no painel do projeto na Vercel, em
+**Settings > Environments > Production > Branch Tracking**. Confira a branch
+selecionada antes de publicar. O `vercel.json` configura o build, as rotas e os
+headers; ele não seleciona a branch de produção neste projeto.
+
+Com a integração Git ativa, pushes na branch de produção geram deploys de produção;
+outras branches podem gerar prévias, conforme a configuração do projeto.
+Se a produção acompanha `main`, um push em `site-novo` não atualiza automaticamente
+o domínio de produção. Nesse caso, publique as mudanças por um pull request para
+`main` ou ajuste a branch acompanhada no painel da Vercel.
+
+Referência: [Deploying Git Repositories with Vercel](https://vercel.com/docs/git).
 
 ### Hostinger
 
