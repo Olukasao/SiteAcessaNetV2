@@ -44,8 +44,8 @@ export default function Footer() {
             <a href={company.centralUrl}>Central do Assinante</a>
             <Link to="/contratos">Contratos e termos</Link>
             <Link to={wifiGuideUrl}>Boas práticas Wi-Fi</Link>
-            <a href="https://acessanet.com.br/lgpd">LGPD</a>
-            <a href="https://acessanet.com.br/trabalhe-conosco">Trabalhe conosco</a>
+            <Link to="/lgpd">LGPD</Link>
+            <Link to="/trabalhe-conosco">Trabalhe conosco</Link>
           </nav>
 
           <div className="ftr-col">

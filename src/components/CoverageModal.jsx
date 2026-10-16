@@ -3,7 +3,6 @@ import Dialog from "./Dialog";
 import CoverageForm from "./CoverageForm";
 import { useUI } from "../context/UIContext";
 import { plans } from "../data/site";
-import { contractLink } from "../lib/contract";
 
 export default function CoverageModal() {
   const { coverageOpen, closeCoverage, coverage, pendingPlan, openPlan } = useUI();
@@ -23,9 +22,16 @@ export default function CoverageModal() {
       {coverage?.status === "ok" && (
         <div className="coverage-next">
           {plan ? (
-            <a className="btn btn--primary btn--block" href={contractLink(plan, coverage)} target="_blank" rel="noreferrer">
-              Contratar {plan.name} pelo WhatsApp <ArrowRight size={18} aria-hidden="true" />
-            </a>
+            <button
+              type="button"
+              className="btn btn--primary btn--block"
+              onClick={() => {
+                closeCoverage();
+                openPlan(plan.id, "form");
+              }}
+            >
+              Contratar {plan.name} <ArrowRight size={18} aria-hidden="true" />
+            </button>
           ) : (
             <div className="coverage-next-plans">
               {plans.map((p) => (

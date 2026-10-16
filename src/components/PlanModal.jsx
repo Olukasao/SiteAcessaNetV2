@@ -1,13 +1,14 @@
 import { ArrowRight, Check, MapPin, ShieldCheck } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Dialog from "./Dialog";
+import PlanLeadForm from "./PlanLeadForm";
 import { useUI } from "../context/UIContext";
 import { company, plans, services } from "../data/site";
 import { contractLink } from "../lib/contract";
 import "./planModal.css";
 
 export default function PlanModal() {
-  const { planId, closePlan, coverage, openCoverage } = useUI();
+  const { planId, planStep, setPlanStep, closePlan, coverage, openCoverage } = useUI();
   const plan = plans.find((p) => p.id === planId);
 
   return (
@@ -18,7 +19,12 @@ export default function PlanModal() {
       title={plan ? `${plan.name}` : ""}
       description={plan?.tagline}
     >
-      {plan && (
+      {plan && planStep === "form" && (
+        <div className="pm">
+          <PlanLeadForm key={plan.id} plan={plan} onBack={() => setPlanStep("details")} />
+        </div>
+      )}
+      {plan && planStep !== "form" && (
         <div className="pm">
           <div className="pm-top">
             <div className="pm-price">
@@ -70,13 +76,16 @@ export default function PlanModal() {
           </div>
 
           <div className="pm-actions">
-            <a className="btn btn--primary btn--block" href={contractLink(plan, coverage)} target="_blank" rel="noreferrer">
-              <FaWhatsapp aria-hidden="true" /> Contratar pelo WhatsApp <ArrowRight size={18} aria-hidden="true" />
-            </a>
-            <a className="btn btn--ghost btn--block" href={company.phoneHref}>
-              Ligar {company.phone}
+            <button type="button" className="btn btn--primary btn--block" onClick={() => setPlanStep("form")}>
+              Quero contratar <ArrowRight size={18} aria-hidden="true" />
+            </button>
+            <a className="btn btn--ghost btn--block" href={contractLink(plan, coverage)} target="_blank" rel="noreferrer">
+              <FaWhatsapp aria-hidden="true" /> Falar no WhatsApp
             </a>
           </div>
+          <p className="pm-call">
+            Ou ligue: <a href={company.phoneHref}>{company.phone}</a>
+          </p>
           <p className="pm-legal">
             A contratação é concluída com nossa equipe comercial, que confirma a viabilidade técnica no seu endereço e as condições vigentes.
           </p>

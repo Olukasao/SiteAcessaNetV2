@@ -166,3 +166,285 @@
     border-top: 1px solid var(--line);
   }
 }
+
+.pm-call {
+  margin-top: 12px;
+  text-align: center;
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+}
+
+.pm-call a {
+  font-weight: 700;
+  color: var(--blue-500);
+}
+
+/* ---------- Pedido de assinatura (PlanLeadForm) ---------- */
+.plf {
+  display: grid;
+  gap: 14px;
+}
+
+.plf-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+.plf-back:hover {
+  color: var(--blue-500);
+}
+
+.plf-plan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 16px 20px;
+  border-radius: var(--r-lg);
+  color: var(--on-dark);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(47, 107, 255, 0.4), transparent 60%),
+    var(--navy-800);
+}
+
+.plf-plan span {
+  flex-basis: 100%;
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan-400);
+}
+
+.plf-plan strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.plf-plan em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--on-dark-2);
+}
+
+.plf-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.plf-field > span,
+.plf-periods legend {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.plf-field small {
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.plf-field input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface-2);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast);
+}
+
+.plf-field input:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.14);
+}
+
+.plf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.plf-row--street {
+  grid-template-columns: 1fr 120px;
+}
+
+.plf-row--cep {
+  grid-template-columns: 170px 1fr;
+  align-items: end;
+}
+
+.plf-cep-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-height: 50px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.35;
+  align-content: center;
+  align-items: center;
+}
+
+.plf-cep-hint svg {
+  flex: none;
+}
+
+.plf-cep-hint.is-info {
+  color: var(--ink-3);
+  background: var(--surface-2);
+}
+
+.plf-cep-hint.is-ok {
+  color: #0b7a47;
+  background: rgba(23, 178, 106, 0.1);
+}
+
+.plf-cep-hint.is-warn {
+  color: #8a5200;
+  background: rgba(245, 165, 36, 0.14);
+}
+
+.plf-periods {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.plf-periods legend {
+  margin-bottom: 8px;
+}
+
+.plf-periods > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plf-periods label {
+  position: relative;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--ink-2);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), background var(--dur-fast), color var(--dur-fast);
+}
+
+.plf-periods label:hover {
+  border-color: var(--blue-400);
+}
+
+.plf-periods label:focus-within {
+  outline: 2px solid var(--blue-500);
+  outline-offset: 2px;
+}
+
+.plf-periods label.is-on {
+  color: var(--white);
+  border-color: var(--blue-500);
+  background: var(--blue-500);
+}
+
+.plf-periods input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plf-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.plf-error {
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  color: #b4232a;
+  background: rgba(229, 72, 77, 0.08);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.plf .btn--primary {
+  margin-top: 4px;
+}
+
+.plf-whats {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: #128c4b;
+}
+
+.plf-whats:hover {
+  color: #0b6b38;
+}
+
+.plf-spin {
+  animation: plf-spin 0.9s linear infinite;
+}
+
+@keyframes plf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.plf-done {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px 8px 8px;
+  text-align: center;
+}
+
+.plf-done svg {
+  color: var(--success);
+}
+
+.plf-done h3 {
+  font-size: var(--fs-h3);
+}
+
+.plf-done p {
+  max-width: 42ch;
+  color: var(--ink-2);
+}
+
+@media (max-width: 560px) {
+  .plf-row,
+  .plf-row--cep {
+    grid-template-columns: 1fr;
+  }
+
+  .plf-row--street {
+    grid-template-columns: 1fr 96px;
+  }
+
+  .plf-cep-hint {
+    min-height: 0;
+  }
+}

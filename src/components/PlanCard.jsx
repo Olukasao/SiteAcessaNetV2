@@ -76,7 +76,7 @@ export default function PlanCard({ plan }) {
       <p className="plan-note">{plan.note}</p>
 
       <div className="plan-actions">
-        <button type="button" className="btn btn--primary btn--block" onClick={() => openPlan(plan.id)}>
+        <button type="button" className="btn btn--primary btn--block" onClick={() => openPlan(plan.id, "form")}>
           Quero este plano <ArrowRight size={18} aria-hidden="true" />
         </button>
         <button type="button" className="plan-details" onClick={() => openPlan(plan.id)}>

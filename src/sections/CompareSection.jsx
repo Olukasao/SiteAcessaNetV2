@@ -56,7 +56,7 @@ export default function CompareSection() {
                 <td />
                 {plans.map((p) => (
                   <td key={p.id} className={p.featured ? "is-featured" : ""}>
-                    <button type="button" className={`btn btn--sm ${p.featured ? "btn--primary" : "btn--ghost"}`} onClick={() => openPlan(p.id)}>
+                    <button type="button" className={`btn btn--sm ${p.featured ? "btn--primary" : "btn--ghost"}`} onClick={() => openPlan(p.id, "form")}>
                       Escolher
                     </button>
                   </td>

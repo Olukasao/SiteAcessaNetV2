@@ -198,7 +198,7 @@ export default function Hero() {
                     <span className="hs-cents">,{p.price.cents}<small>/mês</small></span>
                   </p>
                   <div className="hero-ctas">
-                    <button type="button" className="btn btn--primary" onClick={() => openPlan(p.id)}>
+                    <button type="button" className="btn btn--primary" onClick={() => openPlan(p.id, "form")}>
                       Quero este plano <ArrowRight size={18} aria-hidden="true" />
                     </button>
                     <Link to="/planos" className="btn btn--ghost-dark">Ver todos</Link>
