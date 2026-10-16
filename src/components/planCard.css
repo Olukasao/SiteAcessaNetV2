@@ -156,9 +156,26 @@
   background: var(--navy-700);
 }
 
-.plan-more {
-  color: var(--cyan-300);
-  font-size: var(--fs-small) !important;
+/* Logos de marca: chip branco, sem a moldura ciano dos ícones genéricos. */
+.plan-include-icon.is-logo {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #fff;
+}
+
+.plan-include-icon.is-logo.is-dark {
+  background: var(--navy-700);
+}
+
+/* Wordmark largo (ESPN): respiro lateral para não encostar na borda. */
+.plan-include-icon.is-pad img {
+  padding: 0 4px;
+}
+
+/* Ícone desenhado (telefone fixo). */
+.plan-include-icon.is-glyph {
+  color: var(--navy-900);
+  border-color: transparent;
+  background: var(--grad-electric);
 }
 
 .plan-price {

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, Clock3, MapPin, Pause, Play, ShieldCheck } from "lucide-react";
 import Globe from "../components/Globe";
 import { useUI } from "../context/UIContext";
-import { company, coveredCitiesLabel, plans, services } from "../data/site";
+import { company, coveredCitiesLabel, plansBySpeed, services } from "../data/site";
 import { gsap } from "../hooks/useReveal";
 import { prefersReducedMotion } from "../hooks/useDeviceTier";
 import "./hero.css";
@@ -12,7 +12,7 @@ import "./hero.css";
 // fixo; só a área de texto troca. Tempos em ms.
 const SLIDES = [
   { id: "brand", label: "Início", duration: 4000 },
-  ...plans.map((p) => ({ id: p.id, label: p.short, duration: 4500, plan: p })),
+  ...plansBySpeed.map((p) => ({ id: p.id, label: p.short, duration: 4500, plan: p })),
 ];
 const INTRO_MS = 1000; // a contagem só começa depois da entrada inicial
 

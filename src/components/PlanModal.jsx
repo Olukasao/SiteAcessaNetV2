@@ -45,8 +45,8 @@ export default function PlanModal() {
               const s = services[key];
               return (
                 <li key={key}>
-                  <span className={`pm-ico ${s.logo ? "pm-ico--logo" : ""} ${s.dark ? "is-dark" : ""}`}>
-                    {s.logo ? <img src={s.logo} alt="" /> : <Check size={16} aria-hidden="true" />}
+                  <span className={`pm-ico ${s.logo ? "pm-ico--logo" : ""} ${s.dark ? "is-dark" : ""} ${s.fit === "pad" ? "is-pad" : ""} ${!s.logo && s.icon ? "is-glyph" : ""}`}>
+                    {s.logo ? <img src={s.logo} alt="" /> : s.icon ? <s.icon size={18} aria-hidden="true" /> : <Check size={16} aria-hidden="true" />}
                   </span>
                   <div>
                     <strong>{s.name}</strong>

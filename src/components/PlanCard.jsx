@@ -27,9 +27,6 @@ export default function PlanCard({ plan }) {
     el?.style.setProperty("--ry", "0deg");
   };
 
-  const visibleIncludes = plan.includes.slice(0, 4);
-  const more = plan.includes.length - visibleIncludes.length;
-
   return (
     <article
       ref={ref}
@@ -53,18 +50,19 @@ export default function PlanCard({ plan }) {
       </header>
 
       <ul className="plan-includes" aria-label="Incluso no plano">
-        {visibleIncludes.map((key) => {
+        {plan.includes.map((key) => {
           const s = services[key];
+          const Glyph = s.icon;
+          const tone = s.logo ? `is-logo ${s.dark ? "is-dark" : ""} ${s.fit === "pad" ? "is-pad" : ""}` : Glyph ? "is-glyph" : "";
           return (
             <li key={key}>
-              <span className={`plan-include-icon ${s.logo && s.dark ? "is-dark" : ""}`} aria-hidden="true">
-                {s.logo ? <img src={s.logo} alt="" loading="lazy" /> : <Check size={16} />}
+              <span className={`plan-include-icon ${tone}`} aria-hidden="true">
+                {s.logo ? <img src={s.logo} alt="" loading="lazy" /> : Glyph ? <Glyph size={17} /> : <Check size={16} />}
               </span>
               <span>{s.name}</span>
             </li>
           );
         })}
-        {more > 0 && <li className="plan-more">+ {more} benefício{more > 1 ? "s" : ""}</li>}
       </ul>
 
       <div className="plan-price" aria-label={`${plan.priceText} por mês`}>

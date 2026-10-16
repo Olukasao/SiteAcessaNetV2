@@ -102,6 +102,15 @@
   background: var(--navy-700);
 }
 
+.pm-ico.is-pad img {
+  padding: 0 5px;
+}
+
+.pm-ico.is-glyph {
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
 .pm-coverage {
   margin-top: 20px;
 }

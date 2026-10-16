@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, HeartPulse, PhoneCall } from "lucide-react";
 import PlanCard from "../components/PlanCard";
-import { fixedLine, plans, temSaudePlans, whatsappLink } from "../data/site";
+import { fixedLine, plansBySpeed, temSaudePlans, whatsappLink } from "../data/site";
 import { useReveal } from "../hooks/useReveal";
 import "./plans.css";
 
@@ -21,7 +21,7 @@ export default function PlansSection({ showCompareLink = true, title = "Escolha 
         </div>
 
         <div className="plans-grid">
-          {plans.map((p) => (
+          {plansBySpeed.map((p) => (
             <PlanCard key={p.id} plan={p} />
           ))}
 

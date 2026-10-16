@@ -5,7 +5,9 @@
 import logoTemSaude from "../assets/temSaude.png";
 import logoWatch from "../assets/watchTV.jpg";
 import logoGraviola from "../assets/graviola.png";
-import logoGloboplay from "../assets/globoplay.png";
+import logoGloboplay from "../assets/globoplay-icon.png";
+import logoEspn from "../assets/espn.png";
+import { PhoneCall } from "lucide-react";
 
 // Footer.jsx / WhatsAppButton.jsx
 export const company = {
@@ -39,9 +41,9 @@ export const services = {
   globoplay: { name: "Globoplay", detail: "Padrão com anúncios", logo: logoGloboplay, dark: false },
   livros: { name: "App Livros", detail: "Conteúdo para toda a família (Graviola Digital)", logo: logoGraviola, dark: true },
   watch: { name: "Watch TV + Premiere", detail: "Canais ao vivo e esportes", logo: logoWatch, dark: false },
-  espn: { name: "ESPN + SporTV", detail: "Canais esportivos no Watch TV", logo: null },
+  espn: { name: "ESPN + SporTV", detail: "Canais esportivos no Watch TV", logo: logoEspn, dark: false, fit: "pad" },
   temsaude: { name: "Telemedicina TemSaúde", detail: "Consultas sem sair de casa", logo: logoTemSaude, dark: false },
-  fixo: { name: "Telefone fixo", detail: "Minutagem ilimitada", logo: null },
+  fixo: { name: "Telefone fixo", detail: "Minutagem ilimitada", logo: null, icon: PhoneCall },
 };
 
 // Planos residenciais. Preço/velocidade/benefícios de TemaSection.jsx (página
@@ -96,6 +98,10 @@ export const plans = [
     note: "Para novos assinantes",
   },
 ];
+
+// Ordem de vitrine (hero e cards de planos): mais rápido primeiro -- 800 Mega,
+// depois os 700. `plans` continua crescente para o comparativo.
+export const plansBySpeed = [...plans].sort((a, b) => b.speed - a.speed);
 
 const compareServices = [
   ["globoplay", "Globoplay (padrão com anúncios)"],
