@@ -1,0 +1,1377 @@
+/* ==========================================================================
+   Central do Assinante — camada visual do lab.
+   Carregada depois dos CSS herdados da Central antiga (mesmo padrão do
+   guiaWifi.lab.css): não muda lógica nem estrutura de dados, só aplica o
+   design system do site novo (tokens.css) -- navy profundo, azul elétrico,
+   Sora nos títulos, botões pill, cards de raio grande e brilho azul.
+   ========================================================================== */
+
+:root {
+  --cliente-navy: var(--navy-900);
+  --cliente-navy-2: var(--navy-700);
+  --cliente-blue: var(--blue-500);
+  --cliente-cyan: var(--cyan-400);
+  --cliente-green: var(--success);
+  --cliente-amber: var(--warning);
+  --cliente-red: var(--danger);
+  --cliente-ink: var(--ink);
+  --cliente-muted: var(--ink-3);
+  --cliente-border: var(--line);
+  --cliente-border-strong: #cfd9ea;
+  --cliente-surface: var(--surface-2);
+  --cliente-surface-2: var(--surface-3);
+  --cliente-white: var(--white);
+  --cliente-shadow: var(--shadow-2);
+}
+
+/* ---------- Base ---------- */
+
+.cliente-app,
+.login {
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.cliente-app :is(h1, h2, h3, h4),
+.login :is(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.cliente-app {
+  background:
+    radial-gradient(70% 420px at 100% -80px, rgba(47, 107, 255, 0.09), transparent 70%),
+    var(--surface-2);
+}
+
+.cliente-app :focus-visible,
+.login :focus-visible {
+  outline: 2px solid var(--blue-500);
+  outline-offset: 3px;
+}
+
+/* ---------- Sidebar ---------- */
+
+.cliente-app .cliente-sidebar {
+  padding: 22px 14px 18px;
+  color: var(--on-dark);
+  background:
+    radial-gradient(120% 40% at 0% 0%, rgba(47, 107, 255, 0.28), transparent 70%),
+    radial-gradient(90% 30% at 100% 100%, rgba(58, 214, 255, 0.1), transparent 70%),
+    linear-gradient(180deg, var(--navy-900), var(--navy-950));
+  border-right: 1px solid var(--line-dark);
+  box-shadow: none;
+}
+
+.cliente-app .cliente-sidebar::before {
+  background-image:
+    radial-gradient(1px 1px at 18% 12%, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 22%, rgba(207, 224, 255, 0.6) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 6%, rgba(138, 232, 255, 0.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 86% 8%, rgba(255, 255, 255, 0.5) 50%, transparent 51%);
+  mask-image: linear-gradient(180deg, #000, transparent 30%);
+}
+
+.cliente-app .cliente-sidebar-head {
+  padding: 4px 8px 22px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.cliente-app .cliente-brand img {
+  width: 132px;
+  height: auto;
+}
+
+.cliente-app .cliente-nav {
+  gap: 4px;
+}
+
+.cliente-app .cliente-nav-item {
+  min-height: 48px;
+  gap: 12px;
+  padding: 0 12px 0 8px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  color: var(--on-dark-2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cliente-app .cliente-nav-item svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 11px;
+  color: var(--blue-300);
+  background: rgba(143, 178, 255, 0.08);
+}
+
+.cliente-app .cliente-nav-item:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.05);
+  transform: none;
+}
+
+.cliente-app .cliente-nav-item.is-active {
+  color: var(--white);
+  font-weight: 700;
+  border-color: rgba(79, 134, 255, 0.35);
+  background: linear-gradient(90deg, rgba(47, 107, 255, 0.3), rgba(47, 107, 255, 0.06));
+  box-shadow: 0 14px 30px -18px rgba(47, 107, 255, 0.9);
+}
+
+.cliente-app .cliente-nav-item.is-active svg {
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+.cliente-app .cliente-sidebar-footer {
+  gap: 10px;
+  padding: 16px 8px 0;
+  border-top: 1px solid var(--line-dark);
+}
+
+.cliente-app .cliente-sidebar-footer span {
+  color: var(--on-dark-2);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.cliente-app .cliente-sidebar-footer button {
+  min-height: 44px;
+  border: 1px solid rgba(143, 178, 255, 0.24);
+  border-radius: var(--r-pill);
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 700;
+}
+
+.cliente-app .cliente-sidebar-footer button:hover {
+  border-color: rgba(229, 72, 77, 0.6);
+  background: rgba(229, 72, 77, 0.12);
+  transform: none;
+}
+
+/* ---------- Topbar ---------- */
+
+.cliente-app .cliente-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--line);
+  background: rgba(244, 247, 252, 0.82);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  box-shadow: none;
+}
+
+.cliente-app .cliente-topbar-title span {
+  color: var(--ink-3);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.cliente-app .cliente-topbar-title strong {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.cliente-app .cliente-contract-chip,
+.cliente-app .cliente-contract-switcher-trigger {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  background: var(--white);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
+}
+
+.cliente-app .cliente-contract-chip svg {
+  color: var(--blue-500);
+}
+
+.cliente-app .cliente-icon-button {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--white);
+  box-shadow: var(--shadow-1);
+}
+
+/* ---------- Conteúdo e cabeçalho das páginas ---------- */
+
+.cliente-app .cliente-content {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+}
+
+.cliente-app .cliente-page-toolbar {
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.cliente-app .cliente-page-toolbar .cliente-soft-action {
+  flex: none;
+}
+
+.cliente-app .cliente-page-toolbar > div > span,
+.cliente-app .cliente-panel-head span,
+.cliente-app .cliente-section-heading span,
+.cliente-app .cliente-chat-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue-500);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cliente-app .cliente-page-toolbar > div > span::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.cliente-app .cliente-page-toolbar h2 {
+  margin-top: 10px;
+  font-size: clamp(1.9rem, 1.4rem + 1.6vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.cliente-app .cliente-page-toolbar p {
+  max-width: 620px;
+  margin-top: 10px;
+  color: var(--ink-3);
+  font-size: 1rem;
+}
+
+/* ---------- Painéis ---------- */
+
+.cliente-app .cliente-panel,
+.cliente-app .cliente-summary-card,
+.cliente-app .cliente-quick-link {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-1);
+}
+
+.cliente-app .cliente-panel h3,
+.cliente-app .cliente-panel-head h3,
+.cliente-app .cliente-section-heading h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.cliente-app .cliente-panel-head > svg {
+  color: var(--blue-500);
+}
+
+.cliente-app .cliente-panel-strong {
+  color: var(--on-dark);
+  border-color: rgba(79, 134, 255, 0.4);
+  background:
+    radial-gradient(100% 80% at 100% 0%, rgba(47, 107, 255, 0.42), transparent 60%),
+    radial-gradient(60% 60% at 0% 100%, rgba(58, 214, 255, 0.12), transparent 70%),
+    var(--navy-800);
+  box-shadow: var(--glow-blue);
+}
+
+.cliente-app .cliente-panel-strong h3,
+.cliente-app .cliente-panel-strong .cliente-panel-head h3 {
+  color: var(--white);
+}
+
+.cliente-app .cliente-panel-strong .cliente-panel-head span {
+  color: var(--cyan-400);
+}
+
+.cliente-app .cliente-panel-strong .cliente-panel-head > svg {
+  color: var(--cyan-400);
+}
+
+.cliente-app .cliente-panel-strong p,
+.cliente-app .cliente-panel-strong .cliente-muted,
+.cliente-app .cliente-panel-strong .cliente-info-list dt {
+  color: var(--on-dark-2);
+}
+
+.cliente-app .cliente-panel-strong .cliente-info-list dd {
+  color: var(--white);
+}
+
+.cliente-app .cliente-info-list div {
+  border-color: var(--line);
+}
+
+.cliente-app .cliente-panel-strong .cliente-info-list div {
+  border-color: var(--line-dark);
+}
+
+.cliente-app .cliente-info-list dd {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- Botões (mesma linguagem do .btn do site) ---------- */
+
+.cliente-app .home-btn,
+.login .home-btn,
+.cliente-app .cliente-primary-action,
+.cliente-app .cliente-soft-action {
+  min-height: 46px;
+  gap: 8px;
+  padding: 0 22px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-med) var(--ease-out),
+    background var(--dur-fast),
+    border-color var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.cliente-app .home-btn:active,
+.login .home-btn:active,
+.cliente-app .cliente-primary-action:active {
+  transform: scale(0.98);
+}
+
+.cliente-app .home-btn-primary,
+.login .home-btn-primary,
+.cliente-app .cliente-primary-action {
+  color: var(--white);
+  background: var(--blue-500);
+  box-shadow: 0 10px 30px -10px rgba(47, 107, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.cliente-app .home-btn-primary:hover,
+.login .home-btn-primary:hover,
+.cliente-app .cliente-primary-action:hover {
+  background: var(--grad-electric);
+  box-shadow: 0 16px 40px -12px rgba(58, 214, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: none;
+}
+
+.cliente-app .home-btn-ghost,
+.cliente-app .cliente-soft-action {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--white);
+  box-shadow: none;
+}
+
+.cliente-app .home-btn-ghost:hover,
+.cliente-app .cliente-soft-action:hover {
+  color: var(--blue-500);
+  border-color: var(--blue-400);
+  background: var(--white);
+}
+
+.cliente-app .home-btn-text {
+  min-height: 40px;
+  padding: 0 6px;
+  color: var(--blue-500);
+  background: transparent;
+  box-shadow: none;
+}
+
+.cliente-app .home-btn-text:hover {
+  color: var(--ink);
+  background: transparent;
+}
+
+.cliente-app .home-btn-onlight {
+  color: var(--navy-900);
+  background: var(--white);
+}
+
+.cliente-app .home-btn-onlight:hover {
+  background: var(--cyan-300);
+}
+
+.cliente-app .home-btn-text-onlight {
+  color: var(--on-dark);
+  border-color: rgba(143, 178, 255, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+}
+
+.cliente-app .home-btn-text-onlight:hover {
+  color: var(--white);
+  border-color: rgba(138, 232, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Início ---------- */
+
+.cliente-app .home {
+  gap: 22px;
+}
+
+.cliente-app .home-header {
+  align-items: flex-end;
+  padding: 6px 0 4px;
+}
+
+.cliente-app .home-header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue-500);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cliente-app .home-header-eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.cliente-app .home-header-hello {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.5rem + 1.8vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.cliente-app .home-header-greeting p {
+  margin-top: 10px;
+  color: var(--ink-3);
+  font-size: 1rem;
+}
+
+.cliente-app .home-icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--white);
+  box-shadow: var(--shadow-1);
+}
+
+.cliente-app .home-icon-button:hover {
+  color: var(--blue-500);
+  border-color: var(--blue-400);
+}
+
+.cliente-app .home-icon-button-profile {
+  color: var(--white);
+  border-color: transparent;
+  background: var(--navy-800);
+}
+
+.cliente-app .home-icon-button-profile:hover {
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+.cliente-app .home-icon-badge {
+  background: var(--blue-500);
+}
+
+.cliente-app .home-layout {
+  gap: 22px;
+}
+
+.cliente-app .home-main,
+.cliente-app .home-side {
+  gap: 22px;
+}
+
+.cliente-app .home-card {
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--white);
+  box-shadow: var(--shadow-1);
+}
+
+.cliente-app .home-card-eyebrow {
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.cliente-app .home-card-eyebrow svg {
+  color: var(--blue-500);
+}
+
+/* Conexão: o card de destaque, na linguagem do card "800 Mega" da home. */
+.cliente-app .home-connection-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 260px;
+  color: var(--on-dark);
+  border: 1px solid rgba(79, 134, 255, 0.45);
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgba(47, 107, 255, 0.5), transparent 62%),
+    radial-gradient(50% 70% at 0% 100%, rgba(58, 214, 255, 0.14), transparent 70%),
+    linear-gradient(160deg, var(--navy-800), var(--navy-900));
+  box-shadow: var(--glow-blue);
+}
+
+/* Anéis de sinal no canto, ecoando o globo/órbitas do hero. */
+.cliente-app .home-connection-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -140px;
+  right: -140px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 34%, rgba(143, 178, 255, 0.16) 34.3% 34.7%, transparent 35% 50%,
+      rgba(143, 178, 255, 0.12) 50.3% 50.7%, transparent 51% 66%, rgba(143, 178, 255, 0.08) 66.3% 66.7%, transparent 67%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.cliente-app .home-connection-card.is-offline {
+  border-color: rgba(229, 72, 77, 0.5);
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgba(229, 72, 77, 0.32), transparent 62%),
+    linear-gradient(160deg, var(--navy-800), var(--navy-900));
+  box-shadow: 0 0 0 1px rgba(229, 72, 77, 0.3), 0 24px 70px -18px rgba(229, 72, 77, 0.45);
+}
+
+.cliente-app .home-card-eyebrow-onlight,
+.cliente-app .home-card-eyebrow-onlight svg {
+  color: var(--cyan-400);
+}
+
+.cliente-app .home-status-chip {
+  padding: 7px 14px 7px 12px;
+  border: 1px solid rgba(143, 178, 255, 0.22);
+  border-radius: var(--r-pill);
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.cliente-app .home-status-dot {
+  box-shadow: 0 0 0 4px rgba(23, 178, 106, 0.18), 0 0 12px var(--success);
+}
+
+.cliente-app .home-connection-plan {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 3rem + 4vw, 6.2rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  background: linear-gradient(180deg, #ffffff 30%, #b9cdfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cliente-app .home-connection-plan-unit {
+  text-transform: none;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+  letter-spacing: -0.03em;
+  background: var(--grad-electric);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cliente-app .home-connection-address {
+  margin-top: 14px;
+  color: var(--on-dark-2);
+  font-size: 0.95rem;
+}
+
+.cliente-app .home-connection-alert {
+  border: 1px solid rgba(229, 72, 77, 0.4);
+  border-radius: var(--r-md);
+  color: #ffd5d6;
+  background: rgba(229, 72, 77, 0.14);
+}
+
+.cliente-app .home-connection-footer {
+  margin-top: 24px;
+}
+
+/* Fatura */
+.cliente-app .home-invoice-amount {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 1.8rem + 1.4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  color: var(--ink);
+}
+
+.cliente-app .home-invoice-amount-ok {
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
+  color: var(--success);
+}
+
+.cliente-app .home-invoice-due {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.cliente-app .home-invoice-card.is-overdue {
+  border-color: rgba(229, 72, 77, 0.4);
+  box-shadow: 0 0 0 1px rgba(229, 72, 77, 0.12), var(--shadow-2);
+}
+
+.cliente-app .home-invoice-notice {
+  border-radius: var(--r-sm);
+}
+
+.cliente-app .home-badge {
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.cliente-app .home-invoice-actions {
+  gap: 10px;
+  margin-top: 22px;
+}
+
+/* Benefícios */
+.cliente-app .home-benefit-item {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.cliente-app .home-benefit-item svg {
+  color: var(--blue-500);
+}
+
+/* Acesso rápido */
+.cliente-app .home-quick-grid {
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cliente-app .home-quick-item {
+  gap: 10px;
+  padding: 16px 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: transform var(--dur-med) var(--ease-out), border-color var(--dur-fast), background var(--dur-fast);
+}
+
+.cliente-app .home-quick-item:hover {
+  color: var(--ink);
+  border-color: rgba(79, 134, 255, 0.5);
+  background: var(--white);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 30px -22px rgba(47, 107, 255, 0.8);
+}
+
+.cliente-app .home-quick-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  color: var(--blue-500);
+  background: rgba(47, 107, 255, 0.1);
+  box-shadow: none;
+}
+
+.cliente-app .home-quick-item:hover .home-quick-icon {
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+/* Suporte: card escuro, como o bloco "Central do Assinante" da home do site. */
+.cliente-app .home-support {
+  color: var(--on-dark);
+  border-color: transparent;
+  background:
+    radial-gradient(100% 80% at 100% 0%, rgba(47, 107, 255, 0.4), transparent 60%),
+    var(--navy-800);
+  box-shadow: 0 24px 60px -30px rgba(5, 11, 31, 0.8);
+}
+
+.cliente-app .home-support .home-card-eyebrow,
+.cliente-app .home-support .home-card-eyebrow svg {
+  color: var(--cyan-400);
+}
+
+.cliente-app .home-support p {
+  color: var(--on-dark-2);
+}
+
+.cliente-app .home-support .home-btn-ghost {
+  color: var(--on-dark);
+  border-color: rgba(143, 178, 255, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cliente-app .home-support .home-btn-ghost:hover {
+  color: var(--white);
+  border-color: rgba(138, 232, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cliente-app .home-announcement-item {
+  border-radius: var(--r-md);
+}
+
+.cliente-app .home-skeleton-card {
+  border-radius: 28px;
+}
+
+/* Destaques escuros das páginas internas (status da conexão, plano atual). */
+.cliente-app .cliente-panel-strong .cliente-panel-head > svg {
+  box-sizing: content-box;
+  padding: 10px;
+  border-radius: 14px;
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+.cliente-app .cliente-panel-strong .cliente-panel-head h3 {
+  margin-top: 6px;
+  font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+@media (max-width: 560px) {
+  .cliente-app .home-header {
+    position: relative;
+    display: block;
+  }
+
+  .cliente-app .home-header-actions {
+    position: absolute;
+    top: -6px;
+    right: 0;
+  }
+
+  .cliente-app .home-icon-button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ---------- Navegação inferior (mobile) ---------- */
+
+.cliente-app .cliente-bottom-nav {
+  border-top: 1px solid var(--line-dark);
+  background: rgba(5, 11, 31, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 -18px 40px -24px rgba(5, 11, 31, 0.7);
+}
+
+.cliente-app .cliente-bottom-nav .cliente-nav-item {
+  min-height: 0;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 14px;
+  color: var(--on-dark-3);
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.66rem;
+  letter-spacing: -0.01em;
+}
+
+.cliente-app .cliente-bottom-nav .cliente-nav-item span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cliente-app .cliente-bottom-nav .cliente-nav-item svg {
+  width: auto;
+  height: auto;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.cliente-app .cliente-bottom-nav .cliente-nav-item.is-active {
+  color: var(--cyan-400);
+  background: rgba(58, 214, 255, 0.1);
+}
+
+/* ==========================================================================
+   Login — tela dividida: painel de marca escuro + formulário claro
+   ========================================================================== */
+
+.login {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 0;
+  min-height: 100dvh;
+  padding: 0;
+  background: var(--surface-2);
+}
+
+.login-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: clamp(28px, 4vw, 56px);
+  color: var(--on-dark);
+  background: var(--navy-900);
+}
+
+.login-brand-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--grad-deep);
+}
+
+.login-brand-aurora {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(40% 45% at 80% 70%, rgba(47, 107, 255, 0.42), transparent 70%),
+    radial-gradient(28% 30% at 95% 95%, rgba(58, 214, 255, 0.2), transparent 70%),
+    radial-gradient(40% 40% at 5% 5%, rgba(26, 50, 102, 0.7), transparent 70%);
+  filter: blur(10px);
+}
+
+.login-brand-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 32% 72%, #cfe0ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 52% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 8% 82%, #cfe0ff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 44% 44%, #8ae8ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 92% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 52%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 36%, #cfe0ff 50%, transparent 51%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+}
+
+/* Órbitas concêntricas no canto -- o "globo" do hero em versão leve. */
+.login-brand-rings {
+  position: absolute;
+  right: -28%;
+  bottom: -34%;
+  width: 115%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(47, 107, 255, 0.35), transparent 42%),
+    radial-gradient(circle, transparent 0 39.6%, rgba(143, 178, 255, 0.22) 39.8% 40.1%, transparent 40.3% 55.6%,
+      rgba(143, 178, 255, 0.14) 55.8% 56.1%, transparent 56.3% 71.6%, rgba(143, 178, 255, 0.08) 71.8% 72.1%, transparent 72.3%);
+  animation: login-orbit 60s linear infinite;
+}
+
+@keyframes login-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-brand-logo {
+  align-self: flex-start;
+}
+
+.login-brand-logo img {
+  width: 150px;
+  height: auto;
+}
+
+.login-brand-copy {
+  max-width: 520px;
+}
+
+.login-brand-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 12px;
+  border: 1px solid rgba(143, 178, 255, 0.2);
+  border-radius: var(--r-pill);
+  color: var(--on-dark);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.login-brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan-400);
+  box-shadow: 0 0 0 4px rgba(58, 214, 255, 0.18), 0 0 14px var(--cyan-400);
+}
+
+.login-brand h2 {
+  margin-top: 26px;
+  font-size: clamp(2.2rem, 1.2rem + 2.6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.login-brand h2 span {
+  display: block;
+  background: linear-gradient(92deg, #ffffff 0%, #8ae8ff 45%, #4f86ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.login-brand-copy > p {
+  max-width: 440px;
+  margin-top: 20px;
+  color: var(--on-dark-2);
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+}
+
+.login-brand-list {
+  display: grid;
+  gap: 12px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.login-brand-list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 440px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(6px);
+}
+
+.login-brand-list li > span {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+.login-brand-list strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+.login-brand-list small {
+  display: block;
+  margin-top: 2px;
+  color: var(--on-dark-2);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.login-brand-support {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  color: var(--on-dark-2);
+  font-size: var(--fs-small);
+  transition: color var(--dur-fast);
+}
+
+.login-brand-support svg {
+  color: var(--cyan-400);
+}
+
+.login-brand-support strong {
+  margin-left: 4px;
+  color: var(--white);
+}
+
+.login-brand-support:hover {
+  color: var(--white);
+}
+
+.login-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: clamp(28px, 5vw, 64px) clamp(16px, 4vw, 56px);
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgba(47, 107, 255, 0.08), transparent 70%),
+    var(--surface-2);
+}
+
+.login .login-card {
+  width: min(100%, 440px);
+  align-items: stretch;
+  gap: 20px;
+  padding: clamp(28px, 4vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--white);
+  box-shadow: var(--shadow-2);
+}
+
+/* O logo já está no painel de marca (e a arte é clara, feita para fundo escuro). */
+.login .login-logo {
+  display: none;
+}
+
+.login .login-head {
+  text-align: left;
+}
+
+.login-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--blue-500);
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.login-eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.login .login-head h1 {
+  margin-top: 12px;
+  font-size: clamp(1.9rem, 1.5rem + 1.2vw, 2.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.login .login-head p {
+  max-width: none;
+  margin: 10px 0 0;
+  color: var(--ink-3);
+  font-size: 0.98rem;
+}
+
+.login .login-form {
+  gap: 10px;
+}
+
+.login .login-form label {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.login .login-form input,
+.login .login-otp-input input {
+  min-height: 54px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  background: var(--surface-2);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.login .login-form input::placeholder {
+  color: #94a1b8;
+  font-weight: 500;
+}
+
+.login .login-form input:focus,
+.login .login-otp-input input:focus {
+  border-color: var(--blue-500);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(47, 107, 255, 0.14);
+}
+
+.login .login-submit {
+  min-height: 54px;
+  margin-top: 8px;
+  font-size: 1rem;
+}
+
+.login .login-cpf-chip {
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 8px 8px 8px 18px;
+  background: var(--surface-2);
+}
+
+.login .login-cpf-chip span {
+  color: var(--ink);
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.login .login-cpf-chip button {
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  color: var(--blue-500);
+  background: var(--white);
+}
+
+.login .login-link-forgot,
+.login .login-cpf-chip button:hover {
+  color: var(--blue-500);
+}
+
+.login .login-footnote {
+  justify-content: center;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+}
+
+.login .login-footnote svg {
+  color: var(--success);
+}
+
+.login .login-back {
+  color: var(--ink-3);
+}
+
+.login .login-back:hover {
+  color: var(--blue-500);
+}
+
+@media (max-width: 960px) {
+  .login {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .login-brand {
+    gap: 22px;
+    padding: 22px var(--gutter) 34px;
+  }
+
+  .login-brand-logo img {
+    width: 120px;
+  }
+
+  .login-brand h2 {
+    margin-top: 18px;
+    font-size: clamp(1.9rem, 1.2rem + 3.6vw, 2.8rem);
+  }
+
+  .login-brand-copy > p {
+    margin-top: 12px;
+    font-size: 1rem;
+  }
+
+  .login-brand-list,
+  .login-brand-support {
+    display: none;
+  }
+
+  .login-brand-rings {
+    right: -45%;
+    bottom: -90%;
+    width: 140%;
+  }
+
+  .login-stage {
+    justify-content: flex-start;
+    padding: 0 var(--gutter) 36px;
+  }
+
+  .login .login-card {
+    margin-top: -18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-brand-rings {
+    animation: none;
+  }
+}
+
+/* Botão "Encerrar sessão" do Perfil (fora da sidebar escura). */
+.cliente-app .cliente-danger-action {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid rgba(229, 72, 77, 0.35);
+  border-radius: var(--r-pill);
+  color: var(--danger);
+  background: var(--white);
+  font-weight: 700;
+}
+
+.cliente-app .cliente-danger-action:hover {
+  border-color: var(--danger);
+  background: rgba(229, 72, 77, 0.06);
+  transform: none;
+}
+
+@media (max-width: 820px) {
+  .cliente-app .cliente-page-toolbar .cliente-soft-action {
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+}
+
+/* Tela de carregamento (checagem da sessão): fundo do hero, logo ao centro. */
+.login.login-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: var(--on-dark-2);
+  background: var(--grad-deep);
+}
+
+.login.login-loading .login-loading-logo {
+  width: min(160px, 44vw);
+}
+
+.login.login-loading .cliente-loading-inline {
+  color: var(--on-dark-2);
+}
+
+.login.login-loading .cliente-loading-inline svg {
+  color: var(--cyan-400);
+}
+
+/* ---------- Upgrade de plano: comparação no estilo dos cards de plano do site ---------- */
+
+.cliente-app .plano-compare-card {
+  border-radius: var(--r-lg);
+}
+
+.cliente-app .plano-compare-speed {
+  font-family: var(--font-display);
+  letter-spacing: -0.05em;
+}
+
+.cliente-app .plano-compare-speed span {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.cliente-app .plano-compare-card.is-recommended {
+  color: var(--on-dark);
+  border-color: rgba(79, 134, 255, 0.5);
+  background:
+    radial-gradient(80% 70% at 100% 0%, rgba(47, 107, 255, 0.45), transparent 62%),
+    linear-gradient(160deg, var(--navy-800), var(--navy-900));
+  box-shadow: var(--glow-blue);
+}
+
+.cliente-app .plano-compare-card.is-recommended .plano-compare-label {
+  color: var(--cyan-400);
+}
+
+.cliente-app .plano-compare-card.is-recommended .plano-compare-speed {
+  background: linear-gradient(180deg, #ffffff 30%, #b9cdfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cliente-app .plano-compare-card.is-recommended .plano-compare-speed span {
+  text-transform: none;
+  background: var(--grad-electric);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cliente-app .plano-compare-card.is-recommended :is(.plano-compare-name, .plano-compare-price) {
+  color: var(--white);
+}
+
+.cliente-app .plano-compare-card.is-recommended :is(.plano-compare-deltas, .plano-compare-deltas li, .plano-compare-diff, .plano-compare-price small) {
+  color: var(--on-dark-2);
+}
+
+.cliente-app .plano-compare-card.is-recommended .plano-compare-deltas svg {
+  color: var(--cyan-400);
+}
+
+.cliente-app .plano-compare-card.is-recommended .plano-compare-badge {
+  color: var(--navy-900);
+  background: var(--grad-electric);
+}
+
+.cliente-app .plano-compare-card.is-recommended .home-btn-text {
+  color: var(--cyan-300);
+}
+
+.cliente-app .plano-compare-card.is-recommended .home-btn-text:hover {
+  color: var(--white);
+}

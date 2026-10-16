@@ -12,6 +12,7 @@ const PlanosPage = lazy(() => import("./pages/PlanosPage"));
 const EmpresasPage = lazy(() => import("./pages/EmpresasPage"));
 const ContratosPage = lazy(() => import("./pages/ContratosPage"));
 const GuiaWifiPage = lazy(() => import("./pages/GuiaWifiPage"));
+const ClienteArea = lazy(() => import("./cliente/ClienteArea"));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -28,7 +29,26 @@ function ScrollManager() {
   return null;
 }
 
+// A Central do Assinante é um app à parte (menu lateral próprio, sem o
+// header/rodapé do site). O guia Wi-Fi mora em /cliente/guia-wifi mas é
+// página do site.
+function isCentralPath(pathname) {
+  return /^\/cliente(\/|$)/.test(pathname) && !pathname.startsWith("/cliente/guia-wifi");
+}
+
 export default function App() {
+  const { pathname } = useLocation();
+
+  if (isCentralPath(pathname)) {
+    return (
+      <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--navy-900)" }} />}>
+        <Routes>
+          <Route path="/cliente/*" element={<ClienteArea />} />
+        </Routes>
+      </Suspense>
+    );
+  }
+
   return (
     <UIProvider>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
