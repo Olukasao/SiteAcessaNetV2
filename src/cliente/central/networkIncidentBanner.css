@@ -1,0 +1,52 @@
+/* Card de instabilidade regional -- tom calmo (azul), nunca vermelho alarmista: o cliente especifico pode continuar online mesmo com o aviso visivel. */
+.network-incident-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  margin: 12px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--cliente-border, #dbe6f2);
+  background: var(--cliente-surface, #f4f9ff);
+  color: var(--cliente-ink, #0f2436);
+}
+
+.network-incident-banner-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 12px;
+  background: rgba(15, 108, 189, 0.12);
+  color: var(--cliente-blue, #0f6cbd);
+}
+
+.network-incident-banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.network-incident-banner-copy strong {
+  font-size: 0.95rem;
+}
+
+.network-incident-banner-copy p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--cliente-muted, #4b6478);
+  line-height: 1.5;
+}
+
+.network-incident-banner-note {
+  font-weight: 600;
+  color: var(--cliente-ink, #0f2436) !important;
+}
+
+.network-incident-banner-time {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--cliente-muted, #4b6478);
+}

@@ -6,11 +6,14 @@ import "@fontsource-variable/manrope";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import App from "./App.jsx";
+import RouteErrorBoundary from "./components/RouteErrorBoundary.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <RouteErrorBoundary>
+        <App />
+      </RouteErrorBoundary>
     </BrowserRouter>
   </StrictMode>
 );

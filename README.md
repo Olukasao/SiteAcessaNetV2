@@ -50,7 +50,20 @@ não é viabilidade por endereço.
 
 `/` · `/planos` · `/empresas` · `/contratos` · `/boas-praticas-wifi`
 (conteúdo do guia da produção com camada visual nova em
-`src/guia-wifi/guiaWifi.lab.css`).
+`src/guia-wifi/guiaWifi.lab.css`) · `/cliente/*` (Central do Assinante).
+
+### Central do Assinante (`/cliente`)
+
+Lógica, API e componentes trazidos da branch `site-antigo` para
+`src/cliente/`, com o visual refeito no design system do site em
+`src/cliente/styles/cliente.lab.css` (os CSS herdados foram remapeados para os
+tokens de `tokens.css`). Roda fora do header/rodapé do site.
+
+Precisa do backend da Central (`/api`, mesma origem em produção, ou
+`VITE_ACESSANET_API_URL`). Sem backend, use o **modo demonstração**: CPF
+`123.456.789-09` no login, tudo roda no navegador com dados fictícios. Os links
+"Central do Assinante" do site continuam apontando para `company.centralUrl`
+até o backend acompanhar este front.
 
 Texturas da Terra: NASA Blue Marble / Black Marble (domínio público).
 
