@@ -61,9 +61,9 @@ tokens de `tokens.css`). Roda fora do header/rodapé do site.
 
 Precisa do backend da Central (`/api`, mesma origem em produção, ou
 `VITE_ACESSANET_API_URL`). Sem backend, use o **modo demonstração**: CPF
-`123.456.789-09` no login, tudo roda no navegador com dados fictícios. Os links
-"Central do Assinante" do site continuam apontando para `company.centralUrl`
-até o backend acompanhar este front.
+`123.456.789-09` no login, tudo roda no navegador com dados fictícios. Em produção na Hostinger, `/cliente/*` usa este front com a API da mesma
+origem. O deploy preserva os assets das versões anteriores para abas abertas.
+Falhas de carregamento mostram uma ação para atualizar a página.
 
 Texturas da Terra: NASA Blue Marble / Black Marble (domínio público).
 
