@@ -179,60 +179,8 @@
   color: var(--blue-500);
 }
 
-/* ---------- Pedido de assinatura (PlanLeadForm) ---------- */
-.plf {
-  display: grid;
-  gap: 14px;
-}
-
-.plf-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  justify-self: start;
-  font-size: var(--fs-small);
-  font-weight: 700;
-  color: var(--ink-3);
-}
-
-.plf-back:hover {
-  color: var(--blue-500);
-}
-
-.plf-plan {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  padding: 16px 20px;
-  border-radius: var(--r-lg);
-  color: var(--on-dark);
-  background:
-    radial-gradient(120% 90% at 100% 0%, rgba(47, 107, 255, 0.4), transparent 60%),
-    var(--navy-800);
-}
-
-.plf-plan span {
-  flex-basis: 100%;
-  font-size: var(--fs-micro);
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--cyan-400);
-}
-
-.plf-plan strong {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  letter-spacing: -0.02em;
-}
-
-.plf-plan em {
-  font-style: normal;
-  font-weight: 700;
-  color: var(--on-dark-2);
-}
-
+/* ---------- Campos de formulário (plf-*) ----------
+   Usados pela página /contratar (src/pages/ContratarPage.jsx). */
 .plf-field {
   display: grid;
   gap: 6px;
@@ -385,10 +333,6 @@
   font-weight: 600;
 }
 
-.plf .btn--primary {
-  margin-top: 4px;
-}
-
 .plf-whats {
   display: inline-flex;
   align-items: center;
@@ -411,27 +355,6 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.plf-done {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
-  padding: 24px 8px 8px;
-  text-align: center;
-}
-
-.plf-done svg {
-  color: var(--success);
-}
-
-.plf-done h3 {
-  font-size: var(--fs-h3);
-}
-
-.plf-done p {
-  max-width: 42ch;
-  color: var(--ink-2);
 }
 
 @media (max-width: 560px) {

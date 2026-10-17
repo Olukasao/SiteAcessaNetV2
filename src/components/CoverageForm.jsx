@@ -3,13 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Loader2, MapPin, XCircle } from "lucide-react";
 import { coveredCities, coveredCitiesLabel, whatsappLink } from "../data/site";
 import { useUI } from "../context/UIContext";
+import { maskCep } from "../lib/masks";
 import "./coverage.css";
 
 const normalize = (s) => s?.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-const maskCep = (v) => {
-  const d = v.replace(/\D/g, "").slice(0, 8);
-  return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
-};
 
 // Mesma regra da produção (Disponibilidade.jsx): ViaCEP -> cidade -> lista de
 // cidades atendidas. Não é viabilidade por endereço; isso é dito na tela.

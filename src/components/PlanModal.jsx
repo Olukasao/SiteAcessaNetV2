@@ -1,14 +1,13 @@
 import { ArrowRight, Check, MapPin, ShieldCheck } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Dialog from "./Dialog";
-import PlanLeadForm from "./PlanLeadForm";
 import { useUI } from "../context/UIContext";
 import { company, plans, services } from "../data/site";
 import { contractLink } from "../lib/contract";
 import "./planModal.css";
 
 export default function PlanModal() {
-  const { planId, planStep, setPlanStep, closePlan, coverage, openCoverage } = useUI();
+  const { planId, openPlan, closePlan, coverage, openCoverage } = useUI();
   const plan = plans.find((p) => p.id === planId);
 
   return (
@@ -19,12 +18,7 @@ export default function PlanModal() {
       title={plan ? `${plan.name}` : ""}
       description={plan?.tagline}
     >
-      {plan && planStep === "form" && (
-        <div className="pm">
-          <PlanLeadForm key={plan.id} plan={plan} onBack={() => setPlanStep("details")} />
-        </div>
-      )}
-      {plan && planStep !== "form" && (
+      {plan && (
         <div className="pm">
           <div className="pm-top">
             <div className="pm-price">
@@ -76,7 +70,7 @@ export default function PlanModal() {
           </div>
 
           <div className="pm-actions">
-            <button type="button" className="btn btn--primary btn--block" onClick={() => setPlanStep("form")}>
+            <button type="button" className="btn btn--primary btn--block" onClick={() => openPlan(plan.id, "form")}>
               Quero contratar <ArrowRight size={18} aria-hidden="true" />
             </button>
             <a className="btn btn--ghost btn--block" href={contractLink(plan, coverage)} target="_blank" rel="noreferrer">

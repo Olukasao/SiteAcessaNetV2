@@ -50,7 +50,17 @@ não é viabilidade por endereço.
 
 `/` · `/planos` · `/empresas` · `/contratos` · `/boas-praticas-wifi`
 (conteúdo do guia da produção com camada visual nova em
-`src/guia-wifi/guiaWifi.lab.css`) · `/cliente/*` (Central do Assinante).
+`src/guia-wifi/guiaWifi.lab.css`) · `/contratar` · `/cliente/*` (Central do Assinante).
+
+### Contratação online (`/contratar?plano=<id>`)
+
+Formulário em 3 etapas (plano e endereço, dados, revisão) aberto por todos os
+botões "Quero este plano". Plano, preço e cidades atendidas vêm do backend
+(`GET /api/contratacao/planos`); o envio grava a solicitação com protocolo
+(`POST /api/contratacao/solicitacoes`) e ela aparece no admin em
+`/admin/contratacoes`. A cobertura mostrada é por cidade; a viabilidade no
+endereço é confirmada pela equipe comercial. Sem backend a página mostra o
+erro com o WhatsApp como alternativa.
 
 ### Central do Assinante (`/cliente`)
 

@@ -11,27 +11,50 @@ export function getApiBaseUrl() {
 }
 
 export class ApiError extends Error {
-  constructor(status, message) {
+  // `code`/`details`/`retryAfter` vêm do corpo de erro do backend
+  // ({ error: { code, message, details } }) e do cabeçalho Retry-After.
+  constructor(status, message, { code = null, details = null, retryAfter = null } = {}) {
     super(message);
     this.status = status;
+    this.code = code;
+    this.details = details;
+    this.retryAfter = retryAfter;
   }
 }
 
-export async function postJson(path, body) {
+async function request(path, init, fallbackMessage) {
   let response;
   try {
-    response = await fetch(`${getApiBaseUrl()}${path}`, {
-      method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
+    response = await fetch(`${getApiBaseUrl()}${path}`, init);
+  } catch (err) {
+    if (err?.name === "AbortError") throw err;
     throw new ApiError(0, "Não foi possível conectar. Verifique sua internet e tente de novo.");
   }
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
     const message = payload?.error?.message || payload?.message;
-    throw new ApiError(response.status, message || "Não foi possível enviar agora. Tente novamente em instantes.");
+    const retryHeader = Number(response.headers.get("Retry-After"));
+    throw new ApiError(response.status, message || fallbackMessage, {
+      code: payload?.error?.code ?? null,
+      details: payload?.error?.details ?? null,
+      retryAfter: Number.isFinite(retryHeader) && retryHeader > 0 ? retryHeader : (payload?.error?.details?.retryAfterSeconds ?? null),
+    });
   }
   return payload;
+}
+
+export function getJson(path, { signal } = {}) {
+  return request(path, { method: "GET", headers: { Accept: "application/json" }, signal }, "Não foi possível carregar agora. Tente novamente em instantes.");
+}
+
+export function postJson(path, body) {
+  return request(
+    path,
+    {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+    "Não foi possível enviar agora. Tente novamente em instantes."
+  );
 }

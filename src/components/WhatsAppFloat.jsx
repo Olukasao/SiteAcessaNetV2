@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa";
 import { whatsappLink } from "../data/site";
 
 // Aparece só depois do hero, pra não competir com os CTAs principais.
 export default function WhatsAppFloat() {
+  const { pathname } = useLocation();
   const [show, setShow] = useState(false);
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > window.innerHeight * 0.6);
@@ -11,6 +13,9 @@ export default function WhatsAppFloat() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // /contratar já tem WhatsApp próprio, e o botão fixo cobria as ações do formulário no celular.
+  if (pathname.replace(/\/+$/, "") === "/contratar") return null;
 
   return (
     <a

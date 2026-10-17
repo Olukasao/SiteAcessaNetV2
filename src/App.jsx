@@ -14,6 +14,7 @@ const ContratosPage = lazy(() => import("./pages/ContratosPage"));
 const GuiaWifiPage = lazy(() => import("./pages/GuiaWifiPage"));
 const LgpdPage = lazy(() => import("./pages/LgpdPage"));
 const TrabalheConoscoPage = lazy(() => import("./pages/TrabalheConoscoPage"));
+const ContratarPage = lazy(() => import("./pages/ContratarPage"));
 const ClienteArea = lazy(() => import("./cliente/ClienteArea"));
 
 function ScrollManager() {
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="/cliente/guia-wifi" element={<GuiaWifiPage />} />
             <Route path="/lgpd" element={<LgpdPage />} />
             <Route path="/trabalhe-conosco" element={<TrabalheConoscoPage />} />
+            <Route path="/contratar" element={<ContratarPage />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

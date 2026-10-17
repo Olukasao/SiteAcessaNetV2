@@ -2,10 +2,17 @@ import { Component } from "react";
 import { useLocation } from "react-router-dom";
 
 class PageBoundary extends Component {
-  state = { failed: false };
+  state = { failed: false, pathname: this.props.pathname };
 
   static getDerivedStateFromError() {
     return { failed: true };
+  }
+
+  // Trocar de rota limpa a falha sem remontar o app inteiro (um `key` por
+  // rota remontava o UIProvider e perdia o CEP consultado, por exemplo).
+  static getDerivedStateFromProps(props, state) {
+    if (props.pathname !== state.pathname) return { failed: false, pathname: props.pathname };
+    return null;
   }
 
   componentDidCatch(error) {
@@ -29,5 +36,5 @@ class PageBoundary extends Component {
 
 export default function RouteErrorBoundary({ children }) {
   const { pathname } = useLocation();
-  return <PageBoundary key={pathname}>{children}</PageBoundary>;
+  return <PageBoundary pathname={pathname}>{children}</PageBoundary>;
 }
