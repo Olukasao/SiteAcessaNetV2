@@ -17,6 +17,8 @@ export class InMemoryRateLimiter {
 
   consume(key: string, rule: RateLimitRule) {
     const now = Date.now();
+    // Chaves vem de IP/e-mail informados por quem chama: sem limpar, um fluxo de chaves novas enche a memoria.
+    if (this.buckets.size > 5000) this.prune(now);
     const current = this.buckets.get(key);
 
     if (current?.blockedUntil && current.blockedUntil > now) {
@@ -37,6 +39,12 @@ export class InMemoryRateLimiter {
       throw new AppError(429, "RATE_LIMITED", "Muitas tentativas. Tente novamente em instantes.", {
         retryAfterSeconds: Math.ceil(((current.blockedUntil ?? current.resetAt) - now) / 1000)
       });
+    }
+  }
+
+  private prune(now: number) {
+    for (const [key, bucket] of this.buckets) {
+      if (bucket.resetAt <= now && (!bucket.blockedUntil || bucket.blockedUntil <= now)) this.buckets.delete(key);
     }
   }
 

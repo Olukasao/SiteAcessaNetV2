@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import type { AppContainer } from "../container.js";
 import { AppError } from "../errors.js";
+import { safeEqual } from "../security/hash.js";
 import { parseParams } from "./validation.js";
 
 const contractParams = z.object({
@@ -16,18 +17,19 @@ const contractParams = z.object({
  * ignora de proposito -- ver publicRoutes em app.ts):
  * 1. So registrada quando config.oltCloud.debug.enabled === true (default:
  *    desligada em producao, ligada fora dela -- ver config.ts).
- * 2. Se OLTCLOUD_DEBUG_TOKEN estiver preenchido, exige o header
- *    "x-debug-token" com esse valor -- necessario se o ambiente for
- *    acessivel pela rede e nao so localhost.
+ * 2. Exige OLTCLOUD_DEBUG_TOKEN: sem ele a rota nao e registrada, e com ele
+ *    o header "x-debug-token" e comparado em tempo constante.
  */
 export async function registerDebugOltCloudRoutes(app: FastifyInstance, container: AppContainer) {
-  if (!container.config.oltCloud.debug.enabled) {
+  // Falha fechado: sem OLTCLOUD_DEBUG_TOKEN a rota nem existe (ela e publica e devolve dados da rede por contrato).
+  const requiredToken = container.config.oltCloud.debug.token;
+  if (!container.config.oltCloud.debug.enabled || !requiredToken) {
     return;
   }
 
   app.get("/api/debug/oltcloud/client-status/:contractId", async (request) => {
-    const requiredToken = container.config.oltCloud.debug.token;
-    if (requiredToken && request.headers["x-debug-token"] !== requiredToken) {
+    const provided = request.headers["x-debug-token"];
+    if (typeof provided !== "string" || !safeEqual(provided, requiredToken)) {
       throw new AppError(401, "DEBUG_TOKEN_REQUIRED", "Header x-debug-token ausente ou invalido.");
     }
 

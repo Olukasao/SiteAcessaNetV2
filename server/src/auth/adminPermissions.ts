@@ -54,8 +54,12 @@ const rolePermissions: Record<AdminRole, ReadonlySet<AdminPermission>> = {
  * Barreira por caminho no hook global, nao depende de cada rota lembrar.
  */
 export function roleCanReachAdminPath(role: AdminRole, url: string) {
-  if (role !== "vendedor") return true;
+  if (role !== "vendedor" && role !== "viewer") return true;
   const pathname = url.split(/[?#]/)[0] ?? "";
+  // viewer le avisos e nada mais (ver rolePermissions): sem clientes, chamados, curriculos, leads, rede...
+  if (role === "viewer") {
+    return pathname.startsWith("/admin/api/auth/") || pathname === "/admin/api/notices" || pathname.startsWith("/admin/api/notices/");
+  }
   return (
     pathname.startsWith("/admin/api/auth/") ||
     pathname === "/admin/api/contratacoes" ||

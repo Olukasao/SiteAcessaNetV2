@@ -1806,6 +1806,7 @@ function ContractRequestDetailModal({ requestId, onClose, onUpdated }) {
               </div>
             ) : null}
             <dl className="admin-detail-grid">
+              <div><dt>Nome</dt><dd>{request.customerName || "—"}</dd></div>
               <div><dt>Plano</dt><dd>{request.planName} · {request.planPriceText}</dd></div>
               <div><dt>Preço no pedido</dt><dd>{formatCents(request.planPriceCents)}/mês (catálogo do site)</dd></div>
               <div><dt>WhatsApp</dt><dd><a href={contractWhatsappHref(request)} target="_blank" rel="noreferrer">{formatWhatsapp(request.whatsapp)}</a></dd></div>

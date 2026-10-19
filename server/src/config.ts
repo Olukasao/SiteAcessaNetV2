@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { createHmac } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -200,7 +201,15 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
   const jwtSecret = process.env.JWT_SECRET ?? (env === "production" ? "" : "local-dev-jwt-secret-change-me");
   const cpfHashSecret = process.env.CPF_HASH_SECRET ?? (env === "production" ? "" : "local-dev-cpf-hash-secret-change-me");
   const otpHashSecret = process.env.OTP_HASH_SECRET ?? (env === "production" ? "" : "local-dev-otp-hash-secret-change-me");
-  const adminJwtSecret = process.env.ADMIN_JWT_SECRET ?? (env === "production" ? "" : "local-dev-admin-jwt-secret-change-me");
+  // Sem ADMIN_JWT_SECRET, o admin NUNCA assina com o texto padrao (esta no repositorio, que e publico):
+  // deriva do JWT_SECRET real. So cai no padrao de dev quando nem o JWT_SECRET existe (maquina local).
+  const adminJwtSecret =
+    process.env.ADMIN_JWT_SECRET ??
+    (env === "production"
+      ? ""
+      : process.env.JWT_SECRET
+        ? createHmac("sha256", process.env.JWT_SECRET).update("acessanet/admin-jwt/v1").digest("hex")
+        : "local-dev-admin-jwt-secret-change-me");
 
   if (env === "production" && jwtSecret.length < 32 && !overrides.jwtSecret) {
     throw new Error("JWT_SECRET must contain at least 32 characters in production.");
@@ -227,7 +236,10 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
     adminAccessTokenTtlSeconds: Number(process.env.ADMIN_ACCESS_TOKEN_TTL_SECONDS ?? 900),
     adminRefreshTokenTtlSeconds: Number(process.env.ADMIN_REFRESH_TOKEN_TTL_SECONDS ?? 60 * 60 * 24 * 7),
     corsOrigins: corsOriginsEnv ? parseCsv(corsOriginsEnv) : true,
-    trustProxy: parseTrustProxy(process.env.TRUST_PROXY),
+    // Sem TRUST_PROXY, confia so no proxy reverso da propria maquina (loopback): atras do proxy da Hostinger todo
+    // pedido chega de 127.0.0.1, e sem isso todos os visitantes dividiam o mesmo limite por IP. Conexao vinda
+    // de fora do loopback nunca tem o X-Forwarded-For aceito. TRUST_PROXY=false desliga.
+    trustProxy: process.env.TRUST_PROXY === undefined ? "127.0.0.1,::1" : parseTrustProxy(process.env.TRUST_PROXY),
     sgp: {
       enabled: Boolean(
         (process.env.SGP_APP && process.env.SGP_TOKEN) ||

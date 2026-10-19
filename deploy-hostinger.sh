@@ -23,6 +23,8 @@ LEGACY_DIR="${LEGACY_DIR-}"
 TS=$(date +%Y%m%d%H%M%S)
 BACKUPS_TO_KEEP=20
 LOCAL_BACKUPS="$ROOT_DIR/backups"
+# Backups tem dados de clientes e hashes de senha: so o dono le (dir 700, arquivos 600).
+umask 077
 
 prune() { (cd "$1" && ls -t $2 2>/dev/null | tail -n +$((BACKUPS_TO_KEEP + 1)) | xargs -r rm --); }
 
@@ -45,6 +47,7 @@ fi
 EOF
 if ssh "$HOST" "test -f $REMOTE_APP_DIR/data/backups/mysql-$TS.sql.gz"; then
   mkdir -p "$LOCAL_BACKUPS/mysql"
+  chmod 700 "$LOCAL_BACKUPS" "$LOCAL_BACKUPS/mysql"
   scp -q -o LogLevel=ERROR "$HOST:$REMOTE_APP_DIR/data/backups/mysql-$TS.sql.gz" "$LOCAL_BACKUPS/mysql/"
   chmod 600 "$LOCAL_BACKUPS/mysql/mysql-$TS.sql.gz"
   prune "$LOCAL_BACKUPS/mysql" "mysql-*.sql.gz"
@@ -60,7 +63,9 @@ if [ "$(ssh "$HOST" "test -f $REMOTE_APP_DIR/data/auth.sqlite && echo yes || ech
     cd $REMOTE_APP_DIR/data/backups && \
     ls -t auth-*.sqlite | tail -n +$((BACKUPS_TO_KEEP + 1)) | xargs -r rm --"
   mkdir -p "$LOCAL_BACKUPS/auth-sqlite"
+  chmod 700 "$LOCAL_BACKUPS" "$LOCAL_BACKUPS/auth-sqlite"
   scp -q -o LogLevel=ERROR "$HOST:$REMOTE_APP_DIR/data/backups/auth-$TS.sqlite" "$LOCAL_BACKUPS/auth-sqlite/"
+  chmod 600 "$LOCAL_BACKUPS/auth-sqlite/auth-$TS.sqlite"
   prune "$LOCAL_BACKUPS/auth-sqlite" "auth-*.sqlite"
   echo "    auth-$TS.sqlite salvo remoto + local (backups/auth-sqlite/)"
 else
