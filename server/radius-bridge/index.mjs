@@ -112,4 +112,3 @@ export function start(config = loadConfig()) {
   return { auth, acct };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) start();
