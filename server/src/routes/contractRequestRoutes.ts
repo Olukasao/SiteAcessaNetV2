@@ -305,8 +305,10 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
   });
 
   app.get("/admin/api/contratacoes/assignees", async (request) => {
-    requireAdminPermission(request, "contratacoes.read");
-    return { items: await container.contractRequests.listAssignees(ASSIGNEE_ROLES) };
+    const admin = requireAdminPermission(request, "contratacoes.read");
+    const items = await container.contractRequests.listAssignees(ASSIGNEE_ROLES);
+    // Vendedor so assume pedido para si mesmo (o ranking conta por responsavel).
+    return { items: admin.role === "vendedor" ? items.filter((item) => item.id === admin.adminUserId) : items };
   });
 
   app.get("/admin/api/contratacoes", async (request) => {
@@ -371,9 +373,24 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
     if (!before) {
       throw new AppError(404, "NOT_FOUND", "Solicitação não encontrada.");
     }
+
+    let assignedAdminId = body.assignedAdminId;
+    if (admin.role === "vendedor") {
+      // O ranking conta por responsavel: vendedor nao toma pedido de colega nem atribui a terceiros.
+      const owner = before.assignedAdminId;
+      if (owner && owner !== admin.adminUserId) {
+        throw new AppError(403, "FORBIDDEN", "Este pedido está com outro vendedor.");
+      }
+      if (assignedAdminId && assignedAdminId !== admin.adminUserId) {
+        throw new AppError(403, "FORBIDDEN", "Você só pode assumir pedidos para si mesmo.");
+      }
+      // Quem atende um pedido sem responsavel passa a ser o responsavel.
+      if (!owner && assignedAdminId === undefined) assignedAdminId = admin.adminUserId;
+    }
+
     const updated = await container.contractRequests.applyChanges(
       id,
-      { status: body.status, assignedAdminId: body.assignedAdminId, note: body.note },
+      { status: body.status, assignedAdminId, note: body.note },
       admin.adminUserId
     );
     if (!updated) {

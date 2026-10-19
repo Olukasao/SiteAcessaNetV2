@@ -139,6 +139,25 @@ export interface ContractMarketingLead {
   consentAt: Date;
 }
 
+/** Desempenho de um vendedor no periodo (pedidos que ele assumiu). */
+export interface SellerRankingRow {
+  adminId: string;
+  name: string;
+  active: boolean;
+  /** Pedidos em que ele e o responsavel. */
+  assigned: number;
+  /** Responsavel e o pedido ja saiu de "novo" (houve atendimento). */
+  attended: number;
+  /** Responsavel e o pedido virou "contratado". */
+  won: number;
+}
+
+export interface SellerRanking {
+  items: SellerRankingRow[];
+  /** Pedidos do periodo sem nenhum responsavel. */
+  unassigned: number;
+}
+
 export class ContractRequestUniqueViolation extends Error {
   constructor(public readonly field: "protocol" | "idempotency_key") {
     super(`Unique violation on contract_requests.${field}`);
@@ -158,6 +177,8 @@ export interface ContractRequestRepository {
   /** Admins ativos com um dos papeis informados (sem hash de senha, sem role). */
   listAssignees(roles: readonly string[]): Promise<ContractRequestAssignee[]>;
   findAssignee(id: string, roles: readonly string[]): Promise<ContractRequestAssignee | null>;
+  /** Ranking dos vendedores por pedidos do periodo [fromIso, toIso). */
+  sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking>;
   /** Solicitacoes com opt-in de marketing, mais recentes primeiro. */
   listMarketingOptIns(limit: number): Promise<ContractMarketingLead[]>;
 }
@@ -218,6 +239,43 @@ interface MarketingRow {
   city: string;
   plan_name: string;
   created_at: string;
+}
+
+interface SellerRow {
+  id: string;
+  name: string;
+  active: number;
+  assigned: number | string;
+  attended: number | string;
+  won: number | string;
+}
+
+const SELECT_SELLER_RANKING = `SELECT u.id, u.name, u.active,
+    COUNT(r.id) AS assigned,
+    COALESCE(SUM(CASE WHEN r.status <> 'novo' THEN 1 ELSE 0 END), 0) AS attended,
+    COALESCE(SUM(CASE WHEN r.status = 'contratado' THEN 1 ELSE 0 END), 0) AS won
+  FROM admin_users u
+  LEFT JOIN contract_requests r ON r.assigned_admin_id = u.id AND r.created_at >= ? AND r.created_at < ?
+  WHERE u.role = 'vendedor'
+  GROUP BY u.id, u.name, u.active`;
+
+const COUNT_UNASSIGNED = `SELECT COUNT(*) AS value FROM contract_requests
+  WHERE assigned_admin_id IS NULL AND created_at >= ? AND created_at < ?`;
+
+/** Mais atendimentos primeiro; empate decide por contratados, depois nome. Inativo sem pedidos some. */
+function buildSellerRanking(rows: SellerRow[], unassigned: number): SellerRanking {
+  const items = rows
+    .map((row) => ({
+      adminId: row.id,
+      name: row.name,
+      active: Number(row.active) === 1,
+      assigned: Number(row.assigned),
+      attended: Number(row.attended),
+      won: Number(row.won)
+    }))
+    .filter((row) => row.active || row.assigned > 0)
+    .sort((a, b) => b.attended - a.attended || b.won - a.won || b.assigned - a.assigned || a.name.localeCompare(b.name, "pt-BR"));
+  return { items, unassigned };
 }
 
 interface AssigneeRow {
@@ -558,6 +616,12 @@ export class SqliteContractRequestRepository implements ContractRequestRepositor
     return row ? { id: row.id, name: row.name, email: row.email } : null;
   }
 
+  async sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking> {
+    const rows = this.db.prepare(SELECT_SELLER_RANKING).all(fromIso, toIso) as unknown as SellerRow[];
+    const count = this.db.prepare(COUNT_UNASSIGNED).get(fromIso, toIso) as CountRow | undefined;
+    return buildSellerRanking(rows, Number(count?.value ?? 0));
+  }
+
   async listMarketingOptIns(limit: number): Promise<ContractMarketingLead[]> {
     const rows = this.db.prepare(SELECT_MARKETING).all(limit) as unknown as MarketingRow[];
     return rows.map(marketingFromRow);
@@ -664,6 +728,12 @@ export class MysqlContractRequestRepository implements ContractRequestRepository
     const [rows] = await this.pool.execute(selectAssignee(roles), [...roles, id]);
     const row = (rows as AssigneeRow[])[0];
     return row ? { id: row.id, name: row.name, email: row.email } : null;
+  }
+
+  async sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking> {
+    const [rows] = await this.pool.execute(SELECT_SELLER_RANKING, [fromIso, toIso]);
+    const [countRows] = await this.pool.execute(COUNT_UNASSIGNED, [fromIso, toIso]);
+    return buildSellerRanking(rows as SellerRow[], Number((countRows as CountRow[])[0]?.value ?? 0));
   }
 
   async listMarketingOptIns(limit: number): Promise<ContractMarketingLead[]> {

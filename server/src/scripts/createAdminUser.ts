@@ -34,14 +34,14 @@ async function main() {
 
   if (!email || !name || !role || !password) {
     console.error(
-      "Uso: ADMIN_BOOTSTRAP_PASSWORD='...' tsx src/scripts/createAdminUser.ts --email=... --name=... --role=admin|editor|viewer"
+      "Uso: ADMIN_BOOTSTRAP_PASSWORD='...' tsx src/scripts/createAdminUser.ts --email=... --name=... --role=admin|editor|viewer|vendedor"
     );
     process.exitCode = 1;
     return;
   }
 
-  if (!["admin", "editor", "viewer"].includes(role)) {
-    console.error('role invalido -- use "admin", "editor" ou "viewer".');
+  if (!["admin", "editor", "viewer", "vendedor"].includes(role)) {
+    console.error('role invalido -- use "admin", "editor", "viewer" ou "vendedor".');
     process.exitCode = 1;
     return;
   }

@@ -26,6 +26,8 @@ export interface AdminUserRepository {
   findById(id: string): Promise<AdminUserRecord | null>;
   create(input: CreateAdminUserInput): Promise<AdminUserRecord>;
   updatePassword(id: string, passwordHash: string): Promise<void>;
+  listByRole(role: AdminRole): Promise<AdminUserRecord[]>;
+  setActive(id: string, active: boolean): Promise<void>;
 }
 
 interface AdminUserRow {
@@ -84,6 +86,19 @@ export class SqliteAdminUserRepository implements AdminUserRepository {
       .prepare("UPDATE admin_users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?")
       .run(passwordHash, id);
   }
+
+  async listByRole(role: AdminRole): Promise<AdminUserRecord[]> {
+    const rows = this.db
+      .prepare("SELECT * FROM admin_users WHERE role = ? ORDER BY name COLLATE NOCASE ASC")
+      .all(role) as unknown as AdminUserRow[];
+    return rows.map(fromRow);
+  }
+
+  async setActive(id: string, active: boolean): Promise<void> {
+    this.db
+      .prepare("UPDATE admin_users SET active = ?, updated_at = datetime('now') WHERE id = ?")
+      .run(active ? 1 : 0, id);
+  }
 }
 
 export class MysqlAdminUserRepository implements AdminUserRepository {
@@ -120,6 +135,18 @@ export class MysqlAdminUserRepository implements AdminUserRepository {
   async updatePassword(id: string, passwordHash: string): Promise<void> {
     await this.pool.execute("UPDATE admin_users SET password_hash = ?, updated_at = UTC_TIMESTAMP() WHERE id = ?", [
       passwordHash,
+      id
+    ]);
+  }
+
+  async listByRole(role: AdminRole): Promise<AdminUserRecord[]> {
+    const [rows] = await this.pool.execute("SELECT * FROM admin_users WHERE role = ? ORDER BY name ASC", [role]);
+    return (rows as AdminUserRow[]).map(fromRow);
+  }
+
+  async setActive(id: string, active: boolean): Promise<void> {
+    await this.pool.execute("UPDATE admin_users SET active = ?, updated_at = UTC_TIMESTAMP() WHERE id = ?", [
+      active ? 1 : 0,
       id
     ]);
   }

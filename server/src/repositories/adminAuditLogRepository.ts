@@ -28,7 +28,10 @@ export type AdminAuditAction =
   | "UPDATE_PLAN_LEAD"
   | "VIEW_CONTRACT_REQUESTS"
   | "VIEW_CONTRACT_REQUEST"
-  | "UPDATE_CONTRACT_REQUEST";
+  | "UPDATE_CONTRACT_REQUEST"
+  | "CREATE_ADMIN_USER"
+  | "UPDATE_ADMIN_USER"
+  | "VIEW_SELLER_RANKING";
 
 export interface AdminAuditLogInput {
   adminUserId?: string | null | undefined;

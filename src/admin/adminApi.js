@@ -372,3 +372,20 @@ export async function updateContractRequest(id, input) {
 export async function listContractRequestAssignees() {
   return adminRequest("/admin/api/contratacoes/assignees");
 }
+
+/** Contas de vendedor(a) (so admin) e ranking de atendimentos. */
+export async function listSellers() {
+  return adminRequest("/admin/api/vendedores");
+}
+
+export async function createSeller(input) {
+  return adminRequest("/admin/api/vendedores", { method: "POST", body: input });
+}
+
+export async function updateSeller(id, input) {
+  return adminRequest(`/admin/api/vendedores/${encodeURIComponent(id)}`, { method: "PATCH", body: input });
+}
+
+export async function getSellerRanking(params) {
+  return adminRequest(`/admin/api/vendedores/ranking${buildQuery(params)}`);
+}

@@ -29,6 +29,9 @@ import { registerJobApplicationRoutes } from "./routes/jobApplicationRoutes.js";
 import { registerPlanLeadRoutes } from "./routes/planLeadRoutes.js";
 import { registerContractRequestRoutes } from "./routes/contractRequestRoutes.js";
 import { registerAdminMarketingRoutes } from "./routes/adminMarketingRoutes.js";
+import { registerAdminSellerRoutes } from "./routes/adminSellerRoutes.js";
+import { roleCanReachAdminPath } from "./auth/adminPermissions.js";
+import { AppError } from "./errors.js";
 
 /**
  * Rotas que continuam no build antigo (legacy.html) no deploy hibrido.
@@ -332,6 +335,9 @@ export async function buildApp(container: AppContainer = createContainer()) {
     }
 
     await adminAuthenticate(request, reply);
+    if (request.adminAuth && !roleCanReachAdminPath(request.adminAuth.role, url)) {
+      throw new AppError(403, "FORBIDDEN", "Voce nao tem permissao para acessar esta area.");
+    }
   });
 
   await registerContractRoutes(app, container);
@@ -352,6 +358,7 @@ export async function buildApp(container: AppContainer = createContainer()) {
   await registerAdminNetworkIncidentRoutes(app, container);
   await registerAdminOltCloudRoutes(app, container);
   await registerAdminMarketingRoutes(app, container);
+  await registerAdminSellerRoutes(app, container);
 
   return app;
 }

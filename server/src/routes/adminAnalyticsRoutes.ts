@@ -6,7 +6,7 @@ import { parseParams, parseQuery } from "./validation.js";
 import { sha256 } from "../security/hash.js";
 import { addDays, parseSaoPauloDate, startOfSaoPauloDay } from "../analytics/saoPauloTime.js";
 
-const periodQuery = z.object({
+export const periodQuery = z.object({
   period: z.enum(["today", "7d", "30d", "custom"]).default("7d"),
   from: z.string().optional(),
   to: z.string().optional()
@@ -36,7 +36,7 @@ const clientParams = z.object({
   id: z.string().min(1).max(191)
 });
 
-function rangeFrom(query: z.infer<typeof periodQuery>) {
+export function rangeFrom(query: z.infer<typeof periodQuery>) {
   const now = new Date();
 
   if (query.period === "today") {

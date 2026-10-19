@@ -27,6 +27,7 @@ import {
   Smartphone,
   Monitor,
   Trash2,
+  Trophy,
   Users
 } from "lucide-react";
 import {
@@ -61,6 +62,10 @@ import {
 	  listJobApplications,
 	  listMarketingLeads,
 	  listContractMarketingLeads,
+	getSellerRanking,
+	listSellers,
+	createSeller,
+	updateSeller,
 	  listNotices,
 	  readAdminTokens,
 	  searchOltClients,
@@ -112,6 +117,7 @@ const AUDIENCE_TYPE_LABELS = {
 const ADMIN_SECTIONS = [
   { key: "overview", path: "/admin", label: "Visão Geral", icon: LayoutDashboard },
   { key: "contratacoes", path: "/admin/contratacoes", label: "Contratações", icon: ClipboardSignature },
+  { key: "vendedores", path: "/admin/vendedores", label: "Vendedores", icon: Trophy },
   { key: "notices", path: "/admin/avisos", label: "Avisos", icon: Bell },
   { key: "marketing", path: "/admin/marketing", label: "Marketing", icon: Megaphone },
   { key: "bugs", path: "/admin/bugs", label: "Bugs relatados", icon: Bug },
@@ -208,10 +214,23 @@ const EVENT_LABELS = {
 
 /** Espelho so-de-leitura do mapa real (server/src/auth/adminPermissions.ts) -- so pra esconder/desabilitar botao na UI; o backend sempre revalida de verdade. */
 const ROLE_PERMISSIONS = {
-  admin: ["avisos.read", "avisos.create", "avisos.update", "avisos.delete", "avisos.publish", "contratacoes.read", "contratacoes.update"],
-  editor: ["avisos.read", "avisos.create", "avisos.update", "avisos.publish", "contratacoes.read", "contratacoes.update"],
-  viewer: ["avisos.read"]
+  admin: ["avisos.read", "avisos.create", "avisos.update", "avisos.delete", "avisos.publish", "contratacoes.read", "contratacoes.update", "usuarios.manage", "ranking.read"],
+  editor: ["avisos.read", "avisos.create", "avisos.update", "avisos.publish", "contratacoes.read", "contratacoes.update", "ranking.read"],
+  viewer: ["avisos.read"],
+  vendedor: ["contratacoes.read", "contratacoes.update"]
 };
+
+const ROLE_LABELS = { admin: "Administrador", editor: "Editor", viewer: "Visualizador", vendedor: "Vendedor(a)" };
+
+/** Vendedor(a) só vê Contratações (o backend também barra o resto); os demais veem o menu conforme a permissão. */
+function sectionsFor(admin) {
+  if (admin?.role === "vendedor") return ADMIN_SECTIONS.filter((section) => section.key === "contratacoes");
+  return ADMIN_SECTIONS.filter((section) => {
+    if (section.key === "contratacoes") return can(admin, "contratacoes.read");
+    if (section.key === "vendedores") return can(admin, "ranking.read");
+    return true;
+  });
+}
 
 function can(admin, permission) {
   return Boolean(admin && ROLE_PERMISSIONS[admin.role]?.includes(permission));
@@ -252,6 +271,7 @@ function pageTitle(pageKey) {
 	    bugs: "Bugs relatados",
 	    curriculos: "Currículos",
 	    contratacoes: "Contratações",
+	    vendedores: "Vendedores",
 	    chamados: "Chamados",
 	    central: "Central do Assinante",
     clients: "Clientes",
@@ -272,6 +292,7 @@ function getPageKey(pathname) {
 	  if (pathname === "/admin/curriculos") return "curriculos";
 	  // /admin/leads era o pedido de plano antigo; os pedidos agora estão em Contratações.
 	  if (pathname === "/admin/contratacoes" || pathname === "/admin/leads") return "contratacoes";
+	  if (pathname === "/admin/vendedores") return "vendedores";
 	  if (pathname === "/admin/chamados") return "chamados";
 	  if (pathname === "/admin/avisos") return "notices";
 	  if (pathname === "/admin/marketing") return "marketing";
@@ -344,13 +365,18 @@ export default function AdminArea() {
 	    }
 	  }, []);
 
+	  const isSeller = admin?.role === "vendedor";
+
 	  useEffect(() => {
 	    if (admin) {
-	      void refreshBugSummary();
-	      void refreshJobSummary();
+	      // Vendedor(a) não tem acesso a bugs/currículos: nem chama (o backend responderia 403).
+	      if (!isSeller) {
+	        void refreshBugSummary();
+	        void refreshJobSummary();
+	      }
 	      if (canSeeContracts) void refreshContractSummary();
 	    }
-	  }, [admin, canSeeContracts, refreshBugSummary, refreshJobSummary, refreshContractSummary]);
+	  }, [admin, canSeeContracts, isSeller, refreshBugSummary, refreshJobSummary, refreshContractSummary]);
 
   async function handleLogout() {
     await adminLogout().catch(() => {});
@@ -369,7 +395,9 @@ export default function AdminArea() {
   const pageInfo = getPageKey(location.pathname);
   const rawPageKey = typeof pageInfo === "string" ? pageInfo : pageInfo.key;
   /** viewer em /admin/contratacoes cai na Visão Geral -- topbar e corpo precisam concordar. */
-  const pageKey = rawPageKey === "contratacoes" && !canSeeContracts ? "overview" : rawPageKey;
+  const allowedKeys = new Set(sectionsFor(admin).map((section) => section.key));
+  const isSectionKey = ADMIN_SECTIONS.some((section) => section.key === rawPageKey);
+  const pageKey = isSectionKey && !allowedKeys.has(rawPageKey) ? (isSeller ? "contratacoes" : "overview") : isSeller && !isSectionKey ? "contratacoes" : rawPageKey;
   const editingId = typeof pageInfo === "object" ? pageInfo.id : null;
 
   return (
@@ -383,7 +411,7 @@ export default function AdminArea() {
             <span>Painel administrativo</span>
           </div>
           <nav className="admin-nav" aria-label="Navegação administrativa">
-            {ADMIN_SECTIONS.filter((section) => section.key !== "contratacoes" || canSeeContracts).map((section) => {
+            {sectionsFor(admin).map((section) => {
               const activeKey = pageKey === "new" || pageKey === "edit" ? "notices" : pageKey;
               const Icon = section.icon;
               return (
@@ -406,7 +434,7 @@ export default function AdminArea() {
             <span className="admin-avatar" aria-hidden="true">{(admin.name || "A").trim().charAt(0).toUpperCase()}</span>
             <span className="admin-sidebar-user-text">
               <strong>{admin.name}</strong>
-              <small>{admin.role}</small>
+              <small>{ROLE_LABELS[admin.role] || admin.role}</small>
             </span>
           </div>
         </aside>
@@ -423,7 +451,7 @@ export default function AdminArea() {
           </div>
           <div className="admin-topbar-user">
             <span className="admin-topbar-name">
-              {admin.name} <small>({admin.role})</small>
+              {admin.name} <small>({ROLE_LABELS[admin.role] || admin.role})</small>
             </span>
             <button type="button" className="admin-btn admin-btn-ghost" onClick={handleLogout}>
               <LogOut size={16} />
@@ -449,6 +477,8 @@ export default function AdminArea() {
 	            <BugReportsPage onChanged={refreshBugSummary} />
 	          ) : pageKey === "contratacoes" ? (
 	            <ContractRequestsPage onChanged={refreshContractSummary} />
+	          ) : pageKey === "vendedores" ? (
+	            <SellersPage admin={admin} />
 	          ) : pageKey === "curriculos" ? (
 	            <JobApplicationsPage onChanged={refreshJobSummary} />
 	          ) : pageKey === "chamados" ? (
@@ -596,6 +626,292 @@ function bugStatusLabel(value) {
 
 function BugStatusPill({ status }) {
   return <span className={`admin-status-pill tone-${status || "novo"}`}>{bugStatusLabel(status)}</span>;
+}
+
+const SELLER_PASSWORD_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+
+/** Senha forte sem caracteres que se confundem (0/O, 1/l/I): feita para ser enviada à pessoa. */
+function generateSellerPassword(length = 14) {
+  const values = new Uint32Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values, (value) => SELLER_PASSWORD_ALPHABET[value % SELLER_PASSWORD_ALPHABET.length]).join("");
+}
+
+function sellerErrorText(caughtError, fallback) {
+  if (!(caughtError instanceof AdminApiError)) return fallback;
+  const fields = caughtError.details?.fieldErrors;
+  const first = fields ? Object.values(fields).flat()[0] : null;
+  return first || caughtError.message || fallback;
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function SellersPage({ admin }) {
+  const canManage = can(admin, "usuarios.manage");
+  const [period, setPeriod] = useState("30d");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [ranking, setRanking] = useState(null);
+  const [rankingLoading, setRankingLoading] = useState(true);
+  const [rankingError, setRankingError] = useState("");
+  const [sellers, setSellers] = useState([]);
+  const [sellersLoading, setSellersLoading] = useState(canManage);
+  const [sellersError, setSellersError] = useState("");
+  const [form, setForm] = useState(() => ({ name: "", email: "", password: generateSellerPassword() }));
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [credentials, setCredentials] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [busyId, setBusyId] = useState("");
+
+  const params = useMemo(() => ({ period, ...(period === "custom" ? { from, to } : {}) }), [from, period, to]);
+
+  const loadRanking = useCallback(async () => {
+    setRankingLoading(true);
+    setRankingError("");
+    try {
+      setRanking(await getSellerRanking(params));
+    } catch (caughtError) {
+      setRankingError(sellerErrorText(caughtError, "Não foi possível carregar o ranking."));
+    } finally {
+      setRankingLoading(false);
+    }
+  }, [params]);
+
+  const loadSellers = useCallback(async () => {
+    if (!canManage) return;
+    setSellersLoading(true);
+    setSellersError("");
+    try {
+      const result = await listSellers();
+      setSellers(result.items || []);
+    } catch (caughtError) {
+      setSellersError(sellerErrorText(caughtError, "Não foi possível carregar os vendedores."));
+    } finally {
+      setSellersLoading(false);
+    }
+  }, [canManage]);
+
+  useEffect(() => {
+    void loadRanking();
+  }, [loadRanking]);
+
+  useEffect(() => {
+    void loadSellers();
+  }, [loadSellers]);
+
+  async function showCredentials(next) {
+    setCredentials(next);
+    setCopied(await copyText(`E-mail: ${next.email}\nSenha: ${next.password}`));
+  }
+
+  async function handleCreate(event) {
+    event.preventDefault();
+    setSaving(true);
+    setFormError("");
+    try {
+      const created = await createSeller({ name: form.name, email: form.email, password: form.password });
+      await showCredentials({ name: created.name, email: created.email, password: form.password, kind: "created" });
+      setForm({ name: "", email: "", password: generateSellerPassword() });
+      void loadSellers();
+      void loadRanking();
+    } catch (caughtError) {
+      setFormError(sellerErrorText(caughtError, "Não foi possível criar o acesso."));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleResetPassword(seller) {
+    if (!window.confirm(`Gerar uma nova senha para ${seller.name}? A senha atual deixa de funcionar e ela será desconectada.`)) return;
+    const password = generateSellerPassword();
+    setBusyId(seller.id);
+    setSellersError("");
+    try {
+      await updateSeller(seller.id, { password });
+      await showCredentials({ name: seller.name, email: seller.email, password, kind: "reset" });
+    } catch (caughtError) {
+      setSellersError(sellerErrorText(caughtError, "Não foi possível redefinir a senha."));
+    } finally {
+      setBusyId("");
+    }
+  }
+
+  async function handleToggleActive(seller) {
+    const next = !seller.active;
+    if (!next && !window.confirm(`Desativar ${seller.name}? Ela é desconectada agora e não consegue entrar. Os atendimentos continuam no histórico.`)) return;
+    setBusyId(seller.id);
+    setSellersError("");
+    try {
+      await updateSeller(seller.id, { active: next });
+      await loadSellers();
+      void loadRanking();
+    } catch (caughtError) {
+      setSellersError(sellerErrorText(caughtError, "Não foi possível alterar o acesso."));
+    } finally {
+      setBusyId("");
+    }
+  }
+
+  const items = ranking?.items || [];
+
+  return (
+    <div className="admin-page-stack">
+      <PageHeader title="Vendedores" period={period} setPeriod={setPeriod} from={from} setFrom={setFrom} to={to} setTo={setTo} />
+
+      <section className="admin-panel">
+        <h3>Ranking de atendimentos</h3>
+        <p className="admin-muted">
+          Pedidos de contratação do período por responsável. <strong>Atendidos</strong> são os pedidos assumidos que já saíram de
+          “Novo”; <strong>Contratados</strong> viraram assinatura.
+        </p>
+        <InlineState loading={rankingLoading} error={rankingError} />
+        {!rankingLoading && !rankingError ? (
+          items.length === 0 ? (
+            <p className="admin-muted">Nenhum vendedor cadastrado ainda.</p>
+          ) : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Vendedor(a)</th>
+                    <th>Pedidos assumidos</th>
+                    <th>Atendidos</th>
+                    <th>Contratados</th>
+                    <th>Conversão</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((row, index) => (
+                    <tr key={row.adminId}>
+                      <td>{index === 0 && row.attended > 0 ? <Trophy size={16} aria-label="1º lugar" /> : index + 1}</td>
+                      <td>
+                        {row.name}
+                        {!row.active ? <small className="admin-muted"> (inativo)</small> : null}
+                      </td>
+                      <td>{formatNumber(row.assigned)}</td>
+                      <td><strong>{formatNumber(row.attended)}</strong></td>
+                      <td>{formatNumber(row.won)}</td>
+                      <td>{row.attended > 0 ? `${Math.round((row.won / row.attended) * 100)}%` : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : null}
+        {ranking && ranking.unassigned > 0 ? (
+          <p className="admin-muted">
+            {formatNumber(ranking.unassigned)} {ranking.unassigned === 1 ? "pedido do período ainda está" : "pedidos do período ainda estão"} sem responsável.
+          </p>
+        ) : null}
+      </section>
+
+      {canManage ? (
+        <>
+          <section className="admin-panel">
+            <h3>Novo(a) vendedor(a)</h3>
+            <p className="admin-muted">
+              Cria um acesso que só enxerga as Contratações. Envie o e-mail e a senha para a pessoa; ela não aparece de novo.
+            </p>
+            {credentials ? (
+              <div className="admin-inline-notice tone-warning" role="status">
+                <ShieldCheck size={16} />
+                <span>
+                  {credentials.kind === "created" ? "Acesso criado" : "Nova senha gerada"} para <strong>{credentials.name}</strong>.{" "}
+                  E-mail: <strong>{credentials.email}</strong> · Senha: <strong>{credentials.password}</strong>{" "}
+                  {copied ? "(copiado)" : ""}
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-soft"
+                    onClick={async () => setCopied(await copyText(`E-mail: ${credentials.email}\nSenha: ${credentials.password}`))}
+                  >
+                    <Copy size={14} /> Copiar
+                  </button>
+                  <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setCredentials(null)}>
+                    Já anotei
+                  </button>
+                </span>
+              </div>
+            ) : null}
+            <form className="admin-form-layout" onSubmit={handleCreate}>
+              {formError ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{formError}</span></div> : null}
+              <label className="admin-field">
+                <span>Nome</span>
+                <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required minLength={2} maxLength={120} autoComplete="off" />
+              </label>
+              <label className="admin-field">
+                <span>E-mail (será o login)</span>
+                <input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required maxLength={254} autoComplete="off" />
+              </label>
+              <label className="admin-field">
+                <span>Senha (mínimo 12 caracteres)</span>
+                <input value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required minLength={12} maxLength={128} autoComplete="off" spellCheck={false} />
+                <p className="admin-field-hint">
+                  Já vem uma senha forte gerada.{" "}
+                  <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setForm({ ...form, password: generateSellerPassword() })}>
+                    <RefreshCw size={14} /> Gerar outra
+                  </button>
+                </p>
+              </label>
+              <div className="admin-form-actions">
+                <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
+                  <Plus size={16} /> {saving ? "Criando…" : "Criar acesso"}
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section className="admin-panel">
+            <h3>Equipe de vendas</h3>
+            <InlineState loading={sellersLoading} error={sellersError} />
+            {!sellersLoading && !sellersError && sellers.length === 0 ? <p className="admin-muted">Nenhum vendedor cadastrado.</p> : null}
+            {sellers.length > 0 ? (
+              <div className="admin-table-wrap">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>E-mail</th>
+                      <th>Situação</th>
+                      <th>Criado em</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sellers.map((seller) => (
+                      <tr key={seller.id}>
+                        <td>{seller.name}</td>
+                        <td>{seller.email}</td>
+                        <td><span className={`admin-status-pill ${seller.active ? "tone-corrigido" : "tone-ignorado"}`}>{seller.active ? "Ativo" : "Inativo"}</span></td>
+                        <td>{formatDateTime(seller.createdAt)}</td>
+                        <td>
+                          <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => handleResetPassword(seller)}>
+                            Nova senha
+                          </button>{" "}
+                          <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => handleToggleActive(seller)}>
+                            <Power size={14} /> {seller.active ? "Desativar" : "Reativar"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
+          </section>
+        </>
+      ) : null}
+    </div>
+  );
 }
 
 function marketingSourceError(caughtError, fallback) {
@@ -1240,6 +1556,9 @@ function ContractRequestDetailModal({ requestId, onClose, onUpdated }) {
                 <select value={assignedAdminId} onChange={(event) => setAssignedAdminId(event.target.value)}>
                   <option value="">Sem responsável</option>
                   {assignees.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}
+                  {request.assignedAdminId && !assignees.some((item) => item.id === request.assignedAdminId) ? (
+                    <option value={request.assignedAdminId}>{request.assignedAdminName || request.assignedAdminId}</option>
+                  ) : null}
                 </select>
               </label>
               <label className="admin-field">

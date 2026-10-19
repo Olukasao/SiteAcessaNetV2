@@ -28,6 +28,8 @@ export interface AdminSessionRepository {
   touchActivity(id: string, when: Date): Promise<void>;
   updateTokenHash(id: string, sessionTokenHash: string): Promise<void>;
   revoke(id: string, when: Date): Promise<void>;
+  /** Derruba todas as sessoes do admin (desativacao, troca de senha). */
+  revokeAllForAdmin(adminUserId: string, when: Date): Promise<void>;
 }
 
 interface AdminSessionRow {
@@ -98,6 +100,12 @@ export class SqliteAdminSessionRepository implements AdminSessionRepository {
       .prepare("UPDATE admin_sessions SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL")
       .run(when.toISOString(), id);
   }
+
+  async revokeAllForAdmin(adminUserId: string, when: Date): Promise<void> {
+    this.db
+      .prepare("UPDATE admin_sessions SET revoked_at = ? WHERE admin_user_id = ? AND revoked_at IS NULL")
+      .run(when.toISOString(), adminUserId);
+  }
 }
 
 export class MysqlAdminSessionRepository implements AdminSessionRepository {
@@ -141,6 +149,13 @@ export class MysqlAdminSessionRepository implements AdminSessionRepository {
     await this.pool.execute("UPDATE admin_sessions SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL", [
       when.toISOString(),
       id
+    ]);
+  }
+
+  async revokeAllForAdmin(adminUserId: string, when: Date): Promise<void> {
+    await this.pool.execute("UPDATE admin_sessions SET revoked_at = ? WHERE admin_user_id = ? AND revoked_at IS NULL", [
+      when.toISOString(),
+      adminUserId
     ]);
   }
 }
