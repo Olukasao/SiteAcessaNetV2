@@ -303,6 +303,8 @@ export async function buildApp(container: AppContainer = createContainer()) {
       /** Wi-Fi publico: cadastro (limite por IP) e autorizacao do RADIUS (token proprio, ver wifiRoutes.ts). */
       "POST /api/wifi/cadastro",
       "POST /api/wifi/radius/authorize",
+      /** Feed de contratacoes pendentes para o chat interno (token proprio, ver contractRequestRoutes.ts). */
+      "GET /api/integracoes/contratacoes/pendentes",
       /**
        * Rota de teste da integracao OLT Cloud -- nao usa sessao de cliente,
        * tem sua propria protecao (x-debug-token + so registrada fora de
