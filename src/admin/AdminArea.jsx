@@ -14,6 +14,7 @@ import {
   Eye,
   Headset,
   History,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -34,6 +35,8 @@ import {
   AdminApiError,
   adminLogin,
   adminLogout,
+  changeAdminPassword,
+  clearAdminTokens,
   adminMe,
   createNotice,
   deleteNotice,
@@ -310,6 +313,7 @@ export default function AdminArea() {
 	  const [bugNewCount, setBugNewCount] = useState(0);
 	  const [jobNewCount, setJobNewCount] = useState(0);
 	  const [contractNewCount, setContractNewCount] = useState(0);
+	  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     document.body.classList.add("cliente-area-shell");
@@ -453,6 +457,10 @@ export default function AdminArea() {
             <span className="admin-topbar-name">
               {admin.name} <small>({ROLE_LABELS[admin.role] || admin.role})</small>
             </span>
+            <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setChangingPassword(true)}>
+              <KeyRound size={16} />
+              Trocar senha
+            </button>
             <button type="button" className="admin-btn admin-btn-ghost" onClick={handleLogout}>
               <LogOut size={16} />
               Sair
@@ -494,6 +502,84 @@ export default function AdminArea() {
           )}
         </main>
         </div>
+      </div>
+      {changingPassword ? (
+        <ChangePasswordDialog
+          onClose={() => setChangingPassword(false)}
+          onDone={() => {
+            // O backend já derrubou todas as sessões; só falta limpar o navegador.
+            clearAdminTokens();
+            setChangingPassword(false);
+            setAdmin(null);
+            navigate("/admin/login", { replace: true });
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/** Troca da própria senha (todos os cargos, inclusive vendedor). Ao concluir, a pessoa entra de novo. */
+function ChangePasswordDialog({ onClose, onDone }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (newPassword !== confirmation) {
+      setError("A confirmação não é igual à nova senha.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      await changeAdminPassword({ currentPassword, newPassword });
+      setDone(true);
+    } catch (caughtError) {
+      const fields = caughtError instanceof AdminApiError ? caughtError.details?.fieldErrors : null;
+      const first = fields ? Object.values(fields).flat()[0] : null;
+      setError(first || (caughtError instanceof AdminApiError ? caughtError.message : "Não foi possível trocar a senha."));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="admin-dialog-backdrop" role="presentation" onClick={done ? undefined : onClose}>
+      <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="change-password-title" onClick={(event) => event.stopPropagation()}>
+        <h3 id="change-password-title">Trocar minha senha</h3>
+        {done ? (
+          <>
+            <p>Senha trocada. Por segurança, entre de novo com a senha nova.</p>
+            <div className="admin-dialog-actions">
+              <button type="button" className="admin-btn admin-btn-primary" onClick={onDone}>Entrar novamente</button>
+            </div>
+          </>
+        ) : (
+          <form className="admin-form-layout" onSubmit={handleSubmit}>
+            {error ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{error}</span></div> : null}
+            <label className="admin-field">
+              <span>Senha atual</span>
+              <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required autoComplete="current-password" autoFocus />
+            </label>
+            <label className="admin-field">
+              <span>Nova senha (mínimo 12 caracteres)</span>
+              <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
+            </label>
+            <label className="admin-field">
+              <span>Repita a nova senha</span>
+              <input type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
+            </label>
+            <div className="admin-dialog-actions">
+              <button type="button" className="admin-btn admin-btn-soft" onClick={onClose}>Cancelar</button>
+              <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>{saving ? "Trocando…" : "Trocar senha"}</button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

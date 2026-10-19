@@ -143,6 +143,34 @@ export class AdminAuthService {
     };
   }
 
+  /**
+   * Troca da propria senha. Exige a senha atual (token roubado nao basta), limita
+   * tentativas e derruba TODAS as sessoes (inclusive a atual): quem trocou entra
+   * de novo com a senha nova.
+   */
+  async changePassword(input: { adminUserId: string; currentPassword: string; newPassword: string }) {
+    this.rateLimiter.consume(`admin_password_change:${input.adminUserId}`, {
+      limit: 5,
+      windowMs: 15 * 60_000,
+      cooldownMs: 15 * 60_000
+    });
+
+    const admin = await this.adminUsers.findById(input.adminUserId);
+    if (!admin || !admin.active) {
+      throw new AppError(401, "AUTH_REQUIRED", "Sessao administrativa obrigatoria.");
+    }
+    // 400 (nao 401): o front trata 401 como sessao expirada e deslogaria quem so errou a senha atual.
+    if (!(await verifyPassword(input.currentPassword, admin.passwordHash))) {
+      throw new AppError(400, "INVALID_CURRENT_PASSWORD", "A senha atual está incorreta.");
+    }
+    if (input.currentPassword === input.newPassword) {
+      throw new AppError(400, "SAME_PASSWORD", "A nova senha precisa ser diferente da atual.");
+    }
+
+    await this.adminUsers.updatePassword(admin.id, await hashPassword(input.newPassword));
+    await this.sessions.revokeAllForAdmin(admin.id, new Date());
+  }
+
   async logout(adminUserId: string, sessionId: string) {
     const session = await this.sessions.findById(sessionId);
     if (session && session.adminUserId === adminUserId) {

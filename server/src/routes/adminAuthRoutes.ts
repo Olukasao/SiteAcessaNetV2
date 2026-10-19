@@ -11,6 +11,11 @@ const loginSchema = z.object({
   password: z.string().min(1).max(128)
 });
 
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newPassword: z.string().min(12, "Use pelo menos 12 caracteres.").max(128)
+});
+
 const refreshSchema = z.object({
   refreshToken: z.string().min(20).max(4096)
 });
@@ -64,6 +69,25 @@ export async function registerAdminAuthRoutes(app: FastifyInstance, container: A
       userAgent: userAgent(request)
     });
     await container.adminAuthService.logout(admin.adminUserId, admin.sessionId);
+    return { ok: true };
+  });
+
+  app.post("/admin/api/auth/change-password", async (request) => {
+    const admin = requireAdminAuth(request);
+    const body = parseBody(changePasswordSchema, request.body);
+    await container.adminAuthService.changePassword({
+      adminUserId: admin.adminUserId,
+      currentPassword: body.currentPassword,
+      newPassword: body.newPassword
+    });
+    const record = await container.adminUsers.findById(admin.adminUserId);
+    await container.adminAuditLog.record({
+      adminUserId: admin.adminUserId,
+      adminEmail: record?.email ?? null,
+      action: "ADMIN_PASSWORD_CHANGED",
+      ipHash: clientIpHash(request),
+      userAgent: userAgent(request)
+    });
     return { ok: true };
   });
 

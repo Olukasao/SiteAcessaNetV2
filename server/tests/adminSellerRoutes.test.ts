@@ -206,3 +206,27 @@ describe("atendimento e ranking", () => {
     await app.close();
   });
 });
+
+describe("troca da própria senha", () => {
+  it("vendedor troca a senha com a atual; sessões caem e a senha antiga para de valer", async () => {
+    const container = testContainer();
+    const app = await buildApp(container);
+    const admin = await adminToken(app, container, "admin");
+    const seller = await createSeller(app, admin, "Ana", "ana@loja.com");
+    const url = "/admin/api/auth/change-password";
+    const call = (payload: Record<string, unknown>) => app.inject({ method: "POST", url, headers: { authorization: seller.token }, payload });
+
+    expect((await app.inject({ method: "POST", url, payload: {} })).statusCode).toBe(401);
+    expect((await call({ currentPassword: "errada-errada-1", newPassword: "Senha-nova-forte-1" })).json().error.code).toBe("INVALID_CURRENT_PASSWORD");
+    expect((await call({ currentPassword: SELLER_PASSWORD, newPassword: "curta" })).statusCode).toBe(400);
+    expect((await call({ currentPassword: SELLER_PASSWORD, newPassword: SELLER_PASSWORD })).json().error.code).toBe("SAME_PASSWORD");
+    // Senha atual errada nao pode derrubar a sessao (o front trata 401 como sessao expirada).
+    expect((await app.inject({ method: "GET", url: "/admin/api/contratacoes", headers: { authorization: seller.token } })).statusCode).toBe(200);
+
+    expect((await call({ currentPassword: SELLER_PASSWORD, newPassword: "Senha-nova-forte-1" })).statusCode).toBe(200);
+    expect((await app.inject({ method: "GET", url: "/admin/api/contratacoes", headers: { authorization: seller.token } })).statusCode).toBe(401);
+    expect((await login(app, "ana@loja.com", SELLER_PASSWORD)).statusCode).toBe(401);
+    expect((await login(app, "ana@loja.com", "Senha-nova-forte-1")).statusCode).toBe(200);
+    await app.close();
+  });
+});

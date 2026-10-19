@@ -10,6 +10,7 @@ export type AdminAuditAction =
   | "AVISO_PUBLICADO"
   | "ADMIN_LOGIN"
   | "ADMIN_LOGOUT"
+  | "ADMIN_PASSWORD_CHANGED"
   | "VIEW_ANALYTICS"
   | "VIEW_CLIENT"
   | "VIEW_ACTIVITY"

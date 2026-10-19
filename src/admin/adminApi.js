@@ -374,6 +374,11 @@ export async function listContractRequestAssignees() {
 }
 
 /** Contas de vendedor(a) (so admin) e ranking de atendimentos. */
+/** Troca a propria senha. Derruba todas as sessoes: depois e preciso entrar de novo. */
+export async function changeAdminPassword(input) {
+  return adminRequest("/admin/api/auth/change-password", { method: "POST", body: input });
+}
+
 export async function listSellers() {
   return adminRequest("/admin/api/vendedores");
 }
