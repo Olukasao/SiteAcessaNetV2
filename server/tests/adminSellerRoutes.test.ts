@@ -230,3 +230,51 @@ describe("troca da própria senha", () => {
     await app.close();
   });
 });
+
+describe("troca de e-mail", () => {
+  it("admin corrige o e-mail do vendedor; e-mail em uso é recusado; o login passa a ser o novo", async () => {
+    const container = testContainer();
+    const app = await buildApp(container);
+    const admin = await adminToken(app, container, "admin");
+    const ana = await createSeller(app, admin, "Ana", "ana@loja.com");
+    await createSeller(app, admin, "Bia", "bia@loja.com");
+    const patchEmail = (id: string, email: string, token = admin) =>
+      app.inject({ method: "PATCH", url: `/admin/api/vendedores/${id}`, headers: { authorization: token }, payload: { email } });
+
+    expect((await patchEmail(ana.id, "bia@loja.com")).statusCode).toBe(409);
+    expect((await patchEmail(ana.id, "invalido")).statusCode).toBe(400);
+    expect((await patchEmail(ana.id, "ana@loja.com", ana.token)).statusCode).toBe(403);
+
+    const changed = await patchEmail(ana.id, "Ana.Nova@Loja.com");
+    expect(changed.statusCode).toBe(200);
+    expect(changed.json().email).toBe("ana.nova@loja.com");
+    expect((await login(app, "ana@loja.com", SELLER_PASSWORD)).statusCode).toBe(401);
+    expect((await login(app, "ana.nova@loja.com", SELLER_PASSWORD)).statusCode).toBe(200);
+    await app.close();
+  });
+
+  it("a própria pessoa troca o e-mail com a senha atual", async () => {
+    const container = testContainer();
+    const app = await buildApp(container);
+    const admin = await adminToken(app, container, "admin");
+    const ana = await createSeller(app, admin, "Ana", "ana@loja.com");
+    await createSeller(app, admin, "Bia", "bia@loja.com");
+    const url = "/admin/api/auth/change-email";
+    const call = (payload: Record<string, unknown>) => app.inject({ method: "POST", url, headers: { authorization: ana.token }, payload });
+
+    expect((await app.inject({ method: "POST", url, payload: {} })).statusCode).toBe(401);
+    expect((await call({ currentPassword: "errada-errada-1", newEmail: "x@loja.com" })).json().error.code).toBe("INVALID_CURRENT_PASSWORD");
+    expect((await call({ currentPassword: SELLER_PASSWORD, newEmail: "bia@loja.com" })).statusCode).toBe(409);
+    expect((await call({ currentPassword: SELLER_PASSWORD, newEmail: "ana@loja.com" })).json().error.code).toBe("SAME_EMAIL");
+
+    const ok = await call({ currentPassword: SELLER_PASSWORD, newEmail: "ana.nova@loja.com" });
+    expect(ok.statusCode).toBe(200);
+    expect(ok.json().email).toBe("ana.nova@loja.com");
+    // A sessao continua valida e /me mostra o e-mail novo.
+    const me = await app.inject({ method: "GET", url: "/admin/api/auth/me", headers: { authorization: ana.token } });
+    expect(me.json().email).toBe("ana.nova@loja.com");
+    expect((await login(app, "ana.nova@loja.com", SELLER_PASSWORD)).statusCode).toBe(200);
+    expect((await login(app, "ana@loja.com", SELLER_PASSWORD)).statusCode).toBe(401);
+    await app.close();
+  });
+});

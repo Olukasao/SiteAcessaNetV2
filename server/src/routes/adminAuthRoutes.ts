@@ -16,6 +16,11 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(12, "Use pelo menos 12 caracteres.").max(128)
 });
 
+const changeEmailSchema = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newEmail: z.string().trim().toLowerCase().pipe(z.email("E-mail inválido.").max(254))
+});
+
 const refreshSchema = z.object({
   refreshToken: z.string().min(20).max(4096)
 });
@@ -89,6 +94,26 @@ export async function registerAdminAuthRoutes(app: FastifyInstance, container: A
       userAgent: userAgent(request)
     });
     return { ok: true };
+  });
+
+  app.post("/admin/api/auth/change-email", async (request) => {
+    const admin = requireAdminAuth(request);
+    const body = parseBody(changeEmailSchema, request.body);
+    const result = await container.adminAuthService.changeEmail({
+      adminUserId: admin.adminUserId,
+      currentPassword: body.currentPassword,
+      newEmail: body.newEmail
+    });
+    await container.adminAuditLog.record({
+      adminUserId: admin.adminUserId,
+      adminEmail: result.email,
+      action: "ADMIN_EMAIL_CHANGED",
+      ipHash: clientIpHash(request),
+      userAgent: userAgent(request),
+      beforeSnapshot: { email: result.previousEmail },
+      afterSnapshot: { email: result.email }
+    });
+    return { email: result.email };
   });
 
   app.get("/admin/api/auth/me", async (request) => {

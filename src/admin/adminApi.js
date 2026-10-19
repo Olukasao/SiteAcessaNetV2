@@ -379,6 +379,11 @@ export async function changeAdminPassword(input) {
   return adminRequest("/admin/api/auth/change-password", { method: "POST", body: input });
 }
 
+/** Troca o proprio e-mail (login). Exige a senha atual; as sessoes continuam validas. */
+export async function changeAdminEmail(input) {
+  return adminRequest("/admin/api/auth/change-email", { method: "POST", body: input });
+}
+
 export async function listSellers() {
   return adminRequest("/admin/api/vendedores");
 }

@@ -35,6 +35,7 @@ import {
   AdminApiError,
   adminLogin,
   adminLogout,
+  changeAdminEmail,
   changeAdminPassword,
   clearAdminTokens,
   adminMe,
@@ -459,7 +460,7 @@ export default function AdminArea() {
             </span>
             <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setChangingPassword(true)}>
               <KeyRound size={16} />
-              Trocar senha
+              Minha conta
             </button>
             <button type="button" className="admin-btn admin-btn-ghost" onClick={handleLogout}>
               <LogOut size={16} />
@@ -505,7 +506,9 @@ export default function AdminArea() {
       </div>
       {changingPassword ? (
         <ChangePasswordDialog
+          admin={admin}
           onClose={() => setChangingPassword(false)}
+          onEmailChanged={(email) => setAdmin((current) => (current ? { ...current, email } : current))}
           onDone={() => {
             // O backend já derrubou todas as sessões; só falta limpar o navegador.
             clearAdminTokens();
@@ -519,16 +522,32 @@ export default function AdminArea() {
   );
 }
 
-/** Troca da própria senha (todos os cargos, inclusive vendedor). Ao concluir, a pessoa entra de novo. */
-function ChangePasswordDialog({ onClose, onDone }) {
+/** Minha conta (todos os cargos, inclusive vendedor): trocar a própria senha ou o e-mail de login. */
+function ChangePasswordDialog({ admin, onClose, onDone, onEmailChanged }) {
+  const [tab, setTab] = useState("password");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [emailDone, setEmailDone] = useState("");
 
-  async function handleSubmit(event) {
+  function errorText(caughtError, fallback) {
+    const fields = caughtError instanceof AdminApiError ? caughtError.details?.fieldErrors : null;
+    const first = fields ? Object.values(fields).flat()[0] : null;
+    return first || (caughtError instanceof AdminApiError ? caughtError.message : fallback);
+  }
+
+  function switchTab(next) {
+    setTab(next);
+    setError("");
+    setEmailDone("");
+    setCurrentPassword("");
+  }
+
+  async function handlePasswordSubmit(event) {
     event.preventDefault();
     if (newPassword !== confirmation) {
       setError("A confirmação não é igual à nova senha.");
@@ -540,9 +559,24 @@ function ChangePasswordDialog({ onClose, onDone }) {
       await changeAdminPassword({ currentPassword, newPassword });
       setDone(true);
     } catch (caughtError) {
-      const fields = caughtError instanceof AdminApiError ? caughtError.details?.fieldErrors : null;
-      const first = fields ? Object.values(fields).flat()[0] : null;
-      setError(first || (caughtError instanceof AdminApiError ? caughtError.message : "Não foi possível trocar a senha."));
+      setError(errorText(caughtError, "Não foi possível trocar a senha."));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleEmailSubmit(event) {
+    event.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      const result = await changeAdminEmail({ currentPassword, newEmail });
+      onEmailChanged(result.email);
+      setEmailDone(result.email);
+      setNewEmail("");
+      setCurrentPassword("");
+    } catch (caughtError) {
+      setError(errorText(caughtError, "Não foi possível trocar o e-mail."));
     } finally {
       setSaving(false);
     }
@@ -551,7 +585,7 @@ function ChangePasswordDialog({ onClose, onDone }) {
   return (
     <div className="admin-dialog-backdrop" role="presentation" onClick={done ? undefined : onClose}>
       <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="change-password-title" onClick={(event) => event.stopPropagation()}>
-        <h3 id="change-password-title">Trocar minha senha</h3>
+        <h3 id="change-password-title">Minha conta</h3>
         {done ? (
           <>
             <p>Senha trocada. Por segurança, entre de novo com a senha nova.</p>
@@ -560,25 +594,51 @@ function ChangePasswordDialog({ onClose, onDone }) {
             </div>
           </>
         ) : (
-          <form className="admin-form-layout" onSubmit={handleSubmit}>
-            {error ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{error}</span></div> : null}
-            <label className="admin-field">
-              <span>Senha atual</span>
-              <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required autoComplete="current-password" autoFocus />
-            </label>
-            <label className="admin-field">
-              <span>Nova senha (mínimo 12 caracteres)</span>
-              <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
-            </label>
-            <label className="admin-field">
-              <span>Repita a nova senha</span>
-              <input type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
-            </label>
-            <div className="admin-dialog-actions">
-              <button type="button" className="admin-btn admin-btn-soft" onClick={onClose}>Cancelar</button>
-              <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>{saving ? "Trocando…" : "Trocar senha"}</button>
+          <>
+            <div className="admin-period-control" role="tablist" aria-label="O que trocar">
+              <button type="button" role="tab" aria-selected={tab === "password"} className={tab === "password" ? "is-active" : ""} onClick={() => switchTab("password")}>Senha</button>
+              <button type="button" role="tab" aria-selected={tab === "email"} className={tab === "email" ? "is-active" : ""} onClick={() => switchTab("email")}>E-mail</button>
             </div>
-          </form>
+            {tab === "password" ? (
+              <form className="admin-form-layout" onSubmit={handlePasswordSubmit}>
+                {error ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{error}</span></div> : null}
+                <label className="admin-field">
+                  <span>Senha atual</span>
+                  <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required autoComplete="current-password" autoFocus />
+                </label>
+                <label className="admin-field">
+                  <span>Nova senha (mínimo 12 caracteres)</span>
+                  <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
+                </label>
+                <label className="admin-field">
+                  <span>Repita a nova senha</span>
+                  <input type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" />
+                </label>
+                <div className="admin-dialog-actions">
+                  <button type="button" className="admin-btn admin-btn-soft" onClick={onClose}>Cancelar</button>
+                  <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>{saving ? "Trocando…" : "Trocar senha"}</button>
+                </div>
+              </form>
+            ) : (
+              <form className="admin-form-layout" onSubmit={handleEmailSubmit}>
+                {error ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{error}</span></div> : null}
+                {emailDone ? <div className="admin-inline-notice tone-warning" role="status"><ShieldCheck size={16} /><span>E-mail trocado. Use <strong>{emailDone}</strong> para entrar daqui em diante.</span></div> : null}
+                <p className="admin-muted">E-mail atual: <strong>{admin?.email}</strong>. Ele é o seu login.</p>
+                <label className="admin-field">
+                  <span>Novo e-mail</span>
+                  <input type="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} required maxLength={254} autoComplete="email" autoFocus />
+                </label>
+                <label className="admin-field">
+                  <span>Senha atual (para confirmar)</span>
+                  <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required autoComplete="current-password" />
+                </label>
+                <div className="admin-dialog-actions">
+                  <button type="button" className="admin-btn admin-btn-soft" onClick={onClose}>Fechar</button>
+                  <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>{saving ? "Trocando…" : "Trocar e-mail"}</button>
+                </div>
+              </form>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -760,6 +820,11 @@ function SellersPage({ admin }) {
   const [resetPassword, setResetPassword] = useState("");
   const [resetSaving, setResetSaving] = useState(false);
   const [resetError, setResetError] = useState("");
+  const [emailTarget, setEmailTarget] = useState(null);
+  const [emailValue, setEmailValue] = useState("");
+  const [emailSaving, setEmailSaving] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [emailNotice, setEmailNotice] = useState("");
 
   const params = useMemo(() => ({ period, ...(period === "custom" ? { from, to } : {}) }), [from, period, to]);
 
@@ -839,6 +904,33 @@ function SellersPage({ admin }) {
       setResetError(sellerErrorText(caughtError, "Não foi possível trocar a senha."));
     } finally {
       setResetSaving(false);
+    }
+  }
+
+  function openEmail(seller) {
+    setEmailTarget(seller);
+    setEmailValue(seller.email);
+    setEmailError("");
+  }
+
+  async function handleEmailSubmit(event) {
+    event.preventDefault();
+    if (!emailTarget) return;
+    if (emailValue.trim().toLowerCase() === emailTarget.email) {
+      setEmailError("Esse já é o e-mail dela.");
+      return;
+    }
+    setEmailSaving(true);
+    setEmailError("");
+    try {
+      const updated = await updateSeller(emailTarget.id, { email: emailValue });
+      setEmailNotice(`E-mail de ${emailTarget.name} trocado para ${updated.email}. Avise a pessoa: o login agora é o e-mail novo, com a mesma senha.`);
+      setEmailTarget(null);
+      void loadSellers();
+    } catch (caughtError) {
+      setEmailError(sellerErrorText(caughtError, "Não foi possível trocar o e-mail."));
+    } finally {
+      setEmailSaving(false);
     }
   }
 
@@ -971,6 +1063,15 @@ function SellersPage({ admin }) {
           <section className="admin-panel">
             <h3>Equipe de vendas</h3>
             <InlineState loading={sellersLoading} error={sellersError} />
+            {emailNotice ? (
+              <div className="admin-inline-notice tone-warning" role="status">
+                <ShieldCheck size={16} />
+                <span>
+                  {emailNotice}{" "}
+                  <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setEmailNotice("")}>Ok</button>
+                </span>
+              </div>
+            ) : null}
             {!sellersLoading && !sellersError && sellers.length === 0 ? <p className="admin-muted">Nenhum vendedor cadastrado.</p> : null}
             {sellers.length > 0 ? (
               <div className="admin-table-wrap">
@@ -992,6 +1093,9 @@ function SellersPage({ admin }) {
                         <td><span className={`admin-status-pill ${seller.active ? "tone-corrigido" : "tone-ignorado"}`}>{seller.active ? "Ativo" : "Inativo"}</span></td>
                         <td>{formatDateTime(seller.createdAt)}</td>
                         <td>
+                          <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => openEmail(seller)}>
+                            Trocar e-mail
+                          </button>{" "}
                           <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => openReset(seller)}>
                             Trocar senha
                           </button>{" "}
@@ -1007,6 +1111,26 @@ function SellersPage({ admin }) {
             ) : null}
           </section>
         </>
+      ) : null}
+
+      {emailTarget ? (
+        <div className="admin-dialog-backdrop" role="presentation" onClick={() => setEmailTarget(null)}>
+          <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="seller-email-title" onClick={(event) => event.stopPropagation()}>
+            <h3 id="seller-email-title">Trocar o e-mail de {emailTarget.name}</h3>
+            <p className="admin-muted">O e-mail é o login da pessoa. A senha continua a mesma e ela segue conectada.</p>
+            <form className="admin-form-layout" onSubmit={handleEmailSubmit}>
+              {emailError ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{emailError}</span></div> : null}
+              <label className="admin-field">
+                <span>Novo e-mail</span>
+                <input type="email" value={emailValue} onChange={(event) => setEmailValue(event.target.value)} required maxLength={254} autoComplete="off" autoFocus />
+              </label>
+              <div className="admin-dialog-actions">
+                <button type="button" className="admin-btn admin-btn-soft" onClick={() => setEmailTarget(null)}>Cancelar</button>
+                <button type="submit" className="admin-btn admin-btn-primary" disabled={emailSaving}>{emailSaving ? "Trocando…" : "Trocar e-mail"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
       ) : null}
 
       {resetTarget ? (

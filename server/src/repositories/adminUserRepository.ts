@@ -28,6 +28,7 @@ export interface AdminUserRepository {
   updatePassword(id: string, passwordHash: string): Promise<void>;
   listByRole(role: AdminRole): Promise<AdminUserRecord[]>;
   setActive(id: string, active: boolean): Promise<void>;
+  updateEmail(id: string, email: string): Promise<void>;
 }
 
 interface AdminUserRow {
@@ -99,6 +100,12 @@ export class SqliteAdminUserRepository implements AdminUserRepository {
       .prepare("UPDATE admin_users SET active = ?, updated_at = datetime('now') WHERE id = ?")
       .run(active ? 1 : 0, id);
   }
+
+  async updateEmail(id: string, email: string): Promise<void> {
+    this.db
+      .prepare("UPDATE admin_users SET email = ?, updated_at = datetime('now') WHERE id = ?")
+      .run(email.toLowerCase().trim(), id);
+  }
 }
 
 export class MysqlAdminUserRepository implements AdminUserRepository {
@@ -147,6 +154,13 @@ export class MysqlAdminUserRepository implements AdminUserRepository {
   async setActive(id: string, active: boolean): Promise<void> {
     await this.pool.execute("UPDATE admin_users SET active = ?, updated_at = UTC_TIMESTAMP() WHERE id = ?", [
       active ? 1 : 0,
+      id
+    ]);
+  }
+
+  async updateEmail(id: string, email: string): Promise<void> {
+    await this.pool.execute("UPDATE admin_users SET email = ?, updated_at = UTC_TIMESTAMP() WHERE id = ?", [
+      email.toLowerCase().trim(),
       id
     ]);
   }

@@ -171,6 +171,33 @@ export class AdminAuthService {
     await this.sessions.revokeAllForAdmin(admin.id, new Date());
   }
 
+  /** Troca do proprio e-mail (o login). Mesma protecao da troca de senha: exige a senha atual e limita tentativas. */
+  async changeEmail(input: { adminUserId: string; currentPassword: string; newEmail: string }) {
+    this.rateLimiter.consume(`admin_email_change:${input.adminUserId}`, {
+      limit: 5,
+      windowMs: 15 * 60_000,
+      cooldownMs: 15 * 60_000
+    });
+
+    const admin = await this.adminUsers.findById(input.adminUserId);
+    if (!admin || !admin.active) {
+      throw new AppError(401, "AUTH_REQUIRED", "Sessao administrativa obrigatoria.");
+    }
+    if (!(await verifyPassword(input.currentPassword, admin.passwordHash))) {
+      throw new AppError(400, "INVALID_CURRENT_PASSWORD", "A senha atual está incorreta.");
+    }
+    const email = input.newEmail.toLowerCase().trim();
+    if (email === admin.email) {
+      throw new AppError(400, "SAME_EMAIL", "Esse já é o seu e-mail.");
+    }
+    const taken = await this.adminUsers.findByEmail(email);
+    if (taken && taken.id !== admin.id) {
+      throw new AppError(409, "EMAIL_IN_USE", "Já existe um usuário com este e-mail.");
+    }
+    await this.adminUsers.updateEmail(admin.id, email);
+    return { previousEmail: admin.email, email };
+  }
+
   async logout(adminUserId: string, sessionId: string) {
     const session = await this.sessions.findById(sessionId);
     if (session && session.adminUserId === adminUserId) {

@@ -11,6 +11,7 @@ export type AdminAuditAction =
   | "ADMIN_LOGIN"
   | "ADMIN_LOGOUT"
   | "ADMIN_PASSWORD_CHANGED"
+  | "ADMIN_EMAIL_CHANGED"
   | "VIEW_ANALYTICS"
   | "VIEW_CLIENT"
   | "VIEW_ACTIVITY"

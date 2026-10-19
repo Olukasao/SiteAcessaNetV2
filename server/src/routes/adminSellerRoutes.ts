@@ -26,10 +26,11 @@ const createSchema = z.object({
 const updateSchema = z
   .object({
     active: z.boolean().optional(),
-    password: z.string().min(PASSWORD_MIN).max(128).optional()
+    password: z.string().min(PASSWORD_MIN).max(128).optional(),
+    email: z.string().trim().toLowerCase().pipe(z.email().max(254)).optional()
   })
-  .refine((value) => value.active !== undefined || value.password !== undefined, {
-    message: "Informe active ou password."
+  .refine((value) => value.active !== undefined || value.password !== undefined || value.email !== undefined, {
+    message: "Informe active, password ou email."
   });
 
 const idParams = z.object({ id: z.string().min(1).max(191) });
@@ -102,7 +103,17 @@ export async function registerAdminSellerRoutes(app: FastifyInstance, container:
       throw new AppError(404, "NOT_FOUND", "Vendedor não encontrado.");
     }
 
+    if (body.email !== undefined && body.email !== target.email) {
+      const taken = await container.adminUsers.findByEmail(body.email);
+      if (taken && taken.id !== id) {
+        throw new AppError(409, "EMAIL_IN_USE", "Já existe um usuário com este e-mail.");
+      }
+    }
+
     const now = new Date();
+    if (body.email !== undefined && body.email !== target.email) {
+      await container.adminUsers.updateEmail(id, body.email);
+    }
     if (body.password !== undefined) {
       await container.adminUsers.updatePassword(id, await hashPassword(body.password));
       // Quem tinha a senha antiga (ou um aparelho perdido) sai na hora.
@@ -117,6 +128,7 @@ export async function registerAdminSellerRoutes(app: FastifyInstance, container:
       userId: id,
       email: target.email,
       ...(body.active !== undefined ? { active: body.active } : {}),
+      ...(body.email !== undefined && body.email !== target.email ? { emailFrom: target.email, emailTo: body.email } : {}),
       passwordReset: body.password !== undefined
     });
     const updated = await container.adminUsers.findById(id);
