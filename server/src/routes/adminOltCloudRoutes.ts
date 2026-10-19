@@ -9,6 +9,9 @@ import { getClientConnectionStatus } from "../integrations/oltcloud/oltClientCon
 import { parseQuery } from "./validation.js";
 
 const MAX_RESULTS = 50;
+/** Tamanho fixo: nao revela o tamanho do usuario PPPoE real. */
+const PPPOE_MASK = "************";
+
 /** Limite de lookups de status de conexao por busca -- cada um e uma chamada extra a OLT Cloud (equipment/list); busca por contrato/pppoe/documento normalmente devolve so 1-3 resultados, isto so protege contra uma busca por nome muito generica disparar 50 chamadas de uma vez. */
 const CONNECTION_LOOKUP_LIMIT = 20;
 
@@ -68,7 +71,9 @@ export async function registerAdminOltCloudRoutes(app: FastifyInstance, containe
 
     const clients = await Promise.all(
       matched.slice(0, MAX_RESULTS).map(async (item, index) => {
-        const summary = normalizeOltClient(item);
+        const normalized = normalizeOltClient(item);
+        // PPPoE e credencial de acesso: o painel nunca recebe o valor (a busca por PPPoE continua funcionando).
+        const summary = { ...normalized, pppoe: normalized.pppoe ? PPPOE_MASK : null };
 
         if (index >= CONNECTION_LOOKUP_LIMIT || !summary.externalContractId) {
           return { ...summary, connectionStatus: "UNKNOWN" as const, connectionUpdatedAt: null };
