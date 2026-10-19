@@ -499,12 +499,14 @@ function OverviewPage() {
     };
   }, [params]);
 
+  // Todos os cards seguem o período escolhido (antes, 5 eram fixos em hoje/7/30 dias/total
+  // e não mudavam ao trocar o filtro).
   const cards = [
-    ["Acessos hoje", data?.cards?.accessesToday],
-    ["Clientes únicos hoje", data?.cards?.uniqueClientsToday],
-    ["Únicos 7 dias", data?.cards?.uniqueClients7d],
-    ["Únicos 30 dias", data?.cards?.uniqueClients30d],
-    ["Total de sessões", data?.cards?.totalSessions],
+    ["Acessos", data?.totals?.accesses],
+    ["Clientes únicos", data?.totals?.uniqueClients],
+    ["Sessões", data?.totals?.sessions],
+    ["Novos usuários", data?.totals?.newClients],
+    ["Clientes retornaram", data?.totals?.returningClients],
     ["Chamados pela Central", data?.cards?.ticketsOpened],
     ["2ª vias geradas", data?.cards?.secondCopiesGenerated],
     ["Consultas de faturas", data?.cards?.invoiceQueries],

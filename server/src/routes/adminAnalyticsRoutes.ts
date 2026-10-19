@@ -4,6 +4,7 @@ import type { AppContainer } from "../container.js";
 import { requireAdminAuth } from "../auth/adminAuthenticate.js";
 import { parseParams, parseQuery } from "./validation.js";
 import { sha256 } from "../security/hash.js";
+import { addDays, parseSaoPauloDate, startOfSaoPauloDay } from "../analytics/saoPauloTime.js";
 
 const periodQuery = z.object({
   period: z.enum(["today", "7d", "30d", "custom"]).default("7d"),
@@ -37,35 +38,21 @@ const clientParams = z.object({
 
 function rangeFrom(query: z.infer<typeof periodQuery>) {
   const now = new Date();
-  const to = query.period === "custom" && query.to ? parseDate(query.to, now) : now;
-  const from = new Date(to);
 
   if (query.period === "today") {
-    from.setHours(0, 0, 0, 0);
-    const end = new Date(from);
-    end.setDate(end.getDate() + 1);
-    return { from, to: end };
-  }
-
-  if (query.period === "30d") {
-    from.setDate(from.getDate() - 30);
-    return { from, to };
+    const from = startOfSaoPauloDay(now);
+    return { from, to: addDays(from, 1) };
   }
 
   if (query.period === "custom") {
-    return {
-      from: query.from ? parseDate(query.from, from) : from,
-      to
-    };
+    // Datas do filtro sao dias inteiros: "ate 15/10" inclui o dia 15 todo.
+    const toDay = query.to ? parseSaoPauloDate(query.to) : null;
+    const to = toDay && /^\d{4}-\d{2}-\d{2}$/.test(query.to ?? "") ? addDays(toDay, 1) : (toDay ?? now);
+    const from = (query.from ? parseSaoPauloDate(query.from) : null) ?? addDays(to, -7);
+    return { from, to };
   }
 
-  from.setDate(from.getDate() - 7);
-  return { from, to };
-}
-
-function parseDate(value: string, fallback: Date) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? fallback : date;
+  return { from: addDays(now, query.period === "30d" ? -30 : -7), to: now };
 }
 
 function clientIpHash(request: FastifyRequest) {

@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
 import type { Pool } from "mysql2/promise";
+import { addDays, SAO_PAULO_OFFSET_HOURS, startOfSaoPauloDay } from "../analytics/saoPauloTime.js";
 
 export type CentralActivityEvent =
   | "LOGIN"
@@ -291,11 +292,8 @@ function countFromRow(row: CountRow | undefined) {
 }
 
 function todayRange() {
-  const from = new Date();
-  from.setHours(0, 0, 0, 0);
-  const to = new Date(from);
-  to.setDate(to.getDate() + 1);
-  return { from, to };
+  const from = startOfSaoPauloDay(new Date());
+  return { from, to: addDays(from, 1) };
 }
 
 function daysAgoRange(days: number) {
@@ -653,16 +651,17 @@ const mysqlClientSelect = `
     GROUP_CONCAT(DISTINCT contract_id) AS contracts
   FROM central_activity_logs`;
 
+// Rotulos de dia/hora no horario de Brasilia (created_at e ISO UTC) -- ver analytics/saoPauloTime.ts.
 const sqliteSql = {
-  day: "substr(created_at, 1, 10)",
-  hour: "substr(created_at, 12, 2)",
+  day: `strftime('%Y-%m-%d', created_at, '-${SAO_PAULO_OFFSET_HOURS} hours')`,
+  hour: `strftime('%H', created_at, '-${SAO_PAULO_OFFSET_HOURS} hours')`,
   sessionDuration:
     "AVG(CASE WHEN ended_at IS NOT NULL THEN strftime('%s', ended_at) - strftime('%s', started_at) ELSE NULL END)"
 };
 
 const mysqlSql = {
-  day: "SUBSTRING(created_at, 1, 10)",
-  hour: "SUBSTRING(created_at, 12, 2)",
+  day: `DATE_FORMAT(DATE_SUB(CAST(SUBSTRING(created_at, 1, 19) AS DATETIME), INTERVAL ${SAO_PAULO_OFFSET_HOURS} HOUR), '%Y-%m-%d')`,
+  hour: `DATE_FORMAT(DATE_SUB(CAST(SUBSTRING(created_at, 1, 19) AS DATETIME), INTERVAL ${SAO_PAULO_OFFSET_HOURS} HOUR), '%H')`,
   sessionDuration:
     "AVG(CASE WHEN ended_at IS NOT NULL THEN TIMESTAMPDIFF(SECOND, CAST(started_at AS DATETIME), CAST(ended_at AS DATETIME)) ELSE NULL END)"
 };
