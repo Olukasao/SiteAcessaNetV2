@@ -16,6 +16,7 @@ const LgpdPage = lazy(() => import("./pages/LgpdPage"));
 const TrabalheConoscoPage = lazy(() => import("./pages/TrabalheConoscoPage"));
 const ContratarPage = lazy(() => import("./pages/ContratarPage"));
 const ClienteArea = lazy(() => import("./cliente/ClienteArea"));
+const AdminArea = lazy(() => import("./admin/AdminArea"));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -32,6 +33,11 @@ function ScrollManager() {
   return null;
 }
 
+// Painel admin: app à parte, também fora do header/rodapé do site.
+function isAdminPath(pathname) {
+  return /^\/admin(\/|$)/.test(pathname);
+}
+
 // A Central do Assinante é um app à parte (menu lateral próprio, sem o
 // header/rodapé do site). O guia Wi-Fi mora em /cliente/guia-wifi mas é
 // página do site.
@@ -41,6 +47,16 @@ function isCentralPath(pathname) {
 
 export default function App() {
   const { pathname } = useLocation();
+
+  if (isAdminPath(pathname)) {
+    return (
+      <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--surface-2)" }} />}>
+        <Routes>
+          <Route path="/admin/*" element={<AdminArea />} />
+        </Routes>
+      </Suspense>
+    );
+  }
 
   if (isCentralPath(pathname)) {
     return (
