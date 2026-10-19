@@ -4,6 +4,7 @@ import { ApiError, postJson } from "../lib/api";
 import { maskPhone, onlyDigits } from "../lib/masks";
 import logo from "../assets/logo-acessanet-3d.png";
 import WifiIntro from "./WifiIntro";
+import WifiAdBreak from "./WifiAdBreak";
 import "./wifiPortal.css";
 
 // Captive portal do Wi-Fi público (Grandstream, fluxo "External Captive Portal").
@@ -40,7 +41,8 @@ export default function WifiPortalPage() {
 
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", termsAccepted: false, marketingConsent: false });
   const [errors, setErrors] = useState({});
-  const [state, setState] = useState("form"); // form | sending | connecting | done
+  const [state, setState] = useState("form"); // form | sending | ads | connecting | done
+  const [redirectUrl, setRedirectUrl] = useState("");
   const [submitError, setSubmitError] = useState("");
 
   // A marca abre o portal toda vez que a pessoa entra na rede. Com "reduzir movimento",
@@ -76,9 +78,10 @@ export default function WifiPortalPage() {
         context,
       });
       if (result?.redirectUrl) {
-        setState("connecting");
-        // O roteador confere o login no RADIUS e libera a internet.
-        window.location.assign(result.redirectUrl);
+        // Cadastro feito: tela de anúncios com contagem; ao fim, o roteador confere o
+        // login no RADIUS e libera a internet.
+        setRedirectUrl(result.redirectUrl);
+        setState("ads");
       } else {
         setState("done");
       }
@@ -100,7 +103,14 @@ export default function WifiPortalPage() {
       <div className="wifi-card">
         <img className="wifi-logo" src={logo} alt="AcessaNet" width="877" height="327" />
 
-        {state === "connecting" ? (
+        {state === "ads" ? (
+          <WifiAdBreak
+            onDone={() => {
+              setState("connecting");
+              window.location.assign(redirectUrl);
+            }}
+          />
+        ) : state === "connecting" ? (
           <div className="wifi-status" role="status" aria-live="polite">
             <span className="wifi-spinner" aria-hidden="true" />
             <h1>Conectando…</h1>

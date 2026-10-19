@@ -209,3 +209,108 @@
     animation-duration: 3s;
   }
 }
+
+/* Tela de anúncios + contagem antes da liberação */
+.wifi-ads {
+  display: grid;
+  gap: 16px;
+  text-align: center;
+}
+
+.wifi-ads h1 {
+  margin: 0;
+}
+
+.wifi-ad {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 20px 16px;
+  min-height: 190px;
+  align-content: center;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--r-xl);
+  background: linear-gradient(160deg, rgba(37, 125, 255, 0.18), rgba(10, 22, 51, 0.5));
+  animation: wifi-ad-in 0.4s ease-out;
+}
+
+.wifi-ad h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.wifi-ad p {
+  margin: 0;
+  color: var(--on-dark-2);
+}
+
+.wifi-ad strong {
+  color: var(--cyan-400);
+}
+
+.wifi-ad__tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(147, 197, 253, 0.16);
+  color: #93c5fd;
+}
+
+.wifi-ad-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.wifi-ad-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-dark);
+}
+
+.wifi-ad-dots span.is-on {
+  background: var(--cyan-400);
+}
+
+.wifi-countdown {
+  display: grid;
+  gap: 8px;
+}
+
+.wifi-countdown p {
+  margin: 0;
+  color: var(--on-dark-2);
+}
+
+.wifi-countdown strong {
+  color: var(--on-dark);
+  font-size: 1.1em;
+}
+
+.wifi-countdown__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line-dark);
+  overflow: hidden;
+}
+
+.wifi-countdown__bar span {
+  display: block;
+  height: 100%;
+  background: var(--cyan-400);
+  transition: width 0.25s linear;
+}
+
+@keyframes wifi-ad-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wifi-ad { animation: none; }
+  .wifi-countdown__bar span { transition: none; }
+}
