@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { AppContainer } from "../container.js";
 import { requireAdminPermission } from "../auth/adminAuthenticate.js";
 import { AppError } from "../errors.js";
-import { sha256 } from "../security/hash.js";
+import { safeEqual, sha256 } from "../security/hash.js";
 import { parsePtBr } from "./validation.js";
 import { rolesWithPermission } from "../auth/adminPermissions.js";
 import {
@@ -305,6 +305,28 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
     }
     throw new AppError(500, "PROTOCOL_UNAVAILABLE", "Não foi possível registrar agora. Tente novamente.");
   });
+
+  /**
+   * Feed para o aviso do chat interno (sistema a sistema, sem sessao de admin): o chat
+   * consulta de tempos em tempos com um token proprio. Devolve so o que o aviso precisa
+   * (sem endereco, WhatsApp ou e-mail). Sem CONTRACT_FEED_TOKEN a rota nem existe.
+   */
+  const feedToken = container.config.contractFeed.token;
+  if (feedToken) {
+    app.get("/api/integracoes/contratacoes/pendentes", async (request, reply) => {
+      const header = request.headers.authorization;
+      const provided = typeof header === "string" && header.startsWith("Bearer ") ? header.slice(7) : "";
+      if (!provided || !safeEqual(provided, feedToken)) {
+        throw new AppError(401, "FEED_TOKEN_REQUIRED", "Token ausente ou inválido.");
+      }
+      reply.header("Cache-Control", "no-store");
+      const [pendingCount, items] = await Promise.all([
+        container.contractRequests.countNew(),
+        container.contractRequests.listNewForFeed(20)
+      ]);
+      return { pendingCount, items };
+    });
+  }
 
   app.get("/admin/api/contratacoes/summary", async (request) => {
     requireAdminPermission(request, "contratacoes.read");

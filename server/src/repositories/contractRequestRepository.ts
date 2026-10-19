@@ -127,6 +127,16 @@ export interface ContractRequestAssignee {
 }
 
 /** Violacao de indice unico -- permite ao chamador reagir (retry de protocolo / replay de idempotencia). */
+/** Pedido pendente como o chat interno enxerga: sem endereco nem WhatsApp. */
+export interface ContractFeedItem {
+  id: number;
+  protocol: string;
+  customerName: string;
+  planName: string;
+  city: string;
+  createdAt: string;
+}
+
 /** Quem marcou "Quero receber ofertas e novidades" na contratacao online (tela Marketing do admin). */
 export interface ContractMarketingLead {
   id: number;
@@ -174,6 +184,8 @@ export interface ContractRequestRepository {
   /** Aplica as mudancas efetivas e grava um evento por mudanca. Retorna null se nao existir. */
   applyChanges(id: number, change: ContractRequestChange, adminId: string): Promise<ContractRequestDetail | null>;
   countNew(): Promise<number>;
+  /** Pedidos com status "novo" (mais recentes primeiro), so o que o aviso do chat interno precisa. */
+  listNewForFeed(limit: number): Promise<ContractFeedItem[]>;
   /** Admins ativos com um dos papeis informados (sem hash de senha, sem role). */
   listAssignees(roles: readonly string[]): Promise<ContractRequestAssignee[]>;
   findAssignee(id: string, roles: readonly string[]): Promise<ContractRequestAssignee | null>;
@@ -297,6 +309,29 @@ const SELECT_REQUEST = `SELECT r.id, r.protocol, r.status, r.plan_id, r.plan_nam
 // O consentimento e dado no proprio envio, entao created_at e a data do opt-in.
 const SELECT_MARKETING = `SELECT id, protocol, customer_name, email, whatsapp, city, plan_name, created_at
   FROM contract_requests WHERE marketing_opt_in = 1 ORDER BY created_at DESC, id DESC LIMIT ?`;
+
+const SELECT_FEED = `SELECT id, protocol, customer_name, plan_name, city, created_at
+  FROM contract_requests WHERE status = 'novo' ORDER BY id DESC LIMIT ?`;
+
+interface FeedRow {
+  id: number;
+  protocol: string;
+  customer_name: string;
+  plan_name: string;
+  city: string;
+  created_at: string;
+}
+
+function feedFromRow(row: FeedRow): ContractFeedItem {
+  return {
+    id: Number(row.id),
+    protocol: row.protocol,
+    customerName: row.customer_name,
+    planName: row.plan_name,
+    city: row.city,
+    createdAt: row.created_at
+  };
+}
 
 function marketingFromRow(row: MarketingRow): ContractMarketingLead {
   return {
@@ -605,6 +640,10 @@ export class SqliteContractRequestRepository implements ContractRequestRepositor
     return this.findById(id);
   }
 
+  async listNewForFeed(limit: number): Promise<ContractFeedItem[]> {
+    return (this.db.prepare(SELECT_FEED).all(limit) as unknown as FeedRow[]).map(feedFromRow);
+  }
+
   async countNew(): Promise<number> {
     const row = this.db.prepare("SELECT COUNT(*) AS value FROM contract_requests WHERE status = 'novo'").get() as
       | CountRow
@@ -742,6 +781,11 @@ export class MysqlContractRequestRepository implements ContractRequestRepository
       connection.release();
     }
     return this.findById(id);
+  }
+
+  async listNewForFeed(limit: number): Promise<ContractFeedItem[]> {
+    const [rows] = await this.pool.execute(SELECT_FEED, [limit]);
+    return (rows as FeedRow[]).map(feedFromRow);
   }
 
   async countNew(): Promise<number> {

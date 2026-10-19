@@ -90,6 +90,10 @@ export interface AppConfig {
    * bloco oltCloud acima: opcional, enabled = Boolean(baseUrl && token).
    */
   /** Wi-Fi publico (captive portal + RADIUS) -- ver src/wifi/wifiRoutes.ts. */
+  /** Feed de contratacoes pendentes para o chat interno (rota so existe com token). */
+  contractFeed: {
+    token: string | undefined;
+  };
   wifi: {
     /** Segredo compartilhado com o radius-bridge. Vazio = rota de autorizacao desligada. */
     radiusToken: string | undefined;
@@ -302,6 +306,9 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
             : env !== "production",
         token: unwrapEnv(process.env.OLTCLOUD_DEBUG_TOKEN)
       }
+    },
+    contractFeed: {
+      token: unwrapEnv(process.env.CONTRACT_FEED_TOKEN)
     },
     wifi: {
       radiusToken: unwrapEnv(process.env.WIFI_RADIUS_TOKEN),
