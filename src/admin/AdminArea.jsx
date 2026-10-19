@@ -670,6 +670,10 @@ function SellersPage({ admin }) {
   const [credentials, setCredentials] = useState(null);
   const [copied, setCopied] = useState(false);
   const [busyId, setBusyId] = useState("");
+  const [resetTarget, setResetTarget] = useState(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetSaving, setResetSaving] = useState(false);
+  const [resetError, setResetError] = useState("");
 
   const params = useMemo(() => ({ period, ...(period === "custom" ? { from, to } : {}) }), [from, period, to]);
 
@@ -729,18 +733,26 @@ function SellersPage({ admin }) {
     }
   }
 
-  async function handleResetPassword(seller) {
-    if (!window.confirm(`Gerar uma nova senha para ${seller.name}? A senha atual deixa de funcionar e ela será desconectada.`)) return;
-    const password = generateSellerPassword();
-    setBusyId(seller.id);
-    setSellersError("");
+  function openReset(seller) {
+    setResetTarget(seller);
+    setResetPassword(generateSellerPassword());
+    setResetError("");
+  }
+
+  async function handleResetSubmit(event) {
+    event.preventDefault();
+    if (!resetTarget) return;
+    setResetSaving(true);
+    setResetError("");
     try {
-      await updateSeller(seller.id, { password });
-      await showCredentials({ name: seller.name, email: seller.email, password, kind: "reset" });
+      // Trocar a senha também desconecta a pessoa (no backend), então ela entra de novo com a senha nova.
+      await updateSeller(resetTarget.id, { password: resetPassword });
+      await showCredentials({ name: resetTarget.name, email: resetTarget.email, password: resetPassword, kind: "reset" });
+      setResetTarget(null);
     } catch (caughtError) {
-      setSellersError(sellerErrorText(caughtError, "Não foi possível redefinir a senha."));
+      setResetError(sellerErrorText(caughtError, "Não foi possível trocar a senha."));
     } finally {
-      setBusyId("");
+      setResetSaving(false);
     }
   }
 
@@ -826,7 +838,7 @@ function SellersPage({ admin }) {
               <div className="admin-inline-notice tone-warning" role="status">
                 <ShieldCheck size={16} />
                 <span>
-                  {credentials.kind === "created" ? "Acesso criado" : "Nova senha gerada"} para <strong>{credentials.name}</strong>.{" "}
+                  {credentials.kind === "created" ? "Acesso criado" : "Senha trocada"} para <strong>{credentials.name}</strong>.{" "}
                   E-mail: <strong>{credentials.email}</strong> · Senha: <strong>{credentials.password}</strong>{" "}
                   {copied ? "(copiado)" : ""}
                   <button
@@ -894,8 +906,8 @@ function SellersPage({ admin }) {
                         <td><span className={`admin-status-pill ${seller.active ? "tone-corrigido" : "tone-ignorado"}`}>{seller.active ? "Ativo" : "Inativo"}</span></td>
                         <td>{formatDateTime(seller.createdAt)}</td>
                         <td>
-                          <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => handleResetPassword(seller)}>
-                            Nova senha
+                          <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => openReset(seller)}>
+                            Trocar senha
                           </button>{" "}
                           <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => handleToggleActive(seller)}>
                             <Power size={14} /> {seller.active ? "Desativar" : "Reativar"}
@@ -909,6 +921,46 @@ function SellersPage({ admin }) {
             ) : null}
           </section>
         </>
+      ) : null}
+
+      {resetTarget ? (
+        <div className="admin-dialog-backdrop" role="presentation" onClick={() => setResetTarget(null)}>
+          <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="seller-reset-title" onClick={(event) => event.stopPropagation()}>
+            <h3 id="seller-reset-title">Trocar a senha de {resetTarget.name}</h3>
+            <p className="admin-muted">
+              Login: <strong>{resetTarget.email}</strong>. Ao confirmar, a senha antiga deixa de valer e a pessoa é desconectada.
+              Envie a nova senha para ela.
+            </p>
+            <form className="admin-form-layout" onSubmit={handleResetSubmit}>
+              {resetError ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{resetError}</span></div> : null}
+              <label className="admin-field">
+                <span>Nova senha (mínimo 12 caracteres)</span>
+                <input
+                  value={resetPassword}
+                  onChange={(event) => setResetPassword(event.target.value)}
+                  required
+                  minLength={12}
+                  maxLength={128}
+                  autoComplete="off"
+                  spellCheck={false}
+                  autoFocus
+                />
+                <p className="admin-field-hint">
+                  Já vem uma senha forte gerada; você pode digitar outra.{" "}
+                  <button type="button" className="admin-btn admin-btn-ghost" onClick={() => setResetPassword(generateSellerPassword())}>
+                    <RefreshCw size={14} /> Gerar outra
+                  </button>
+                </p>
+              </label>
+              <div className="admin-dialog-actions">
+                <button type="button" className="admin-btn admin-btn-soft" onClick={() => setResetTarget(null)}>Cancelar</button>
+                <button type="submit" className="admin-btn admin-btn-primary" disabled={resetSaving}>
+                  {resetSaving ? "Trocando…" : "Trocar senha"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       ) : null}
     </div>
   );
