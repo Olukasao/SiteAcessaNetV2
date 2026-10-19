@@ -12,7 +12,7 @@ set -euo pipefail
 # nunca são tocados aqui: o deploy só troca public/ e dist/. Mesmo assim, o
 # banco é copiado ANTES de qualquer coisa, no servidor e nesta máquina.
 #
-# Páginas antigas (/admin, /assinar-documento, /dados -- ver isLegacySpaPath em
+# Páginas antigas (/assinar-documento, /dados -- ver isLegacySpaPath em
 # server/src/app.ts) saem do legacy.html. Por padrão ele é reaproveitado do
 # que já está no ar; LEGACY_DIR=~/Site-Acessanet recompila do site antigo.
 

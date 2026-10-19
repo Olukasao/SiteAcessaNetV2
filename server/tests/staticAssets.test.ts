@@ -16,7 +16,7 @@ describe("assets no deploy híbrido", () => {
     directories.push(staticDir);
     fs.mkdirSync(path.join(staticDir, "assets"));
     fs.writeFileSync(path.join(staticDir, "index.html"), "<html>site novo</html>");
-    fs.writeFileSync(path.join(staticDir, "legacy.html"), "<html>admin legado</html>");
+    fs.writeFileSync(path.join(staticDir, "legacy.html"), "<html>legado</html>");
     fs.writeFileSync(path.join(staticDir, "assets", "kept-old-hash.js"), "export default 1;");
     const app = await buildApp(createContainer({ env: "test", dbDriver: "sqlite", sqlitePath: ":memory:", staticDir, sgp: { basicUsername: "test", basicPassword: "test" } }));
     try {
@@ -29,10 +29,10 @@ describe("assets no deploy híbrido", () => {
       const kept = await app.inject({ method: "GET", url: "/assets/kept-old-hash.js" });
       expect(kept.statusCode).toBe(200);
       expect(kept.headers["content-type"]).toContain("javascript");
-      for (const url of ["/", "/contratos", "/cliente", "/cliente/faturas", "/cliente/guia-wifi"]) {
+      for (const url of ["/", "/contratos", "/admin", "/admin/contratacoes", "/cliente", "/cliente/faturas", "/cliente/guia-wifi"]) {
         expect((await app.inject({ method: "GET", url })).body).toBe("<html>site novo</html>");
       }
-      expect((await app.inject({ method: "GET", url: "/admin" })).body).toBe("<html>admin legado</html>");
+      expect((await app.inject({ method: "GET", url: "/assinar-documento" })).body).toBe("<html>legado</html>");
       expect((await app.inject({ method: "GET", url: "/api/does-not-exist" })).headers["content-type"]).toContain("application/json");
     } finally {
       await app.close();

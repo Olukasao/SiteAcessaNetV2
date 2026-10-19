@@ -32,10 +32,10 @@ import { registerAdminMarketingRoutes } from "./routes/adminMarketingRoutes.js";
 
 /**
  * Rotas que continuam no build antigo (legacy.html) no deploy hibrido.
- * A Central e o guia Wi-Fi ficam no site novo. O frontend legado ainda
+ * A Central, o admin e o guia Wi-Fi ficam no site novo. O frontend legado ainda
  * reconhece /cliente para manter abas anteriores utilizáveis durante a transição.
  */
-const LEGACY_SPA_PREFIXES = ["/admin", "/assinar-documento", "/dados"];
+const LEGACY_SPA_PREFIXES = ["/assinar-documento", "/dados"];
 
 export function isLegacySpaPath(url: string) {
   const pathname = url.split(/[?#]/)[0] ?? "";

@@ -27,7 +27,6 @@ import {
   Smartphone,
   Monitor,
   Trash2,
-  UserPlus,
   Users
 } from "lucide-react";
 import {
@@ -52,7 +51,6 @@ import {
 	  getBugReportsSummary,
 	  getCentralAnalytics,
 	  getJobApplicationsSummary,
-	  getPlanLeadsSummary,
   listAnalyticsActivity,
 	  listAnalyticsClients,
 	  listAnalyticsEvents,
@@ -61,7 +59,6 @@ import {
 	  listContractRequestAssignees,
 	  listContractRequests,
 	  listJobApplications,
-	  listPlanLeads,
 	  listMarketingLeads,
 	  listContractMarketingLeads,
 	  listNotices,
@@ -71,7 +68,6 @@ import {
 	  updateBugReport,
 	  updateContractRequest,
 	  updateJobApplication,
-	  updatePlanLead,
 	  updateNotice
 } from "./adminApi";
 import PageMeta from "../cliente/PageMeta";
@@ -115,7 +111,6 @@ const AUDIENCE_TYPE_LABELS = {
 
 const ADMIN_SECTIONS = [
   { key: "overview", path: "/admin", label: "Visão Geral", icon: LayoutDashboard },
-  { key: "leads", path: "/admin/leads", label: "Leads", icon: UserPlus },
   { key: "contratacoes", path: "/admin/contratacoes", label: "Contratações", icon: ClipboardSignature },
   { key: "notices", path: "/admin/avisos", label: "Avisos", icon: Bell },
   { key: "marketing", path: "/admin/marketing", label: "Marketing", icon: Megaphone },
@@ -169,23 +164,6 @@ const JOB_APPLICATION_STATUS_LABELS = {
   em_analise: "Em análise",
   contatado: "Contatado",
   arquivado: "Arquivado"
-};
-
-const PLAN_LEAD_STATUSES = [
-  { value: "", label: "Todos" },
-  { value: "novo", label: "Novos" },
-  { value: "em_contato", label: "Em contato" },
-  { value: "contratado", label: "Contratados" },
-  { value: "sem_viabilidade", label: "Sem viabilidade" },
-  { value: "perdido", label: "Perdidos" }
-];
-
-const PLAN_LEAD_STATUS_LABELS = {
-  novo: "Novo",
-  em_contato: "Em contato",
-  contratado: "Contratado",
-  sem_viabilidade: "Sem viabilidade",
-  perdido: "Perdido"
 };
 
 const PLAN_LEAD_PERIOD_LABELS = {
@@ -273,7 +251,6 @@ function pageTitle(pageKey) {
 	    edit: "Editar aviso",
 	    bugs: "Bugs relatados",
 	    curriculos: "Currículos",
-	    leads: "Leads",
 	    contratacoes: "Contratações",
 	    chamados: "Chamados",
 	    central: "Central do Assinante",
@@ -293,8 +270,8 @@ function getPageKey(pathname) {
 	  if (pathname === "/admin/historico") return "activity";
 	  if (pathname === "/admin/bugs") return "bugs";
 	  if (pathname === "/admin/curriculos") return "curriculos";
-	  if (pathname === "/admin/leads") return "leads";
-	  if (pathname === "/admin/contratacoes") return "contratacoes";
+	  // /admin/leads era o pedido de plano antigo; os pedidos agora estão em Contratações.
+	  if (pathname === "/admin/contratacoes" || pathname === "/admin/leads") return "contratacoes";
 	  if (pathname === "/admin/chamados") return "chamados";
 	  if (pathname === "/admin/avisos") return "notices";
 	  if (pathname === "/admin/marketing") return "marketing";
@@ -311,7 +288,6 @@ export default function AdminArea() {
 	  const [admin, setAdmin] = useState(null);
 	  const [bugNewCount, setBugNewCount] = useState(0);
 	  const [jobNewCount, setJobNewCount] = useState(0);
-	  const [leadNewCount, setLeadNewCount] = useState(0);
 	  const [contractNewCount, setContractNewCount] = useState(0);
 
   useEffect(() => {
@@ -356,15 +332,6 @@ export default function AdminArea() {
 	    }
 	  }, []);
 
-	  const refreshLeadSummary = useCallback(async () => {
-	    try {
-	      const summary = await getPlanLeadsSummary();
-	      setLeadNewCount(Number(summary.newCount || 0));
-	    } catch {
-	      setLeadNewCount(0);
-	    }
-	  }, []);
-
 	  /** viewer nao tem contratacoes.read (dados pessoais): nem mostra o menu nem chama o resumo. */
 	  const canSeeContracts = can(admin, "contratacoes.read");
 
@@ -381,10 +348,9 @@ export default function AdminArea() {
 	    if (admin) {
 	      void refreshBugSummary();
 	      void refreshJobSummary();
-	      void refreshLeadSummary();
 	      if (canSeeContracts) void refreshContractSummary();
 	    }
-	  }, [admin, canSeeContracts, refreshBugSummary, refreshJobSummary, refreshLeadSummary, refreshContractSummary]);
+	  }, [admin, canSeeContracts, refreshBugSummary, refreshJobSummary, refreshContractSummary]);
 
   async function handleLogout() {
     await adminLogout().catch(() => {});
@@ -431,7 +397,6 @@ export default function AdminArea() {
 	                  <span>{section.label}</span>
 	                  {section.key === "bugs" && bugNewCount > 0 ? <em className="admin-nav-badge">{bugNewCount}</em> : null}
 	                  {section.key === "curriculos" && jobNewCount > 0 ? <em className="admin-nav-badge">{jobNewCount}</em> : null}
-	                  {section.key === "leads" && leadNewCount > 0 ? <em className="admin-nav-badge">{leadNewCount}</em> : null}
 	                  {section.key === "contratacoes" && contractNewCount > 0 ? <em className="admin-nav-badge">{contractNewCount}</em> : null}
 	                </button>
               );
@@ -482,8 +447,6 @@ export default function AdminArea() {
 	            <CentralStatsPage />
 	          ) : pageKey === "bugs" ? (
 	            <BugReportsPage onChanged={refreshBugSummary} />
-	          ) : pageKey === "leads" ? (
-	            <PlanLeadsPage onChanged={refreshLeadSummary} />
 	          ) : pageKey === "contratacoes" ? (
 	            <ContractRequestsPage onChanged={refreshContractSummary} />
 	          ) : pageKey === "curriculos" ? (
@@ -897,211 +860,6 @@ function BugReportsPage({ onChanged }) {
 	          }}
 	        />
 	      ) : null}
-    </div>
-  );
-}
-
-function leadStatusLabel(value) {
-  return PLAN_LEAD_STATUS_LABELS[value] || value || "—";
-}
-
-function LeadStatusPill({ status }) {
-  return <span className={`admin-status-pill tone-lead-${status || "novo"}`}>{leadStatusLabel(status)}</span>;
-}
-
-/** Link do WhatsApp do cliente (assume Brasil quando o número vem sem DDI). */
-function leadWhatsappHref(lead) {
-  let digits = String(lead.phone || "").replace(/\D/g, "");
-  if (digits.length <= 11) digits = `55${digits}`;
-  const text = `Olá, ${String(lead.name || "").split(" ")[0]}! Aqui é da AcessaNet, sobre o seu pedido do ${lead.planName}.`;
-  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
-}
-
-function leadAddress(lead) {
-  const line = [lead.street, lead.number].filter(Boolean).join(", ");
-  const extra = [lead.complement, lead.district].filter(Boolean).join(" · ");
-  return [line, extra, `${lead.city}${lead.uf ? `/${lead.uf}` : ""}`, `CEP ${lead.cep}`].filter(Boolean).join(" — ");
-}
-
-function PlanLeadsPage({ onChanged }) {
-  const [status, setStatus] = useState("novo");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState(null);
-  const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const params = useMemo(() => ({ page, limit: 30, status, search }), [page, search, status]);
-
-  const loadLeads = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      setData(await listPlanLeads(params));
-      await onChanged?.();
-    } catch (caughtError) {
-      setError(caughtError instanceof AdminApiError ? caughtError.message : "Não foi possível carregar os leads.");
-    } finally {
-      setLoading(false);
-    }
-  }, [onChanged, params]);
-
-  useEffect(() => {
-    void loadLeads();
-  }, [loadLeads]);
-
-  return (
-    <div className="admin-page-stack">
-      <div className="admin-page-head">
-        <h2>Leads</h2>
-        <p className="admin-muted">Pedidos de assinatura feitos pelo botão "Quero este plano" do site.</p>
-      </div>
-      <FilterBar>
-        <label className="admin-field admin-field-inline">
-          <span>Status</span>
-          <select value={status} onChange={(event) => { setPage(1); setStatus(event.target.value); }}>
-            {PLAN_LEAD_STATUSES.map((item) => <option value={item.value} key={item.value || "all"}>{item.label}</option>)}
-          </select>
-        </label>
-        <label className="admin-field admin-field-inline">
-          <span>Busca</span>
-          <input value={search} onChange={(event) => { setPage(1); setSearch(event.target.value); }} placeholder="Nome, telefone, CEP, rua..." />
-        </label>
-        <button type="button" className="admin-btn admin-btn-soft" onClick={() => { setStatus(""); setSearch(""); setPage(1); }}>Limpar</button>
-      </FilterBar>
-      <InlineState loading={loading} error={error} />
-      {!loading && !error && data && data.items.length === 0 ? <p className="admin-muted">Nenhum lead encontrado.</p> : null}
-      <div className="admin-table-wrap">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>Telefone</th>
-              <th>Plano</th>
-              <th>Cidade</th>
-              <th>Contato</th>
-              <th>Status</th>
-              <th>Recebido em</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(data?.items || []).map((lead) => (
-              <tr key={lead.id} onClick={() => setSelected(lead)}>
-                <td>#{lead.id}</td>
-                <td>{lead.name}</td>
-                <td>{lead.phone}</td>
-                <td>{lead.planName}</td>
-                <td>
-                  {lead.city}
-                  {!lead.coverageOk ? <span className="admin-lead-flag">fora da área</span> : null}
-                </td>
-                <td>{PLAN_LEAD_PERIOD_LABELS[lead.contactPeriod] || "—"}</td>
-                <td><LeadStatusPill status={lead.status} /></td>
-                <td>{formatDateTime(lead.createdAt)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <TablePager data={data} page={page} setPage={setPage} />
-      {selected ? (
-        <PlanLeadDetailModal
-          lead={selected}
-          onClose={() => setSelected(null)}
-          onUpdated={(next) => {
-            setSelected(next);
-            setData((current) => current ? { ...current, items: current.items.map((item) => item.id === next.id ? next : item) } : current);
-            void onChanged?.();
-          }}
-        />
-      ) : null}
-    </div>
-  );
-}
-
-function PlanLeadDetailModal({ lead, onClose, onUpdated }) {
-  const [status, setStatus] = useState(lead.status || "novo");
-  const [adminNotes, setAdminNotes] = useState(lead.adminNotes || "");
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    setStatus(lead.status || "novo");
-    setAdminNotes(lead.adminNotes || "");
-  }, [lead]);
-
-  async function handleSave(event) {
-    event.preventDefault();
-    setSaving(true);
-    setError("");
-    try {
-      onUpdated(await updatePlanLead(lead.id, { status, adminNotes }));
-    } catch (caughtError) {
-      setError(caughtError instanceof AdminApiError ? caughtError.message : "Não foi possível salvar.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <div className="admin-dialog-backdrop" role="presentation" onClick={onClose}>
-      <div className="admin-dialog admin-dialog-wide admin-bug-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
-        <h3>Lead #{lead.id} — {lead.name}</h3>
-        {!lead.coverageOk ? (
-          <div className="admin-inline-notice tone-warning">
-            <AlertTriangle size={16} />
-            <span>A cidade informada não está na lista de cidades atendidas. Confirme a viabilidade antes de vender.</span>
-          </div>
-        ) : null}
-        <dl className="admin-detail-grid">
-          <div><dt>Plano</dt><dd>{lead.planName}{lead.planPrice ? ` · ${lead.planPrice}` : ""}</dd></div>
-          <div><dt>Telefone</dt><dd><a href={`tel:${String(lead.phone).replace(/[^\d+]/g, "")}`}>{lead.phone}</a></dd></div>
-          <div className="admin-detail-wide"><dt>Endereço</dt><dd>{leadAddress(lead)}</dd></div>
-          <div><dt>Melhor horário</dt><dd>{PLAN_LEAD_PERIOD_LABELS[lead.contactPeriod] || "—"}</dd></div>
-          <div><dt>Recebido em</dt><dd>{formatDateTime(lead.createdAt)}</dd></div>
-          <div><dt>Status</dt><dd><LeadStatusPill status={lead.status} /></dd></div>
-          <div><dt>Atualizado em</dt><dd>{formatDateTime(lead.updatedAt)}</dd></div>
-        </dl>
-
-        <div className="admin-dialog-actions admin-lead-actions">
-          <a className="admin-btn admin-btn-whats" href={leadWhatsappHref(lead)} target="_blank" rel="noreferrer">
-            Chamar no WhatsApp
-          </a>
-          <a className="admin-btn admin-btn-soft" href={`tel:${String(lead.phone).replace(/[^\d+]/g, "")}`}>
-            Ligar
-          </a>
-        </div>
-
-        <form className="admin-bug-admin-form" onSubmit={handleSave}>
-          {error ? <div className="admin-inline-notice tone-danger"><AlertTriangle size={16} /><span>{error}</span></div> : null}
-          <label className="admin-field">
-            <span>Status</span>
-            <select value={status} onChange={(event) => setStatus(event.target.value)}>
-              {PLAN_LEAD_STATUSES.filter((item) => item.value).map((item) => (
-                <option value={item.value} key={item.value}>{leadStatusLabel(item.value)}</option>
-              ))}
-            </select>
-          </label>
-          <label className="admin-field">
-            <span>Notas internas</span>
-            <textarea
-              value={adminNotes}
-              onChange={(event) => setAdminNotes(event.target.value)}
-              rows={4}
-              maxLength={5000}
-              placeholder="Ex.: instalação agendada para sexta, cliente prefere contato à tarde."
-            />
-          </label>
-          <div className="admin-dialog-actions">
-            <button type="button" className="admin-btn admin-btn-soft" onClick={onClose}>Fechar</button>
-            <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
-              {saving ? "Salvando…" : "Salvar alterações"}
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 }

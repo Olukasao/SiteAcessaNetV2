@@ -111,7 +111,7 @@ O script, nesta ordem:
 O banco e o `.env` do servidor nunca são tocados. A versão anterior fica como
 `public.previous-*`/`dist.previous-*` no servidor, para voltar atrás.
 
-`/admin`, `/assinar-documento` e `/dados` ainda saem do `legacy.html` do site antigo, que o
+`/assinar-documento` e `/dados` ainda saem do `legacy.html` do site antigo, que o
 script reaproveita do que já está no ar. Para recompilar o site antigo junto, rode
 `LEGACY_DIR=~/Site-Acessanet ./deploy-hostinger.sh`.
 
