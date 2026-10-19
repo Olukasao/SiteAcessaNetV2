@@ -1,0 +1,58 @@
+/* Abertura do captive portal: tela cheia sobre o formulário até a animação acabar. */
+.wifi-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #06152d;
+}
+
+.wifi-intro__splash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+  background:
+    radial-gradient(75% 28% at 50% 46%, rgba(37, 125, 255, 0.26) 0%, rgba(17, 102, 189, 0.1) 45%, rgba(6, 21, 45, 0) 100%),
+    radial-gradient(70% 55% at 50% 0%, rgba(37, 125, 255, 0.22) 0%, rgba(6, 21, 45, 0) 70%),
+    radial-gradient(45% 35% at 85% 85%, rgba(147, 197, 253, 0.08) 0%, rgba(6, 21, 45, 0) 70%),
+    linear-gradient(180deg, #06152d 0%, #0a2250 55%, #06152d 100%);
+}
+
+.wifi-intro__logo {
+  display: block;
+  width: min(74vw, 340px);
+  height: auto;
+}
+
+.wifi-intro__tagline {
+  margin: 0;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  font-size: 17px;
+  letter-spacing: 0.01em;
+  color: rgba(234, 242, 255, 0.88);
+}
+
+.wifi-intro__tagline b {
+  font-weight: 400;
+  color: #93c5fd;
+}
+
+.wifi-intro__media {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.wifi-intro__canvas {
+  z-index: 3;
+}

@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { ApiError, postJson } from "../lib/api";
 import { maskPhone, onlyDigits } from "../lib/masks";
 import logo from "../assets/logo-acessanet-3d.png";
+import WifiIntro from "./WifiIntro";
 import "./wifiPortal.css";
 
 // Captive portal do Wi-Fi público (Grandstream, fluxo "External Captive Portal").
@@ -41,6 +42,13 @@ export default function WifiPortalPage() {
   const [errors, setErrors] = useState({});
   const [state, setState] = useState("form"); // form | sending | connecting | done
   const [submitError, setSubmitError] = useState("");
+
+  // A marca abre o portal toda vez que a pessoa entra na rede. Com "reduzir movimento",
+  // é só a tela estática da logo.
+  const [showIntro, setShowIntro] = useState(true);
+  const [staticIntro] = useState(
+    () => typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     document.title = "Wi-Fi grátis | AcessaNet";
@@ -88,6 +96,7 @@ export default function WifiPortalPage() {
 
   return (
     <main className="wifi-shell">
+      {showIntro ? <WifiIntro staticOnly={staticIntro} onComplete={() => setShowIntro(false)} /> : null}
       <div className="wifi-card">
         <img className="wifi-logo" src={logo} alt="AcessaNet" width="877" height="327" />
 
