@@ -177,6 +177,8 @@ export interface ContractRequestRepository {
   /** Admins ativos com um dos papeis informados (sem hash de senha, sem role). */
   listAssignees(roles: readonly string[]): Promise<ContractRequestAssignee[]>;
   findAssignee(id: string, roles: readonly string[]): Promise<ContractRequestAssignee | null>;
+  /** Devolve ao "sem responsavel" todos os pedidos de um admin (ao exclui-lo). Retorna quantos. */
+  releaseAssignedTo(adminId: string): Promise<number>;
   /** Ranking dos vendedores por pedidos do periodo [fromIso, toIso). */
   sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking>;
   /** Solicitacoes com opt-in de marketing, mais recentes primeiro. */
@@ -616,6 +618,13 @@ export class SqliteContractRequestRepository implements ContractRequestRepositor
     return row ? { id: row.id, name: row.name, email: row.email } : null;
   }
 
+  async releaseAssignedTo(adminId: string): Promise<number> {
+    const result = this.db
+      .prepare("UPDATE contract_requests SET assigned_admin_id = NULL, updated_at = ? WHERE assigned_admin_id = ?")
+      .run(iso(new Date()), adminId);
+    return Number(result.changes);
+  }
+
   async sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking> {
     const rows = this.db.prepare(SELECT_SELLER_RANKING).all(fromIso, toIso) as unknown as SellerRow[];
     const count = this.db.prepare(COUNT_UNASSIGNED).get(fromIso, toIso) as CountRow | undefined;
@@ -728,6 +737,14 @@ export class MysqlContractRequestRepository implements ContractRequestRepository
     const [rows] = await this.pool.execute(selectAssignee(roles), [...roles, id]);
     const row = (rows as AssigneeRow[])[0];
     return row ? { id: row.id, name: row.name, email: row.email } : null;
+  }
+
+  async releaseAssignedTo(adminId: string): Promise<number> {
+    const [result] = await this.pool.execute(
+      "UPDATE contract_requests SET assigned_admin_id = NULL, updated_at = ? WHERE assigned_admin_id = ?",
+      [iso(new Date()), adminId]
+    );
+    return Number((result as { affectedRows?: number }).affectedRows ?? 0);
   }
 
   async sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking> {

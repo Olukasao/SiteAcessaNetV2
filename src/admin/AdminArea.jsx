@@ -69,6 +69,7 @@ import {
 	getSellerRanking,
 	listSellers,
 	createSeller,
+	deleteSeller,
 	updateSeller,
 	  listNotices,
 	  readAdminTokens,
@@ -934,6 +935,25 @@ function SellersPage({ admin }) {
     }
   }
 
+  async function handleDelete(seller) {
+    if (!window.confirm(`Excluir ${seller.name} (${seller.email}) de vez? Não dá para desfazer. Os pedidos que estão com ela voltam para "sem responsável".`)) return;
+    setBusyId(seller.id);
+    setSellersError("");
+    try {
+      const result = await deleteSeller(seller.id);
+      const released = Number(result?.released || 0);
+      setEmailNotice(
+        `${seller.name} foi excluída.${released > 0 ? ` ${released} ${released === 1 ? "pedido voltou" : "pedidos voltaram"} para "sem responsável".` : ""}`
+      );
+      await loadSellers();
+      void loadRanking();
+    } catch (caughtError) {
+      setSellersError(sellerErrorText(caughtError, "Não foi possível excluir."));
+    } finally {
+      setBusyId("");
+    }
+  }
+
   async function handleToggleActive(seller) {
     const next = !seller.active;
     if (!next && !window.confirm(`Desativar ${seller.name}? Ela é desconectada agora e não consegue entrar. Os atendimentos continuam no histórico.`)) return;
@@ -1102,6 +1122,14 @@ function SellersPage({ admin }) {
                           <button type="button" className="admin-btn admin-btn-soft" disabled={busyId === seller.id} onClick={() => handleToggleActive(seller)}>
                             <Power size={14} /> {seller.active ? "Desativar" : "Reativar"}
                           </button>
+                          {!seller.active ? (
+                            <>
+                              {" "}
+                              <button type="button" className="admin-btn admin-btn-danger" disabled={busyId === seller.id} onClick={() => handleDelete(seller)}>
+                                <Trash2 size={14} /> Excluir
+                              </button>
+                            </>
+                          ) : null}
                         </td>
                       </tr>
                     ))}

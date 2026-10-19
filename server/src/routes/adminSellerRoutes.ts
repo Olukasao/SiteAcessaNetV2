@@ -135,6 +135,34 @@ export async function registerAdminSellerRoutes(app: FastifyInstance, container:
     return present(updated ?? target);
   });
 
+  app.delete("/admin/api/vendedores/:id", async (request) => {
+    const admin = requireAdminPermission(request, "usuarios.manage");
+    const { id } = parsePtBr(idParams, request.params);
+
+    const target = await container.adminUsers.findById(id);
+    if (!target || target.role !== "vendedor") {
+      throw new AppError(404, "NOT_FOUND", "Vendedor não encontrado.");
+    }
+    // Dois passos de proposito: desativar primeiro evita excluir uma conta ativa por engano.
+    if (target.active) {
+      throw new AppError(409, "SELLER_ACTIVE", "Desative o acesso antes de excluir.");
+    }
+
+    // Sessoes primeiro: o token dela cai na hora, antes de a conta sumir.
+    await container.adminSessions.revokeAllForAdmin(id, new Date());
+    // Os pedidos dela voltam para a fila (sem responsavel) para outra pessoa assumir.
+    const released = await container.contractRequests.releaseAssignedTo(id);
+    await container.adminUsers.delete(id);
+
+    await audit(request, container, admin.adminUserId, "DELETE_ADMIN_USER", {
+      userId: id,
+      email: target.email,
+      name: target.name,
+      releasedRequests: released
+    });
+    return { ok: true, released };
+  });
+
   app.get("/admin/api/vendedores/ranking", async (request) => {
     const admin = requireAdminPermission(request, "ranking.read");
     const query = parsePtBr(periodQuery, request.query);

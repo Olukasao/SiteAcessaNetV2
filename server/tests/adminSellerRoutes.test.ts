@@ -278,3 +278,36 @@ describe("troca de e-mail", () => {
     await app.close();
   });
 });
+
+describe("excluir vendedor", () => {
+  it("só exclui conta desativada; sessões caem, pedidos voltam à fila e o e-mail fica livre", async () => {
+    const container = testContainer();
+    const app = await buildApp(container);
+    const admin = await adminToken(app, container, "admin");
+    const editor = await adminToken(app, container, "editor");
+    const ana = await createSeller(app, admin, "Ana", "ana@loja.com");
+    const del = (id: string, token = admin) => app.inject({ method: "DELETE", url: `/admin/api/vendedores/${id}`, headers: { authorization: token } });
+    const requestId = await submitRequest(app, container);
+    await patch(app, ana.token, requestId, { status: "em_atendimento" });
+
+    expect((await del(ana.id, ana.token)).statusCode).toBe(403);
+    expect((await del(ana.id, editor)).statusCode).toBe(403);
+    expect((await del(ana.id)).json().error.code).toBe("SELLER_ACTIVE");
+    expect((await del("adm_admin")).statusCode).toBe(404); // outro cargo nao se exclui por aqui
+
+    await app.inject({ method: "PATCH", url: `/admin/api/vendedores/${ana.id}`, headers: { authorization: admin }, payload: { active: false } });
+    const removed = await del(ana.id);
+    expect(removed.statusCode).toBe(200);
+    expect(removed.json()).toEqual({ ok: true, released: 1 });
+
+    expect(await container.adminUsers.findById(ana.id)).toBeNull();
+    expect((await app.inject({ method: "GET", url: "/admin/api/contratacoes", headers: { authorization: ana.token } })).statusCode).toBe(401);
+    expect((await login(app, "ana@loja.com", SELLER_PASSWORD)).statusCode).toBe(401);
+    expect((await container.contractRequests.findById(requestId))?.assignedAdminId).toBeNull();
+    expect((await app.inject({ method: "GET", url: "/admin/api/vendedores", headers: { authorization: admin } })).json().items).toHaveLength(0);
+
+    // O e-mail pode ser usado por uma conta nova.
+    await createSeller(app, admin, "Ana Nova", "ana@loja.com");
+    await app.close();
+  });
+});

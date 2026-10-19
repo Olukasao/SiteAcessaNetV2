@@ -29,6 +29,7 @@ export interface AdminUserRepository {
   listByRole(role: AdminRole): Promise<AdminUserRecord[]>;
   setActive(id: string, active: boolean): Promise<void>;
   updateEmail(id: string, email: string): Promise<void>;
+  delete(id: string): Promise<void>;
 }
 
 interface AdminUserRow {
@@ -106,6 +107,10 @@ export class SqliteAdminUserRepository implements AdminUserRepository {
       .prepare("UPDATE admin_users SET email = ?, updated_at = datetime('now') WHERE id = ?")
       .run(email.toLowerCase().trim(), id);
   }
+
+  async delete(id: string): Promise<void> {
+    this.db.prepare("DELETE FROM admin_users WHERE id = ?").run(id);
+  }
 }
 
 export class MysqlAdminUserRepository implements AdminUserRepository {
@@ -163,5 +168,9 @@ export class MysqlAdminUserRepository implements AdminUserRepository {
       email.toLowerCase().trim(),
       id
     ]);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.pool.execute("DELETE FROM admin_users WHERE id = ?", [id]);
   }
 }

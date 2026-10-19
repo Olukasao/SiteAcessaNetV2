@@ -396,6 +396,10 @@ export async function updateSeller(id, input) {
   return adminRequest(`/admin/api/vendedores/${encodeURIComponent(id)}`, { method: "PATCH", body: input });
 }
 
+export async function deleteSeller(id) {
+  return adminRequest(`/admin/api/vendedores/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
 export async function getSellerRanking(params) {
   return adminRequest(`/admin/api/vendedores/ranking${buildQuery(params)}`);
 }
