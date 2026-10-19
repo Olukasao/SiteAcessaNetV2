@@ -96,14 +96,23 @@ Referência: [Deploying Git Repositories with Vercel](https://vercel.com/docs/gi
 
 ### Hostinger
 
+O site e o backend (`server/`) vão juntos para o app Node.js da Hostinger:
+
 ```bash
-npm ci
-npm run build
+./deploy-hostinger.sh
 ```
 
-Envie **o conteúdo** da pasta `dist/` (não a pasta em si) para `public_html/` pelo Gerenciador de Arquivos
-ou FTP. O `dist/.htaccess` (vem de `public/.htaccess`) já faz as rotas `/planos`, `/contratos` etc.
-funcionarem, força HTTPS e configura cache. Arquivos ocultos precisam estar visíveis no gerenciador para
-o `.htaccess` ir junto.
+O script, nesta ordem:
 
-> O site antigo completo (Central do Assinante, admin e backend) fica na branch `site-antigo`.
+1. Faz backup do MySQL (clientes cadastrados), no servidor e em `backups/mysql/` nesta máquina.
+2. Compila o site e o backend.
+3. Envia tudo para pastas novas e só então troca o que está no ar, com `mv`.
+
+O banco e o `.env` do servidor nunca são tocados. A versão anterior fica como
+`public.previous-*`/`dist.previous-*` no servidor, para voltar atrás.
+
+`/admin`, `/assinar-documento` e `/dados` ainda saem do `legacy.html` do site antigo, que o
+script reaproveita do que já está no ar. Para recompilar o site antigo junto, rode
+`LEGACY_DIR=~/Site-Acessanet ./deploy-hostinger.sh`.
+
+> O código do site antigo fica na branch `site-antigo`.

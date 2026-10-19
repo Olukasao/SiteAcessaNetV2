@@ -1,2 +1,6 @@
 node_modules
 dist
+
+# Backups do deploy (dump do banco com dados de clientes) e build hibrido -- nunca versionar.
+/backups
+/dist-hybrid
