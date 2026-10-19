@@ -58,6 +58,8 @@ export interface WifiRepository {
   markAuthorized(id: number, when: Date): Promise<void>;
   /** Quem tem o consentimento de marketing MAIS RECENTE = concedido. */
   listMarketingLeads(limit: number): Promise<WifiMarketingLead[]>;
+  /** true se a pessoa estava na lista (consentimento de marketing mais recente = concedido). */
+  isMarketingLead(visitorId: string): Promise<boolean>;
 }
 
 const iso = (date: Date) => date.toISOString();
@@ -143,6 +145,10 @@ const MARKETING_SQL = `SELECT v.id, v.full_name, v.email, v.phone, v.created_at,
   WHERE c.granted = 1
   ORDER BY c.created_at DESC
   LIMIT ?`;
+
+const LATEST_MARKETING_GRANTED_SQL = `SELECT c.id FROM wifi_consents c
+  WHERE c.visitor_id = ? AND c.purpose = 'marketing' AND c.granted = 1
+    AND c.id = (SELECT MAX(c2.id) FROM wifi_consents c2 WHERE c2.visitor_id = c.visitor_id AND c2.purpose = 'marketing')`;
 
 interface SessionRow {
   id: number;
@@ -250,6 +256,11 @@ export class SqliteWifiRepository implements WifiRepository {
     this.ready();
     return (this.db.prepare(MARKETING_SQL).all(limit) as unknown as MarketingRow[]).map(leadFromRow);
   }
+
+  async isMarketingLead(visitorId: string): Promise<boolean> {
+    this.ready();
+    return Boolean(this.db.prepare(LATEST_MARKETING_GRANTED_SQL).get(visitorId));
+  }
 }
 
 export class MysqlWifiRepository implements WifiRepository {
@@ -317,5 +328,11 @@ export class MysqlWifiRepository implements WifiRepository {
     await this.ready();
     const [rows] = await this.pool.execute(MARKETING_SQL, [limit]);
     return (rows as MarketingRow[]).map(leadFromRow);
+  }
+
+  async isMarketingLead(visitorId: string): Promise<boolean> {
+    await this.ready();
+    const [rows] = await this.pool.execute(LATEST_MARKETING_GRANTED_SQL, [visitorId]);
+    return (rows as unknown[]).length > 0;
   }
 }

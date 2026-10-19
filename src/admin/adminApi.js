@@ -252,6 +252,11 @@ export async function searchOltClients(params) {
   return adminRequest(`/admin/api/oltcloud/clients${buildQuery(params)}`);
 }
 
+/** Tira da lista de Marketing (source: "wifi" | "contrato"). Nao apaga cadastro nem pedido. */
+export async function removeMarketingLead(source, id) {
+  return adminRequest(`/admin/api/marketing/leads/${source}/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
 /** Leads do Wi-Fi publico (AcessaNet Connect) que deram opt-in de marketing. */
 export async function listMarketingLeads() {
   return adminRequest("/admin/api/marketing/leads");

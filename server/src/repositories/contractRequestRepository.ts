@@ -183,6 +183,8 @@ export interface ContractRequestRepository {
   sellerRanking(fromIso: string, toIso: string): Promise<SellerRanking>;
   /** Solicitacoes com opt-in de marketing, mais recentes primeiro. */
   listMarketingOptIns(limit: number): Promise<ContractMarketingLead[]>;
+  /** Desmarca o opt-in de marketing (o pedido fica) e registra o evento. false = nao havia opt-in. */
+  removeMarketingOptIn(id: number, adminId: string): Promise<boolean>;
 }
 
 type SqlParam = string | number | null;
@@ -321,6 +323,8 @@ const INSERT_REQUEST = `INSERT INTO contract_requests
 
 const INSERT_EVENT = `INSERT INTO contract_request_events (request_id, type, from_value, to_value, note, admin_id, created_at)
   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+const MARKETING_REMOVED_NOTE = "Removido da lista de marketing pelo painel (opt-in desmarcado).";
 
 function rolePlaceholders(roles: readonly string[]) {
   // Lista vazia nunca casa (IN () e invalido em SQL).
@@ -635,6 +639,23 @@ export class SqliteContractRequestRepository implements ContractRequestRepositor
     const rows = this.db.prepare(SELECT_MARKETING).all(limit) as unknown as MarketingRow[];
     return rows.map(marketingFromRow);
   }
+
+  async removeMarketingOptIn(id: number, adminId: string): Promise<boolean> {
+    const nowIso = iso(new Date());
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      const result = this.db
+        .prepare("UPDATE contract_requests SET marketing_opt_in = 0, updated_at = ? WHERE id = ? AND marketing_opt_in = 1")
+        .run(nowIso, id);
+      const changed = Number(result.changes) > 0;
+      if (changed) this.db.prepare(INSERT_EVENT).run(id, "note", null, null, MARKETING_REMOVED_NOTE, adminId, nowIso);
+      this.db.exec("COMMIT");
+      return changed;
+    } catch (error) {
+      this.db.exec("ROLLBACK");
+      throw error;
+    }
+  }
 }
 
 export class MysqlContractRequestRepository implements ContractRequestRepository {
@@ -756,5 +777,26 @@ export class MysqlContractRequestRepository implements ContractRequestRepository
   async listMarketingOptIns(limit: number): Promise<ContractMarketingLead[]> {
     const [rows] = await this.pool.execute(SELECT_MARKETING, [limit]);
     return (rows as MarketingRow[]).map(marketingFromRow);
+  }
+
+  async removeMarketingOptIn(id: number, adminId: string): Promise<boolean> {
+    const nowIso = iso(new Date());
+    const connection = await this.pool.getConnection();
+    try {
+      await connection.beginTransaction();
+      const [result] = await connection.execute(
+        "UPDATE contract_requests SET marketing_opt_in = 0, updated_at = ? WHERE id = ? AND marketing_opt_in = 1",
+        [nowIso, id]
+      );
+      const changed = Number((result as { affectedRows?: number }).affectedRows) > 0;
+      if (changed) await connection.execute(INSERT_EVENT, [id, "note", null, null, MARKETING_REMOVED_NOTE, adminId, nowIso]);
+      await connection.commit();
+      return changed;
+    } catch (error) {
+      await connection.rollback().catch(() => {});
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 }

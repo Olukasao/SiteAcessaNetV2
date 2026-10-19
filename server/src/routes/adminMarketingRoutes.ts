@@ -2,6 +2,8 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { AppContainer } from "../container.js";
 import { requireAdminAuth, requireAdminPermission } from "../auth/adminAuthenticate.js";
 import { sha256 } from "../security/hash.js";
+import { AppError } from "../errors.js";
+import { WIFI_MARKETING_VERSION } from "../wifi/wifiRoutes.js";
 
 function clientIpHash(request: FastifyRequest) {
   return sha256(request.ip || "unknown");
@@ -63,5 +65,42 @@ export async function registerAdminMarketingRoutes(app: FastifyInstance, contain
     });
 
     return { items: leads };
+  });
+
+  /**
+   * Tira a pessoa da lista de Marketing: no Wi-Fi grava uma recusa de marketing (novo
+   * registro de consentimento, o historico fica); na contratacao desmarca o opt-in.
+   * Cadastro, pedido e registros de conexao NAO sao apagados. So admin.
+   */
+  app.delete<{ Params: { source: string; id: string } }>("/admin/api/marketing/leads/:source/:id", async (request) => {
+    const admin = requireAdminPermission(request, "marketing.manage");
+    const { source, id } = request.params;
+
+    let removed = false;
+    if (source === "wifi") {
+      if (await container.wifi.isMarketingLead(id)) {
+        await container.wifi.recordConsent(id, "marketing", false, WIFI_MARKETING_VERSION);
+        removed = true;
+      }
+    } else if (source === "contrato") {
+      const requestId = Number(id);
+      if (!Number.isInteger(requestId) || requestId <= 0) throw new AppError(400, "INVALID_ID", "Identificador invalido.");
+      removed = await container.contractRequests.removeMarketingOptIn(requestId, admin.adminUserId);
+    } else {
+      throw new AppError(400, "INVALID_SOURCE", "Origem invalida.");
+    }
+    if (!removed) throw new AppError(404, "LEAD_NOT_FOUND", "Essa pessoa ja nao esta na lista de marketing.");
+
+    const record = await container.adminUsers.findById(admin.adminUserId);
+    await container.adminAuditLog.record({
+      adminUserId: admin.adminUserId,
+      adminEmail: record?.email ?? null,
+      action: "REMOVE_MARKETING_LEAD",
+      ipHash: clientIpHash(request),
+      userAgent: userAgent(request),
+      afterSnapshot: { source, id }
+    });
+
+    return { ok: true };
   });
 }

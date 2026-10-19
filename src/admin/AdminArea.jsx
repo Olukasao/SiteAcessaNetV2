@@ -65,6 +65,7 @@ import {
 	  listContractRequests,
 	  listJobApplications,
 	  listMarketingLeads,
+	  removeMarketingLead,
 	  listContractMarketingLeads,
 	getSellerRanking,
 	listSellers,
@@ -219,7 +220,7 @@ const EVENT_LABELS = {
 
 /** Espelho so-de-leitura do mapa real (server/src/auth/adminPermissions.ts) -- so pra esconder/desabilitar botao na UI; o backend sempre revalida de verdade. */
 const ROLE_PERMISSIONS = {
-  admin: ["avisos.read", "avisos.create", "avisos.update", "avisos.delete", "avisos.publish", "contratacoes.read", "contratacoes.update", "usuarios.manage", "ranking.read"],
+  admin: ["avisos.read", "avisos.create", "avisos.update", "avisos.delete", "avisos.publish", "contratacoes.read", "contratacoes.update", "usuarios.manage", "ranking.read", "marketing.manage"],
   editor: ["avisos.read", "avisos.create", "avisos.update", "avisos.publish", "contratacoes.read", "contratacoes.update", "ranking.read"],
   viewer: ["avisos.read"],
   vendedor: ["contratacoes.read", "contratacoes.update"]
@@ -476,7 +477,7 @@ export default function AdminArea() {
           ) : pageKey === "notices" ? (
             <NoticesListPage admin={admin} onNavigate={navigate} />
           ) : pageKey === "marketing" ? (
-            <MarketingPage />
+            <MarketingPage admin={admin} />
           ) : pageKey === "new" ? (
             <NoticeFormPage admin={admin} mode="create" onNavigate={navigate} />
           ) : pageKey === "edit" ? (
@@ -1210,7 +1211,9 @@ function marketingSourceError(caughtError, fallback) {
   return caughtError.message || fallback;
 }
 
-function MarketingPage() {
+function MarketingPage({ admin }) {
+  const canRemove = can(admin, "marketing.manage");
+  const [removingKey, setRemovingKey] = useState("");
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState([]);
@@ -1227,6 +1230,8 @@ function MarketingPage() {
       for (const lead of Array.isArray(wifi.value) ? wifi.value : []) {
         merged.push({
           key: `wifi-${lead.visitorId}`,
+          source_: "wifi",
+          id: lead.visitorId,
           name: lead.fullName,
           email: lead.email,
           phone: lead.phone,
@@ -1242,6 +1247,8 @@ function MarketingPage() {
       for (const lead of contract.value?.items || []) {
         merged.push({
           key: `contrato-${lead.id}`,
+          source_: "contrato",
+          id: lead.id,
           name: lead.customerName,
           email: lead.email,
           phone: lead.whatsapp,
@@ -1262,6 +1269,20 @@ function MarketingPage() {
   useEffect(() => {
     void loadLeads();
   }, [loadLeads]);
+
+  async function handleRemove(lead) {
+    if (!window.confirm(`Tirar ${lead.name} da lista de marketing? A pessoa deixa de receber ofertas. O cadastro e o histórico são mantidos.`)) return;
+    setRemovingKey(lead.key);
+    try {
+      await removeMarketingLead(lead.source_, lead.id);
+      setLeads((current) => current.filter((item) => item.key !== lead.key));
+    } catch (caught) {
+      window.alert(caught instanceof AdminApiError ? caught.message : "Não foi possível remover agora.");
+      void loadLeads();
+    } finally {
+      setRemovingKey("");
+    }
+  }
 
   return (
     <div className="admin-page-stack">
@@ -1290,6 +1311,7 @@ function MarketingPage() {
                 <th>Origem</th>
                 <th>Detalhe</th>
                 <th>Consentimento em</th>
+                {canRemove ? <th>Ações</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -1301,6 +1323,13 @@ function MarketingPage() {
                   <td><span className="admin-status-pill">{lead.source}</span></td>
                   <td>{lead.detail}</td>
                   <td>{formatDateTime(lead.consentAt)}</td>
+                  {canRemove ? (
+                    <td>
+                      <button type="button" className="admin-btn admin-btn-danger" disabled={removingKey === lead.key} onClick={() => handleRemove(lead)}>
+                        {removingKey === lead.key ? "Removendo…" : "Excluir"}
+                      </button>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

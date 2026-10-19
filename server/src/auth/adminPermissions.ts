@@ -14,7 +14,9 @@ export type AdminPermission =
   /** Criar/desativar contas de vendedor e redefinir senha. */
   | "usuarios.manage"
   /** Ranking de vendedores (desempenho de cada pessoa). */
-  | "ranking.read";
+  | "ranking.read"
+  /** Tirar pessoas da lista de Marketing (revoga o opt-in; nao apaga cadastro nem pedido). */
+  | "marketing.manage";
 
 /**
  * Mapa fixo em codigo (nao em banco): time pequeno, sem necessidade de UI de
@@ -31,7 +33,8 @@ const rolePermissions: Record<AdminRole, ReadonlySet<AdminPermission>> = {
     "contratacoes.read",
     "contratacoes.update",
     "usuarios.manage",
-    "ranking.read"
+    "ranking.read",
+    "marketing.manage"
   ]),
   editor: new Set([
     "avisos.read",
