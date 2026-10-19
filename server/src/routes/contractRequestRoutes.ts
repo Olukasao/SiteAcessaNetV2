@@ -334,10 +334,9 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
   });
 
   app.get("/admin/api/contratacoes/assignees", async (request) => {
-    const admin = requireAdminPermission(request, "contratacoes.read");
-    const items = await container.contractRequests.listAssignees(ASSIGNEE_ROLES);
-    // Vendedor so assume pedido para si mesmo (o ranking conta por responsavel).
-    return { items: admin.role === "vendedor" ? items.filter((item) => item.id === admin.adminUserId) : items };
+    requireAdminPermission(request, "contratacoes.read");
+    // Todos que atendem contratacoes podem trocar o responsavel (inclusive vendedor).
+    return { items: await container.contractRequests.listAssignees(ASSIGNEE_ROLES) };
   });
 
   app.get("/admin/api/contratacoes", async (request) => {
@@ -404,17 +403,10 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
     }
 
     let assignedAdminId = body.assignedAdminId;
-    if (admin.role === "vendedor") {
-      // O ranking conta por responsavel: vendedor nao toma pedido de colega nem atribui a terceiros.
-      const owner = before.assignedAdminId;
-      if (owner && owner !== admin.adminUserId) {
-        throw new AppError(403, "FORBIDDEN", "Este pedido está com outro vendedor.");
-      }
-      if (assignedAdminId && assignedAdminId !== admin.adminUserId) {
-        throw new AppError(403, "FORBIDDEN", "Você só pode assumir pedidos para si mesmo.");
-      }
-      // Quem atende um pedido sem responsavel passa a ser o responsavel.
-      if (!owner && assignedAdminId === undefined) assignedAdminId = admin.adminUserId;
+    // Qualquer pessoa com contratacoes.update troca o responsavel (a troca fica no historico
+    // do pedido e na auditoria). Vendedor que atende pedido sem responsavel passa a ser o responsavel.
+    if (admin.role === "vendedor" && !before.assignedAdminId && assignedAdminId === undefined) {
+      assignedAdminId = admin.adminUserId;
     }
 
     const updated = await container.contractRequests.applyChanges(
