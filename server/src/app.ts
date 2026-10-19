@@ -30,6 +30,7 @@ import { registerPlanLeadRoutes } from "./routes/planLeadRoutes.js";
 import { registerContractRequestRoutes } from "./routes/contractRequestRoutes.js";
 import { registerAdminMarketingRoutes } from "./routes/adminMarketingRoutes.js";
 import { registerAdminSellerRoutes } from "./routes/adminSellerRoutes.js";
+import { registerWifiRoutes } from "./wifi/wifiRoutes.js";
 import { roleCanReachAdminPath } from "./auth/adminPermissions.js";
 import { AppError } from "./errors.js";
 
@@ -299,6 +300,9 @@ export async function buildApp(container: AppContainer = createContainer()) {
       "GET /api/contratacao/planos",
       "GET /api/contratacao/planos/:id",
       "POST /api/contratacao/solicitacoes",
+      /** Wi-Fi publico: cadastro (limite por IP) e autorizacao do RADIUS (token proprio, ver wifiRoutes.ts). */
+      "POST /api/wifi/cadastro",
+      "POST /api/wifi/radius/authorize",
       /**
        * Rota de teste da integracao OLT Cloud -- nao usa sessao de cliente,
        * tem sua propria protecao (x-debug-token + so registrada fora de
@@ -359,6 +363,7 @@ export async function buildApp(container: AppContainer = createContainer()) {
   await registerAdminOltCloudRoutes(app, container);
   await registerAdminMarketingRoutes(app, container);
   await registerAdminSellerRoutes(app, container);
+  await registerWifiRoutes(app, container);
 
   return app;
 }

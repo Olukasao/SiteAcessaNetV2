@@ -1,7 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { AppContainer } from "../container.js";
 import { requireAdminAuth, requireAdminPermission } from "../auth/adminAuthenticate.js";
-import { AppError } from "../errors.js";
 import { sha256 } from "../security/hash.js";
 
 function clientIpHash(request: FastifyRequest) {
@@ -14,8 +13,8 @@ function userAgent(request: FastifyRequest) {
 }
 
 /**
- * Tela "Marketing" do admin: mostra os visitantes do Wi-Fi publico (AcessaNet
- * Connect) que deram opt-in de marketing. Somente leitura -- segue o mesmo padrao
+ * Tela "Marketing" do admin: mostra os visitantes do Wi-Fi publico (cadastro
+ * em /login-wifi-publico, src/wifi) que deram opt-in de marketing. Somente leitura -- segue o mesmo padrao
  * de adminAnalyticsRoutes.ts (qualquer admin autenticado pode ver, sem permissao
  * granular propria, igual Analytics/Chamados/Bugs -- so o modulo de Avisos usa
  * permissoes finas hoje). Cada leitura fica no audit log, igual VIEW_ANALYTICS.
@@ -30,15 +29,11 @@ export async function registerAdminMarketingRoutes(app: FastifyInstance, contain
   app.get("/admin/api/marketing/leads", async (request) => {
     const admin = requireAdminAuth(request);
 
-    if (!container.acessanetConnect) {
-      throw new AppError(
-        503,
-        "ACESSANET_CONNECT_NOT_CONFIGURED",
-        "Integracao com o AcessaNet Connect nao configurada (ACESSANET_CONNECT_URL/ACESSANET_CONNECT_TOKEN)."
-      );
-    }
-
-    const leads = await container.acessanetConnect.listMarketingLeads();
+    // Wi-Fi publico agora mora no proprio site (src/wifi). O Connect antigo so entra
+    // se ainda estiver configurado, somado aos cadastros locais.
+    const local = await container.wifi.listMarketingLeads(CONTRACT_LEADS_LIMIT);
+    const remote = container.acessanetConnect ? await container.acessanetConnect.listMarketingLeads().catch(() => []) : [];
+    const leads = [...local, ...remote];
 
     const record = await container.adminUsers.findById(admin.adminUserId);
     await container.adminAuditLog.record({

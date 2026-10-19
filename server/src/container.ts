@@ -28,6 +28,7 @@ import {
 } from "./integrations/sgp/providers.js";
 import { SgpUraClient } from "./integrations/sgp/sgpClient.js";
 import { OltCloudClient, type OltCloudTokenSource } from "./integrations/oltcloud/oltCloudClient.js";
+import { MysqlWifiRepository, SqliteWifiRepository, type WifiRepository } from "./wifi/wifiRepository.js";
 import { AcessanetConnectClient } from "./integrations/acessanetConnect/acessanetConnectClient.js";
 import { OltCloudAuthClient } from "./integrations/oltcloud/oltCloudAuth.js";
 import { OltCloudIncidentService } from "./integrations/oltcloud/oltCloudIncidentService.js";
@@ -167,6 +168,7 @@ export interface AppContainer {
   planLeads: PlanLeadRepository;
   /** Solicitacoes de Contratacao Online (/api/contratacao, aba "Contratações" do admin). */
   contractRequests: ContractRequestRepository;
+  wifi: WifiRepository;
   /** Porta INERTE para encaminhar solicitacoes a um sistema externo (SGP) no futuro -- hoje no-op, nenhuma rota chama. */
   contractRequestForwarder: ContractRequestForwarder;
   /** Incidentes PON_OUTAGE persistidos (alert/list pon_loss -> equipment/list -> external_client_contract_id) -- ver ponOutageSyncService.ts. Tabela sempre existe; so e alimentada quando oltCloud esta configurado (ver server.ts). */
@@ -296,6 +298,7 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
   let jobApplications: JobApplicationRepository;
   let planLeads: PlanLeadRepository;
   let contractRequests: ContractRequestRepository;
+  let wifi: WifiRepository;
   let networkIncidents: NetworkIncidentRepository;
   let dbHealthCheck: () => Promise<boolean>;
   let dbReady: Promise<void>;
@@ -328,6 +331,7 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
     jobApplications = new MysqlJobApplicationRepository(pool);
     planLeads = new MysqlPlanLeadRepository(pool);
     contractRequests = new MysqlContractRequestRepository(pool);
+    wifi = new MysqlWifiRepository(pool);
     networkIncidents = new MysqlNetworkIncidentRepository(pool);
   } else {
     const db = createDatabase(config.sqlitePath);
@@ -357,6 +361,7 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
     jobApplications = new SqliteJobApplicationRepository(db);
     planLeads = new SqlitePlanLeadRepository(db);
     contractRequests = new SqliteContractRequestRepository(db);
+    wifi = new SqliteWifiRepository(db);
     networkIncidents = new SqliteNetworkIncidentRepository(db);
   }
 
@@ -443,6 +448,7 @@ export function createContainer(configOverrides: AppConfigOverrides = {}): AppCo
     jobApplications,
     planLeads,
     contractRequests,
+    wifi,
     contractRequestForwarder: new NoopContractRequestForwarder(),
     networkIncidents,
     oltCloud,

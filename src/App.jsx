@@ -17,6 +17,7 @@ const TrabalheConoscoPage = lazy(() => import("./pages/TrabalheConoscoPage"));
 const ContratarPage = lazy(() => import("./pages/ContratarPage"));
 const ClienteArea = lazy(() => import("./cliente/ClienteArea"));
 const AdminArea = lazy(() => import("./admin/AdminArea"));
+const WifiPortalPage = lazy(() => import("./pages/WifiPortalPage"));
 
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -45,8 +46,23 @@ function isCentralPath(pathname) {
   return /^\/cliente(\/|$)/.test(pathname) && pathname !== "/cliente/guia-wifi" && pathname !== "/cliente/guia-wifi/";
 }
 
+// Captive portal do Wi-Fi público: abre no mini-navegador do celular, sem header/rodapé.
+function isWifiPortalPath(pathname) {
+  return /^\/login-wifi-publico\/?$/.test(pathname);
+}
+
 export default function App() {
   const { pathname } = useLocation();
+
+  if (isWifiPortalPath(pathname)) {
+    return (
+      <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--navy-900)" }} />}>
+        <Routes>
+          <Route path="/login-wifi-publico" element={<WifiPortalPage />} />
+        </Routes>
+      </Suspense>
+    );
+  }
 
   if (isAdminPath(pathname)) {
     return (

@@ -1,0 +1,14 @@
+{
+  "name": "acessanet-wifi-radius",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "RADIUS do Wi-Fi publico: o AP Grandstream pergunta aqui, este processo confere no site (POST /api/wifi/radius/authorize).",
+  "scripts": {
+    "start": "node index.mjs",
+    "test": "node --test test.mjs"
+  },
+  "dependencies": {
+    "radius": "1.1.4"
+  }
+}

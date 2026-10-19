@@ -89,6 +89,15 @@ export interface AppConfig {
    * le os leads que deram opt-in de marketing no Wi-Fi publico. Mesmo padrao do
    * bloco oltCloud acima: opcional, enabled = Boolean(baseUrl && token).
    */
+  /** Wi-Fi publico (captive portal + RADIUS) -- ver src/wifi/wifiRoutes.ts. */
+  wifi: {
+    /** Segredo compartilhado com o radius-bridge. Vazio = rota de autorizacao desligada. */
+    radiusToken: string | undefined;
+    /** Quanto tempo o login temporario vale (e vira o Session-Timeout no AP). */
+    sessionHours: number;
+    /** Hosts extras aceitos em login_url alem de IPs privados (ex.: dominio do controlador). */
+    loginHosts: string[];
+  };
   acessanetConnect: {
     enabled: boolean;
     baseUrl: string;
@@ -181,6 +190,7 @@ export type AppConfigOverrides = Partial<Omit<AppConfig, "sgp" | "oltCloud" | "r
   };
   oltCloud?: Partial<Omit<AppConfig["oltCloud"], "debug">> & { debug?: Partial<AppConfig["oltCloud"]["debug"]> };
   acessanetConnect?: Partial<AppConfig["acessanetConnect"]>;
+  wifi?: Partial<AppConfig["wifi"]>;
   regionalIncident?: Partial<AppConfig["regionalIncident"]>;
   sgpSignMock?: Partial<AppConfig["sgpSignMock"]>;
 };
@@ -293,6 +303,11 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
         token: unwrapEnv(process.env.OLTCLOUD_DEBUG_TOKEN)
       }
     },
+    wifi: {
+      radiusToken: unwrapEnv(process.env.WIFI_RADIUS_TOKEN),
+      sessionHours: Number(process.env.WIFI_SESSION_HOURS ?? 4),
+      loginHosts: parseCsv(process.env.WIFI_LOGIN_HOSTS ?? "").map((host) => host.toLowerCase())
+    },
     acessanetConnect: {
       enabled: Boolean(process.env.ACESSANET_CONNECT_URL && process.env.ACESSANET_CONNECT_TOKEN),
       baseUrl: process.env.ACESSANET_CONNECT_URL ?? "",
@@ -347,6 +362,7 @@ export function loadConfig(overrides: AppConfigOverrides = {}): AppConfig {
       ...base.acessanetConnect,
       ...overrides.acessanetConnect
     },
+    wifi: { ...base.wifi, ...overrides.wifi },
     oltCloud: {
       ...base.oltCloud,
       ...overrides.oltCloud,
