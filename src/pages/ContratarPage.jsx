@@ -95,7 +95,11 @@ const validators = {
     const ok = (d.length === 10 || d.length === 11) && VALID_DDDS.has(Number(d.slice(0, 2))) && (d.length === 10 || d[2] === "9");
     return ok ? "" : "Informe um celular com DDD, como (11) 99999-9999.";
   },
-  email: (v) => (!v.trim() || (v.trim().length <= 254 && EMAIL_PATTERN.test(v.trim())) ? "" : "Confira o e-mail, ex.: nome@email.com."),
+  email: (v) => {
+    const value = v.trim();
+    if (!value) return "Informe seu e-mail, ex.: nome@email.com.";
+    return value.length <= 254 && EMAIL_PATTERN.test(value) ? "" : "Confira o e-mail, ex.: nome@email.com.";
+  },
   notes: (v) => (v.length <= NOTES_MAX ? "" : `Use no máximo ${NOTES_MAX} caracteres.`),
 };
 
@@ -650,7 +654,7 @@ export default function ContratarPage() {
           city: form.city.trim(),
           uf: form.uf.trim() ? form.uf.trim().toUpperCase() : null,
         },
-        customer: { name: form.name.trim().replace(/\s+/g, " "), whatsapp: form.whatsapp, email: nullable(form.email) },
+        customer: { name: form.name.trim().replace(/\s+/g, " "), whatsapp: form.whatsapp, email: form.email.trim() },
         contactPeriod: form.contactPeriod || null,
         notes: nullable(form.notes),
         privacyNoticeAck: true,
@@ -963,7 +967,7 @@ export default function ContratarPage() {
               />
             )}
           </Field>
-          <Field id="ctr-email" label="E-mail" optional error={errors.email}>
+          <Field id="ctr-email" label="E-mail" error={errors.email}>
             {(a) => <input {...a} name="email" type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(e) => set("email", e.target.value)} onBlur={() => onBlur("email")} />}
           </Field>
         </div>

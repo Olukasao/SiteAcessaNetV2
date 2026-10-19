@@ -183,15 +183,21 @@ describe("POST /api/contratacao/solicitacoes", () => {
     await app.close();
   });
 
-  it("aceita e-mail vazio/ausente e WhatsApp fixo de 10 digitos", async () => {
+  it("exige e-mail (vazio, só espaços ou ausente são recusados) e aceita WhatsApp fixo de 10 digitos", async () => {
     const container = testContainer();
     const app = await buildApp(container);
     const base = payload();
-    const response = await submit(app, payload({ customer: { ...base.customer, email: "", whatsapp: "1144445555" } }));
+    for (const email of ["", "   ", undefined]) {
+      const { email: _omit, ...customerWithoutEmail } = base.customer;
+      const customer = email === undefined ? customerWithoutEmail : { ...base.customer, email };
+      const refused = await submit(app, payload({ customer }));
+      expect(refused.statusCode).toBe(400);
+      expect(JSON.stringify(refused.json())).toMatch(/e-mail/i);
+    }
+    expect((await container.contractRequests.list({ page: 1, limit: 10 })).total).toBe(0);
+
+    const response = await submit(app, payload({ customer: { ...base.customer, whatsapp: "1144445555" } }));
     expect(response.statusCode).toBe(201);
-    const { items } = await container.contractRequests.list({ page: 1, limit: 10 });
-    const saved = await container.contractRequests.findById(items[0]!.id);
-    expect(saved?.email).toBeNull();
     await app.close();
   });
 

@@ -53,7 +53,7 @@ async function submitRequest(app: FastifyInstance, container: AppContainer) {
       idempotencyKey: randomUUID(),
       planId: "800",
       address: { cep: "07700-000", street: "Rua das Flores", number: "1", district: "Centro", city: "Caieiras", uf: "SP" },
-      customer: { name: "Cliente Teste", whatsapp: "(11) 98888-7777" },
+      customer: { name: "Cliente Teste", whatsapp: "(11) 98888-7777", email: "cliente@example.com" },
       privacyNoticeAck: true
     }
   });

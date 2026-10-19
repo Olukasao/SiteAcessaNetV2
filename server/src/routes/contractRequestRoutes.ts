@@ -108,7 +108,14 @@ const createSchema = z.object({
       .refine((value) => NAME_PATTERN.test(value), "Use apenas letras no nome.")
       .refine((value) => value.split(" ").filter((part) => part.length >= 2).length >= 2, "Informe nome e sobrenome."),
     whatsapp: whatsappSchema,
-    email: z.preprocess(blankToNull, z.email({ error: "E-mail inválido." }).max(254).toLowerCase().nullable().optional())
+    // Obrigatorio: e o segundo canal de contato alem do WhatsApp (linhas antigas podem ter e-mail nulo).
+    email: z
+      .string({ error: "Informe o e-mail." })
+      .trim()
+      .min(1, "Informe o e-mail.")
+      .max(254)
+      .pipe(z.email({ error: "E-mail inválido." }))
+      .transform((value) => value.toLowerCase())
   }),
   contactPeriod: z.enum(CONTRACT_REQUEST_PERIODS).nullable().optional(),
   notes: optionalText(500),
