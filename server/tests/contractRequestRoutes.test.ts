@@ -33,7 +33,7 @@ function payload(overrides: Record<string, unknown> = {}) {
       city: "Caieiras",
       uf: "sp"
     },
-    customer: { name: "João Pereira", whatsapp: "(11) 98888-7777", email: "Joao@Example.com" },
+    customer: { name: "João Pereira", whatsapp: "(11) 98888-7777", email: "Joao@Example.com", cpf: "529.982.247-25" },
     contactPeriod: "tarde",
     notes: "Perto da padaria",
     privacyNoticeAck: true,

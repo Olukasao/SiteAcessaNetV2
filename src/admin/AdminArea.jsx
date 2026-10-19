@@ -242,6 +242,12 @@ function can(admin, permission) {
   return Boolean(admin && ROLE_PERMISSIONS[admin.role]?.includes(permission));
 }
 
+function formatCpf(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (digits.length !== 11) return "—";
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
 function formatDateTime(value) {
   if (!value) return "—";
   const date = new Date(value);
@@ -1541,7 +1547,7 @@ const CONTRACT_PLAN_OPTIONS = [
   { value: "700-fixo", label: "Plano 700 Mega + Telefone Fixo" }
 ];
 
-const CONTRACT_PROTOCOL_RE = /^AC\d{6}-[0-9A-HJKMNP-TV-Z]{6}$/;
+const CONTRACT_PROTOCOL_RE = /^AC(\d{6}-)?[0-9A-HJKMNP-TV-Z]{6}$/;
 
 function contractStatusLabel(value) {
   return CONTRACT_REQUEST_STATUS_LABELS[value] || value || "—";
@@ -1671,17 +1677,17 @@ function ContractRequestsPage({ onChanged }) {
           <input
             value={protocol}
             onChange={(event) => { setPage(1); setProtocol(event.target.value); }}
-            placeholder="AC261017-7KQ3XD"
+            placeholder="AC7KQ3XD"
             maxLength={15}
           />
         </label>
         <label className="admin-field admin-field-inline">
           <span>Busca</span>
-          <input value={search} onChange={(event) => { setPage(1); setSearch(event.target.value); }} placeholder="Nome, WhatsApp, cidade..." maxLength={120} />
+          <input value={search} onChange={(event) => { setPage(1); setSearch(event.target.value); }} placeholder="Nome, CPF, WhatsApp, cidade..." maxLength={120} />
         </label>
         <button type="button" className="admin-btn admin-btn-soft" onClick={clearFilters}>Limpar</button>
       </FilterBar>
-      {protocolIncomplete ? <p className="admin-muted">Digite o protocolo completo (ex.: AC261017-7KQ3XD) para filtrar.</p> : null}
+      {protocolIncomplete ? <p className="admin-muted">Digite o protocolo completo (ex.: AC7KQ3XD) para filtrar.</p> : null}
       <InlineState loading={loading} error={error} />
       {!loading && !error && data && data.items.length === 0 ? <p className="admin-muted">Nenhuma solicitação encontrada.</p> : null}
       <div className="admin-table-wrap">
@@ -1840,6 +1846,7 @@ function ContractRequestDetailModal({ requestId, onClose, onUpdated }) {
               <div><dt>Preço no pedido</dt><dd>{formatCents(request.planPriceCents)}/mês (catálogo do site)</dd></div>
               <div><dt>WhatsApp</dt><dd><a href={contractWhatsappHref(request)} target="_blank" rel="noreferrer">{formatWhatsapp(request.whatsapp)}</a></dd></div>
               <div><dt>E-mail</dt><dd>{request.email ? <a href={`mailto:${request.email}`}>{request.email}</a> : "—"}</dd></div>
+              <div><dt>CPF</dt><dd>{formatCpf(request.cpf)}</dd></div>
               <div className="admin-detail-wide"><dt>Endereço</dt><dd>{contractAddress(request)}</dd></div>
               <div className="admin-detail-wide"><dt>Observações do interessado</dt><dd>{request.notes || "—"}</dd></div>
               <div><dt>Melhor horário</dt><dd>{PLAN_LEAD_PERIOD_LABELS[request.contactPeriod] || "—"}</dd></div>

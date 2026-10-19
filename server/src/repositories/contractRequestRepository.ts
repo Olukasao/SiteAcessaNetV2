@@ -50,6 +50,8 @@ export interface ContractRequestDetail extends ContractRequestSummary {
   number: string;
   complement: string | null;
   email: string | null;
+  /** So digitos. Pedidos antigos (antes do campo existir) ficam null. */
+  cpf: string | null;
   notes: string | null;
   marketingOptIn: boolean;
   privacyNoticeVersion: string;
@@ -85,6 +87,7 @@ export interface CreateContractRequestInput {
   customerName: string;
   whatsapp: string;
   email: string | null;
+  cpf: string | null;
   contactPeriod: string | null;
   notes: string | null;
   privacyNoticeVersion: string;
@@ -220,6 +223,7 @@ interface RequestRow {
   customer_name: string;
   whatsapp: string;
   email: string | null;
+  cpf: string | null;
   contact_period: string | null;
   notes: string | null;
   privacy_notice_version: string;
@@ -302,7 +306,7 @@ interface AssigneeRow {
 
 const SELECT_REQUEST = `SELECT r.id, r.protocol, r.status, r.plan_id, r.plan_name, r.plan_price_cents, r.plan_price_text,
   r.cep, r.street, r.number, r.complement, r.district, r.city, r.uf, r.city_covered, r.customer_name, r.whatsapp,
-  r.email, r.contact_period, r.notes, r.privacy_notice_version, r.privacy_notice_ack_at, r.marketing_opt_in,
+  r.email, r.cpf, r.contact_period, r.notes, r.privacy_notice_version, r.privacy_notice_ack_at, r.marketing_opt_in,
   r.assigned_admin_id, a.name AS assigned_admin_name, r.created_at, r.updated_at
   FROM contract_requests r LEFT JOIN admin_users a ON a.id = r.assigned_admin_id`;
 
@@ -352,9 +356,9 @@ const SELECT_EVENTS = `SELECT e.id, e.type, e.from_value, e.to_value, e.note, e.
 
 const INSERT_REQUEST = `INSERT INTO contract_requests
   (protocol, idempotency_key, status, plan_id, plan_name, plan_price_cents, plan_price_text, cep, street, number, complement,
-   district, city, uf, city_covered, customer_name, whatsapp, email, contact_period, notes, privacy_notice_version,
+   district, city, uf, city_covered, customer_name, whatsapp, email, cpf, contact_period, notes, privacy_notice_version,
    privacy_notice_ack_at, marketing_opt_in, assigned_admin_id, ip_hash, user_agent, created_at, updated_at)
-  VALUES (?, ?, 'novo', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`;
+  VALUES (?, ?, 'novo', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`;
 
 const INSERT_EVENT = `INSERT INTO contract_request_events (request_id, type, from_value, to_value, note, admin_id, created_at)
   VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -402,6 +406,7 @@ function fromRow(row: RequestRow): ContractRequestDetail {
     customerName: row.customer_name,
     whatsapp: row.whatsapp,
     email: row.email,
+    cpf: row.cpf ?? null,
     contactPeriod: row.contact_period,
     notes: row.notes,
     privacyNoticeVersion: row.privacy_notice_version,
@@ -486,8 +491,8 @@ function buildWhere(filters: ContractRequestFilters) {
     // WhatsApp e gravado so com digitos: "(11) 9888" tambem precisa achar.
     const digits = filters.search.replace(/\D/g, "");
     if (digits.length >= 3) {
-      parts.push("r.whatsapp LIKE ? ESCAPE '!'");
-      params.push(likeValue(digits));
+      parts.push("r.whatsapp LIKE ? ESCAPE '!'", "r.cpf LIKE ? ESCAPE '!'");
+      params.push(likeValue(digits), likeValue(digits));
     }
     clauses.push(`(${parts.join(" OR ")})`);
   }
@@ -514,6 +519,7 @@ function insertValues(input: CreateContractRequestInput, nowIso: string): SqlPar
     input.customerName.slice(0, 120),
     input.whatsapp.slice(0, 11),
     cut(input.email, 254),
+    cut(input.cpf, 11),
     cut(input.contactPeriod, 20),
     cut(input.notes, 500),
     input.privacyNoticeVersion.slice(0, 32),

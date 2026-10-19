@@ -20,7 +20,7 @@ import { useUI } from "../context/UIContext";
 import { plans as sitePlans, services, whatsappLink } from "../data/site";
 import { ApiError, getJson, postJson } from "../lib/api";
 import { contractLink } from "../lib/contract";
-import { maskCep, maskPhone, onlyDigits } from "../lib/masks";
+import { isValidCpf, maskCep, maskCpf, maskPhone, onlyDigits } from "../lib/masks";
 import "../sections/sections.css";
 import "../components/planModal.css";
 import "../components/planCard.css";
@@ -49,7 +49,7 @@ const LEGAL =
 
 // Campos por etapa, na ordem visual (o primeiro inválido recebe o foco).
 const ADDRESS_FIELDS = ["cep", "street", "number", "district", "city", "uf"];
-const CONTACT_FIELDS = ["name", "whatsapp", "email", "notes"];
+const CONTACT_FIELDS = ["name", "cpf", "whatsapp", "email", "notes"];
 const FIELD_STEP = Object.fromEntries([...ADDRESS_FIELDS.map((f) => [f, 1]), ...CONTACT_FIELDS.map((f) => [f, 2])]);
 const FIELD_LABEL = {
   cep: "CEP",
@@ -59,6 +59,7 @@ const FIELD_LABEL = {
   city: "Cidade",
   uf: "UF",
   name: "Nome completo",
+  cpf: "CPF",
   whatsapp: "WhatsApp",
   email: "E-mail",
   notes: "Ponto de referência ou observação",
@@ -89,6 +90,10 @@ const validators = {
     if (name.length > 120) return "Use no máximo 120 caracteres.";
     if (!NAME_PATTERN.test(name)) return "Use apenas letras no nome.";
     return "";
+  },
+  cpf: (v) => {
+    if (!onlyDigits(v)) return "Informe seu CPF.";
+    return isValidCpf(v) ? "" : "CPF inválido. Confira os números.";
   },
   whatsapp: (v) => {
     const d = onlyDigits(v);
@@ -143,6 +148,7 @@ function emptyForm(coverage) {
     city: fromCoverage ? coverage.city || "" : "",
     uf: fromCoverage ? coverage.uf || "" : "",
     name: "",
+    cpf: "",
     whatsapp: "",
     email: "",
     contactPeriod: "",
@@ -600,7 +606,7 @@ export default function ContratarPage() {
     const errs = {};
     const groups = [
       ["address", ADDRESS_FIELDS],
-      ["customer", ["name", "whatsapp", "email"]],
+      ["customer", ["name", "cpf", "whatsapp", "email"]],
       ["notes", ["notes"]],
     ];
     for (const [group, fields] of groups) {
@@ -615,6 +621,7 @@ export default function ContratarPage() {
       const guess =
         (/CEP/i.test(text) && "cep") ||
         (/UF/.test(text) && "uf") ||
+        (/CPF/i.test(text) && "cpf") ||
         (/WhatsApp|DDD|Celular/i.test(text) && "whatsapp") ||
         (/nome/i.test(text) && "name") ||
         (/mail/i.test(text) && "email") ||
@@ -654,7 +661,7 @@ export default function ContratarPage() {
           city: form.city.trim(),
           uf: form.uf.trim() ? form.uf.trim().toUpperCase() : null,
         },
-        customer: { name: form.name.trim().replace(/\s+/g, " "), whatsapp: form.whatsapp, email: form.email.trim() },
+        customer: { name: form.name.trim().replace(/\s+/g, " "), cpf: onlyDigits(form.cpf), whatsapp: form.whatsapp, email: form.email.trim() },
         contactPeriod: form.contactPeriod || null,
         notes: nullable(form.notes),
         privacyNoticeAck: true,
@@ -951,6 +958,21 @@ export default function ContratarPage() {
         <Field id="ctr-name" label="Nome completo" error={errors.name}>
           {(a) => <input {...a} name="name" autoComplete="name" maxLength={120} value={form.name} onChange={(e) => set("name", e.target.value)} onBlur={() => onBlur("name")} />}
         </Field>
+        <Field id="ctr-cpf" label="CPF" help="Do titular do contrato." error={errors.cpf}>
+          {(a) => (
+            <input
+              {...a}
+              name="cpf"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="000.000.000-00"
+              maxLength={14}
+              value={form.cpf}
+              onChange={(e) => set("cpf", maskCpf(e.target.value))}
+              onBlur={() => onBlur("cpf")}
+            />
+          )}
+        </Field>
         <div className="plf-row">
           <Field id="ctr-whatsapp" label="WhatsApp" help="É por aqui que nossa equipe vai falar com você." error={errors.whatsapp}>
             {(a) => (
@@ -1078,6 +1100,7 @@ export default function ContratarPage() {
           <dl className="ctr-review-list">
             {rows([
               ["Nome", form.name.trim()],
+              ["CPF", form.cpf],
               ["WhatsApp", form.whatsapp],
               ["E-mail", form.email.trim()],
               ["Melhor horário", periodLabel],

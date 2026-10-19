@@ -407,6 +407,9 @@ export async function migrateMysql(pool: Pool): Promise<void> {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
 
+  // CPF na contratacao online: coluna nova em tabela que ja existe (aditivo, idempotente).
+  await addMysqlColumnIfMissing(pool, "contract_requests", "cpf", "VARCHAR(11) NULL AFTER email");
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS network_incidents (
       id VARCHAR(191) PRIMARY KEY,
@@ -442,3 +445,17 @@ export async function migrateMysql(pool: Pool): Promise<void> {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
 	}
+
+/**
+ * CREATE TABLE IF NOT EXISTS nao adiciona coluna em tabela que ja existe. Sempre
+ * aditivo (nunca DROP/RENAME), idempotente (seguro rodar em todo boot).
+ * `table`/`column`/`definition` sao constantes do codigo, nunca entrada de usuario.
+ */
+async function addMysqlColumnIfMissing(pool: Pool, table: string, column: string, definition: string) {
+  const [rows] = await pool.query(
+    "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ? LIMIT 1",
+    [table, column]
+  );
+  if ((rows as unknown[]).length > 0) return;
+  await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}

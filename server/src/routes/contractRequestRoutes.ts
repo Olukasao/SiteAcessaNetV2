@@ -4,6 +4,7 @@ import type { AppContainer } from "../container.js";
 import { requireAdminPermission } from "../auth/adminAuthenticate.js";
 import { AppError } from "../errors.js";
 import { safeEqual, sha256 } from "../security/hash.js";
+import { isValidCpf, normalizeCpf } from "../auth/cpf.js";
 import { parsePtBr } from "./validation.js";
 import { rolesWithPermission } from "../auth/adminPermissions.js";
 import {
@@ -108,6 +109,10 @@ const createSchema = z.object({
       .refine((value) => NAME_PATTERN.test(value), "Use apenas letras no nome.")
       .refine((value) => value.split(" ").filter((part) => part.length >= 2).length >= 2, "Informe nome e sobrenome."),
     whatsapp: whatsappSchema,
+    cpf: z
+      .string({ error: "Informe o CPF." })
+      .transform((value) => normalizeCpf(value))
+      .refine((digits) => isValidCpf(digits), "CPF inválido. Confira os números."),
     // Obrigatorio: e o segundo canal de contato alem do WhatsApp (linhas antigas podem ter e-mail nulo).
     email: z
       .string({ error: "Informe o e-mail." })
@@ -278,6 +283,7 @@ export async function registerContractRequestRoutes(app: FastifyInstance, contai
           cityCovered,
           customerName: body.customer.name,
           whatsapp: body.customer.whatsapp,
+          cpf: body.customer.cpf,
           email: body.customer.email ?? null,
           contactPeriod: body.contactPeriod ?? null,
           notes: body.notes ?? null,

@@ -384,6 +384,7 @@ function migrate(db: DatabaseSync) {
 	  `);
 
   addColumnIfMissing(db, "central_notices", "image_url", "TEXT");
+  addColumnIfMissing(db, "contract_requests", "cpf", "TEXT");
 }
 
 /**
